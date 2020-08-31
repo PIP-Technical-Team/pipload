@@ -1,7 +1,7 @@
 #' pip_datafind
 #' Find surveys available for PIP
 #'
-#' @param country character: ISO3 country code
+#' @param country character: vector of ISO3 country codes.
 #' @param year    numeric: survey year
 #' @param survey  character: Survey acronym
 #' @param vermast character: Master version in the form v## or ##
@@ -50,26 +50,27 @@
 
 pip_datafind <- function(country          = NULL,
                          year             = NULL,
-                         survey           = NA,
-                         vermast          = NA,
-                         veralt           = NA,
+                         survey           = NULL,
+                         vermast          = NULL,
+                         veralt           = NULL,
                          characteristics  = TRUE,
-                         maindir          = ":/01.PovcalNet/01.Vintage_control",
-                         drive            = "p") {
+                         maindir          = getOption("pip.maindir")
+                         ) {
   #--------- Initial conditions
 
   # drive and main dir
 
-  maindir <- paste0(drive, maindir)
-
-  if (!dir.exists(maindir)) {
-    maindir <- "//wbntpcifs/povcalnet/01.PovcalNet/01.Vintage_control"
-  }
   if (!dir.exists(maindir)) {
     st_msg <- paste0("main directory `",
                      maindir,
-                     "` not reachable. Check connection")
-    stop(st_msg)
+                     "` not reachable.")
+    rlang::abort(c(
+                  st_msg,
+                  i = "Check connection"
+                  ),
+                  class = "pipload_error"
+                  )
+
   }
 
 
@@ -77,186 +78,64 @@ pip_datafind <- function(country          = NULL,
   #   Country condition
   #----------------------------------------------------------
 
-  if (length(country) == 0) {
+  if (is.null(country)) {
     argum <- c(year, survey, vermast, veralt)
-    if (sum(is.na(argum)) != length(argum)) {
-      warning(
-        "if `country` is NA, arguments `year`, `survey`,
-              `vermast`, and `veralt` should be NA as well"
+    if (length(argum)) {
+      rlang::inform(
+        paste("if `country` is NULL, arguments `year`, `survey`\n",
+              "`vermast`, and `veralt` should be NULL as well\n",
+              "These arguments are coerced to NULL")
       )
+
     }
 
+    # Load country names when no country is selected
     countries <- dir(maindir)
     countries <- countries[!grepl("^_", countries)]  # remove _aux folder
 
   } else { # country is selected
     lyear      <- length(year)
-    lcountry   <-  length(country)
+    lcountry   <- length(country)
 
     if ( lyear != 0 ) {       # if year is selected along with country
-      if (lcountry != 1) {  # if more than one country selected
+
+      if (lcountry != 1) {    # if more than one country selected
+
         if ( lyear != 1) {
-          warning(paste0("`length(country)` is greater than 1 (==",
-                         lcountry, "), So the first value of `year` (",
-                         year[[1]], ") wille be used"))
+          rlang::warn(c(
+                      paste0("Since `length(country)` is greater than 1,\n",
+                             "the first value of `year` (",
+                             year[[1]], ") wille be used"),
+                        i = paste("length(country) == " , lcountry)
+                        ),
+                        class = "pipload_warning"
+                        )
         }
+
         countries  <- country
-        years <- rep(year[[1]], lcountry)
+        years      <- rep(year[[1]], lcountry)
+
       } else {              # if only one country selected
+
         countries <- rep(country, lyear)
-        years <- year
+        years     <- year
+
       }
     } else  { # if lyear == 0
       countries  <- country
     }
-  }   # end of country no NA
+  }   # end of country no NULL
 
+  invisible()
+}
 
-
-  #----------------------------------------------------------
-  #   Clean data
-  #----------------------------------------------------------
-
-  #--------- get file names
-
-  if (length(year) > 0) {  # if year is selected
-    DT <- purrr::map2_dfr(countries,
-                          years,
-                          find_filename,
-                          maindir = maindir)
-  } else {                 # if no year is selected
-    DT <- purrr::map_dfr(countries,
-                         find_filename,
-                         maindir = maindir)
-  }
-
-  varnames <- c("countrycode",
-                "year",
-                "survey",
-                "vermast",
-                "M",
-                "veralt",
-                "A",
-                "collection",
-                "module"
-  )
-  # combinations not found
-  not_found <- grep("NotFound$",
-                    DT$filename,
-                    value = TRUE)
-
-  # filename <-grep("^((?!NotFound).)*$",
-  #                           DT$filename,
-  #                           perl = TRUE,
-  #                           value = TRUE)
-
-  DT <- DT[!(grep("NotFound$",  filename))]  # returns a vector, not a data.table
-
-  if (nrow(DT) == 0) {
-    r <- list(pcn   = DT,
-              fail  = not_found )
-    return(r)
-  }
-
-
-  DT <- DT[,
-           (varnames) :=
-             tstrsplit(filename, "_", fixed = TRUE) # Create columns separating by _
-  ][ ,
-     c("M", "A") := NULL
-  ]
-
-  vers <- c("vermast", "veralt")
-  nvers <- c("vm", "va")
-
-  DT[, (nvers) :=
-       lapply(.SD, (function(x) {       # anonymous function
-         x <- gsub("[Vv](.*)", "\\1", x)  # remove V
-         x <- as.numeric(x)            # convert to number
-       })),
-     .SDcols = vers]                   # apply to vermast and veralt
-
-  DT[,
-     mxvm := max(vm),         # Get max vermast by country, year, and survey
-     by = .(countrycode, year, survey)
-  ]
-
-  nvers <- c(nvers, "mxvm")  # add to variables to remove
-
-  DT <- DT[DT[ mxvm ==vm,
-               .I[which.max(va)],         # Get max veralt by country, year, and survey
-               by = .(countrycode, year, survey, module) # module is added for group data
-  ]$V1
-  ][,
-    (nvers) := NULL
-  ]
-
-  #--------- defaults
-  # if it is Argentina get only EPHC-S2
-  if (any(DT$countrycode == "ARG")) {
-    DT <- DT[,
-             n := .N,
-             by = .(countrycode, year)
-    ][
-      n == 1 |survey == "EPHC-S2" | countrycode != "ARG"
-    ][ ,
-       n := NULL
-    ]
-  } # end of ARG condition
-
-  # if it is Brazil get only PNADC-E1
-  if (any(DT$countrycode == "BRA")) {
-    DT <- DT[,
-             n := .N,
-             by = .(countrycode, year)
-    ][
-      n == 1 |survey == "PNADC-E1" | countrycode != "BRA"
-    ][ ,
-       n := NULL
-    ]
-  } # end of BRA condition
-
-  # if it is Germany get only GSOEP-LIS
-  if (any(DT$countrycode == "DEU")) {
-    DT <- DT[,
-             n := .N,
-             by = .(countrycode, year)
-    ][
-      n == 1 |survey == "GSOEP-LIS" | countrycode != "DEU"
-    ][ ,
-       n := NULL
-    ]
-  } # end of DEU condition
-
-  # Modify year for EU-SILC survey
-  DT <- DT[,
-           year := as.numeric(year)
-  ][survey == "EU-SILC",
-    year := year - 1
-  ]
-
-  #----------------------------------------------------------
-  #   find characteristics  of Stata data
-  #----------------------------------------------------------
-
-  if (characteristics) {
-    chr <- purrr::map_df(DT$filepath, find_characteristics)
-    DT <- cbind(DT, chr)
-  }
-
-  #--------- Return
-
-  r <- list(pcn   = tibble::as_tibble(DT),
-            fail  = not_found )
-  return(r)
-} # end of function pip_datafind
 
 #----------------------------------------------------------
 #   Auxiliary functions
 #----------------------------------------------------------
 
 find_filename <- function(country = NULL,
-                          year = NULL,
+                          year    = NULL,
                           maindir) {
 
 
@@ -309,36 +188,5 @@ find_filename <- function(country = NULL,
                                 filename))
   # return(tibble::tibble(filename))
 } # end of find_filename
-
-
-find_characteristics <- function(filepath) {
-  at <- attributes(readstata13::read.dta13(filepath))$expansion.fields
-
-  r2get <-  c("welfaretype")  # rows to get
-
-
-  df <- tibble::enframe(at)      %>%     #convert into data frame
-    tidyr::unnest(cols = c(value)) %>%   # separate values in each vector of each row
-    dplyr::mutate(index = rep(c("a", "note", "value"), dplyr::n()/3)) %>%  # names of future columns
-    tidyr::pivot_wider(values_from = value,  # reshape to wide format
-                       names_from = index) %>%
-    dplyr::filter(note  %in% r2get) %>%
-    dplyr::select(note, value)
-
-  # transpose
-  tdf <- tibble::as_tibble(t(df[,-1]),
-                           .name_repair = "minimal")
-  colnames(tdf) <- df$note # add names to columns
-  return(tdf)
-}
-
-
-
-# mbm = microbenchmark(
-#   map  = purrr::map_dfr(countries, find_filename, maindir = maindir),
-#   base = find_filename(maindir = maindir),
-#   times = 25
-# )
-# mbm
 
 
