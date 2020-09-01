@@ -2,20 +2,33 @@
 % Please edit documentation in R/pip_inventory.R
 \name{pip_inventory}
 \alias{pip_inventory}
-\title{Title}
+\title{Load or Update PIP microdata inventory. Wrapper of function pip_inventory_load and
+pip_inventory_update}
 \usage{
 pip_inventory(
   action = "load",
+  country = NULL,
   maindir = getOption("pip.maindir"),
-  force = FALSE
+  force = FALSE,
+  inventory_version = NULL
 )
 }
 \arguments{
-\item{main}{}
+\item{action}{character: Either \code{load} or \code{update}}
+
+\item{country}{character: vector with ISO3 country code to update}
+
+\item{maindir}{character: main directory. By default it
+uses \code{getOption("pip.maindir")}}
+
+\item{force}{logical: If TRUE, forced update implemented}
+
+\item{inventory_version}{date: date of inventory version to load}
 }
 \value{
 
 }
 \description{
-Title
+Load or Update PIP microdata inventory. Wrapper of function pip_inventory_load and
+pip_inventory_update
 }

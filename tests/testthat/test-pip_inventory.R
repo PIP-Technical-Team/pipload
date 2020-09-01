@@ -3,9 +3,10 @@ test_that("list of countries correct", {
                     regexp  = "PIP.*dta$",
                     recurse = TRUE
   )
-
-  df <- pip_inventory("update",
+  cdf <- as.character(cdf)
+  df  <- pip_inventory("update",
                       country = "COL")
+  df  <- as.character(df)
 
   expect_equal(df, cdf)
 })

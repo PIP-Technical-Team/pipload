@@ -2,4 +2,6 @@
 
 export(pip_datafind)
 export(pip_inventory)
+export(pip_inventory_load)
+export(pip_inventory_update)
 import(data.table)
