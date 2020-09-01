@@ -6,9 +6,10 @@
 #' @param survey  character: Survey acronym
 #' @param vermast character: Master version in the form v## or ##
 #' @param veralt  character: Alternative version in the form v## or ##
-#' @param type    character: Type of alternative version
+#' @param module
+#' @param tool
+#' @param source
 #' @param maindir character: Main directory
-#' @param drive   character: mapped drive
 #'
 #' @return data.frame: list of filenames to be loaded with pcn_load()
 #' @import data.table
@@ -50,10 +51,12 @@
 
 pip_datafind <- function(country          = NULL,
                          year             = NULL,
-                         survey           = NULL,
+                         survey_acronym   = NULL,
                          vermast          = NULL,
                          veralt           = NULL,
-                         characteristics  = TRUE,
+                         module           = NULL,
+                         tool             = NULL,
+                         source           = NULL,
                          maindir          = getOption("pip.maindir")
                          ) {
   #--------- Initial conditions
@@ -90,7 +93,8 @@ pip_datafind <- function(country          = NULL,
     }
 
     # Load country names when no country is selected
-    countries <- dir(maindir)
+    countries <- fs::dir_ls(maindir)
+    countries <- gsub(maindir, "", countries)
     countries <- countries[!grepl("^_", countries)]  # remove _aux folder
 
   } else { # country is selected
@@ -123,70 +127,55 @@ pip_datafind <- function(country          = NULL,
       }
     } else  { # if lyear == 0
       countries  <- country
+      years      <- NULL
     }
   }   # end of country no NULL
 
-  invisible()
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #---------   Load Inventory database   ---------
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+  #--------- create conditions ---------
+  # Country and year are special because the names are different
+  condi <- "country_code %chin% (countries)"
+
+  if (!(is.null(years))) {
+    condi <- paste(condi, "& year %chin% as.character(years)")
+  }
+
+  # The other arguments work fine
+  argus <-
+    c("survey_acronym",
+      "vermast",
+      "veralt",
+      "module",
+      "tool",
+      "source")
+
+  for (i in seq_along(argus)) {
+
+    # if argument is NOT NULL
+    y <- argus[i]
+    if (!(is.null(get(y)))) {
+
+      assign(paste0("alt_", y), get(y))
+      condi <- paste(condi, create_cond(y))
+
+    }
+  }
+
+  #--------- load data ---------
+  condi <- parse(text = condi)
+
+  df <- pip_inventory_load()
+  # df <- df[ country_code %chin% (countries)]
+  df <- df[ eval(condi)]
+
+  return(df)
 }
 
-
-#----------------------------------------------------------
-#   Auxiliary functions
-#----------------------------------------------------------
-
-find_filename <- function(country = NULL,
-                          year    = NULL,
-                          maindir) {
-
-
-  modules <- c("PCN", "GROUP")
-  nmods <- length(modules)
-  filename <- NULL
-  i <- 1
-  while (length(filename) == 0 && i <= nmods) {
-
-    pattern <- paste0(modules[i], "[\\-]?[URNA]?\\.dta$")
-
-    if (length(country) > 0) {
-      country <- toupper(country)
-      cdir <- paste0(maindir, "/", country)
-
-      if (length(year) > 0) {
-        pattern <- paste0(".*", year, ".*", modules[i], "[\\-]?[URNA]?\\.dta$")
-      }
-
-    } else {
-      cdir <- maindir
-      if (length(year) > 0) {
-        warning("argument `year` ignored when no country is selected")
-      }
-    }
-
-
-    filepath <- list.files(path = cdir,
-                           pattern = pattern,
-                           recursive = TRUE,
-                           full.names = TRUE)
-
-    filename <- gsub(pattern = paste0("(.*[Dd]ata/)(.*)\\.dta$"),
-                     replacement = "\\2",
-                     x =  filepath)
-    i <- i + 1
-  } # end of while
-
-
-  if (length(filename) == 0) {
-
-    if (length(year) > 0) {
-      filename <- filepath <- paste(country, year, "NotFound", sep = "_")
-    } else {
-      filename <- filepath <- paste(country, "NotFound", sep = "_")
-    }
-  } # if no file was found on any module
-
-  return(data.table::data.table(filepath,
-                                filename))
-  # return(tibble::tibble(filename))
-} # end of find_filename
-
-
+create_cond <- function(x) {
+  cd <- paste0("& ", x, " %chin% (alt_", x, ")")
+  return(cd)
+}

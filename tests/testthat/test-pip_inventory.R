@@ -1,3 +1,5 @@
+context("PIP inventory")
+
 test_that("list of countries correct", {
   cdf <- fs::dir_ls(path    = paste0(getOption("pip.maindir"), "COL"),
                     regexp  = "PIP.*dta$",

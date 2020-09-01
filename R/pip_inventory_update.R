@@ -207,6 +207,10 @@ pip_inventory_update <- function(country = NULL,
 
       # create tool and source
       c("tool", "source") := tstrsplit(module, "-", fixed = TRUE)
+    ][,
+      # change to lower case
+      c("vermast", "veralt") := lapply(.SD, tolower),
+      .SDcols = c("vermast", "veralt")
     ][
       ,
       # Remove unnecessary variables
