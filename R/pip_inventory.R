@@ -66,7 +66,8 @@ pip_inventory <- function(action            = "load",
                "Provide my own vector of countries to update")
 
       ans <- menu(ops,
-                  title="Updating whole inventory may take up to 15min.\n"
+                  title=paste("Updating whole inventory may take up to 15min.\n",
+                              "What do you want to do?")
                   )
 
       # Action depending on answer
@@ -110,11 +111,11 @@ pip_inventory <- function(action            = "load",
     #   Look for data and organize
     #----------------------------------------------------------
 
-    # searh all data avaiable for selected countries
+    # search all data available for selected countries
     inventory <- fs::dir_ls(path    = paste0(maindir, country),
                             regexp  = "PIP.*dta$",
                             recurse = TRUE
-                        )
+                            )
     inventory <- as.character(inventory) # necessary for the data signature
 
     #----------------------------------------------------------
@@ -122,6 +123,9 @@ pip_inventory <- function(action            = "load",
     #----------------------------------------------------------
 
     #--------- Get data signature of inventory just created ---------
+    if (is.null(country)) {
+      country <- list_of_countries(maindir)
+    }
 
     ds_inventory <- purrr::map_df(.x        = country,
                                   .f        = country_ds,
@@ -150,13 +154,13 @@ pip_inventory <- function(action            = "load",
 
         df                   <- fst::read_fst(inv_file)
         inventory_production <- df[, "orig"]
+        avaiable_countries   <- unique(df$country_code)
 
         ds_inventory_production <- purrr::map_df(.x        = country,
                                                  .f        = country_ds,
                                                  inventory = inventory_production,
                                                  time      = time,
                                                  user      = user)
-
 
       } else {
         # fake signature
@@ -178,13 +182,28 @@ pip_inventory <- function(action            = "load",
 
     #--------- Compare data signatures ---------
 
+    diff_inv <- fsetdiff(dsi, dsip)
+    ldiff    <- dim(diff_inv)[1]
 
     #----------------------------------------------------------
     #   Update data if Signature is different from
     #   the one in production
     #----------------------------------------------------------
 
-    if (ds_inventory_production != ds_inventory || force == TRUE) {
+    if (ldiff > 0 || force == TRUE) {
+
+      diff_cty  <- diff_inv[, unique(country_code)]
+
+      inventory <- inventory[grepl(paste0("/(",
+                                          paste(diff_cty, collapse = "|"),
+                                          ")/"),
+                                   inventory)
+                             ]
+      if (length(diff_cty) > 0) {
+        message(paste0("data inventory changed for ",
+                            add_and(diff_cty),
+                            ".\n"))
+      }
 
       # make sure directory exists
       wholedir <- paste0(maindir, "_inventory/_vintage/")
@@ -208,7 +227,7 @@ pip_inventory <- function(action            = "load",
           "module"
         )
 
-      # check number of items Pick thirdone by random (it could be any other row)
+      # check number of items Pick third one by random (it could be any other row)
       linv <- inventory[[3]]
       nobj <- length(strsplit(linv, "/")[[1]])
 
@@ -231,26 +250,55 @@ pip_inventory <- function(action            = "load",
             ,
             # Remove unnecessary variables
             c("M", "A") := NULL
+          ][
+            # Remove unnecessary rows
+            !(is.na(filename))
           ]
+
+      # Remove all data
+      if (file.exists(inv_file) && length(diff_cty) > 0) {
+        df <- fst::read_fst(inv_file)
+        setDT(df)
+
+        df <- df[!(country_code %chin% diff_cty)]
+        dt <- rbindlist(list(dt, df), use.names = TRUE)
+      }
+
       # re-write inventory in production if data signature is not found
+      setorder(dt, country_code, year, vermast, veralt)
+      dt <- unique(dt) # Remove any duplicated row
 
       fst::write_fst(x = dt,
-                     path = paste0(maindir, "_inventory/", "inventory.fst")
+                     path = inv_file
                     )
 
       haven::write_dta(data = dt,
                        path = paste0(maindir, "_inventory/", "inventory.dta")
       )
+
       # Vintage
-      time <- format(Sys.time(), "%Y%m%d%H%M%S") # find a way to account for time zones
       fst::write_fst(x = dt,
                      path = paste0(wholedir, "inventory", "_", time,".fst")
                       )
 
-      ds_text <- c(ds_inventory, time, user)
+      #--------- save data signature ---------
 
-      readr::write_lines(x = ds_text,
-                         path = ds_inventory_path)
+      if (file.exists(ds_inventory_path) && length(diff_cty) > 0) {
+
+        # read data signature in production, remove old signatures from
+        # both dataframes and append
+
+        dsp <- fst::read_fst(ds_inventory_path)
+        setDT(dsp)
+
+        dsp          <- dsp[!(country_code %chin% diff_cty)]
+        ds_inventory <- ds_inventory[country_code %chin% diff_cty]
+        ds_inventory <- rbindlist(list(ds_inventory, dsp), use.names = TRUE)
+
+      }
+
+      fst::write_fst(x = ds_inventory,
+                     path = ds_inventory_path)
 
       infmsg <- paste("Data signature has changed, it was not found,",
                       "or update was forced.\n",
@@ -290,15 +338,3 @@ country_ds <- function(x, inventory, time, user) {
   return(df)
 }
 
-
-list_of_countries <- function(maindir) {
-
-  countries <- fs::dir_ls(path    = maindir,
-                          recurse = FALSE,
-                          type    = "directory"
-  )
-
-  country_list <- gsub(maindir, "", countries)
-  country_list <- country_list[!grepl("^_", country_list)]
-  return(country_list)
-}
