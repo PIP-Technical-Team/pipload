@@ -19,6 +19,7 @@ Imports:
     digest,
     haven,
     readr,
-    fs
+    fs,
+    purrr
 Suggests: 
     testthat

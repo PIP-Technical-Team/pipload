@@ -8,44 +8,181 @@
 #' @import data.table
 #'
 #' @examples
-pip_inventory <- function(action    = "load",
-                          maindir   = getOption("pip.maindir"),
-                          force     = FALSE
+pip_inventory <- function(action            = "load",
+                          country           = NULL,
+                          maindir           = getOption("pip.maindir"),
+                          force             = FALSE,
+                          inventory_version = NULL
                           ) {
+
+  #----------------------------------------------------------
+  #   Initial parameters
+  #----------------------------------------------------------
+
+  # inventory file to be used everywhere
+  inv_file <- paste0(maindir, "_inventory/inventory.fst")
+
+  # get processing time for all data signatures
+  time <- format(Sys.time(), "%Y%m%d%H%M%S")
+
+  # User
+  user <- Sys.info()[8]
+
   if (action == "load" ) {
 
-  } else if (action == "update") {
+    #----------------------------------------------------------
+    #   Load data
+    #----------------------------------------------------------
 
-    if (maindir == getOption("pip.maindir")) {
-      countries <- fs::dir_ls(path    = maindir,
-                              recurse = FALSE,
-                              type    = "directory"
-                              )
+    if (file.exists(inv_file)) {
+      df       <- fst::read_fst(inv_file)
+      return(df)
+    } else {
+      rlang::abort(c(
+                    paste("file", inv_file, "does not exist"),
+                    i = "Check your connection to the drives"
+                    ),
+                    class = "pipload_error"
+                    )
 
     }
 
-    inventory <- fs::dir_ls(path    = maindir,
+
+  } else if (action == "update") {
+    #----------------------------------------------------------
+    #   Update data
+    #----------------------------------------------------------
+
+
+    #--------- If user wants to update the whoe inventory ---------
+
+    if (maindir == getOption("pip.maindir") && is.null(country)) {
+
+      # display meny if user wants to updated the whole thing
+
+      ops <- c("Update the whole directory regardless of computational time",
+               "No way, ABORT!",
+               "Select one country to update",
+               "Provide my own vector of countries to update")
+
+      ans <- menu(ops,
+                  title="Updating whole inventory may take up to 15min.\n"
+                  )
+
+      # Action depending on answer
+      if (ans == 1) {
+
+        message("Go and have a coffee.\nThis may take a while!")
+
+      } else if  (ans == 2) {
+
+        return(invisible(TRUE))
+
+      } else if (ans == 3) {
+        message("this may take a few seconds to load.")
+
+        country_list <- list_of_countries(maindir = maindir)
+
+        country      <- menu(country_list,
+                            title = "Select the country you want to update")
+
+      } else if (ans == 4) {
+
+        prompt <- paste("\nEnter the list of countries space-separated",
+                        "\n (e.g., 'COL ARG', without the quotes) \n")
+        country    <- as.character(strsplit(readline(prompt), " ")[[1]])
+
+      } else {
+
+        rlang::abort(c(
+                      "The number select is invalid.",
+                      i = paste0("It must one any integer from 1 to ", length(ops)),
+                      x = paste("you specified", ans)
+                    ),
+                    class = "pipload_error"
+                    )
+      }
+
+    } # end of condition when whole inventory to be updated
+
+
+    #----------------------------------------------------------
+    #   Look for data and organize
+    #----------------------------------------------------------
+
+    # searh all data avaiable for selected countries
+    inventory <- fs::dir_ls(path    = paste0(maindir, country),
                             regexp  = "PIP.*dta$",
                             recurse = TRUE
                         )
+    inventory <- as.character(inventory) # necessary for the data signature
 
-    ds_inventory <- digest::digest(inventory, algo = "xxhash64")
+    #----------------------------------------------------------
+    #   Data signature
+    #----------------------------------------------------------
+
+    #--------- Get data signature of inventory just created ---------
+
+    ds_inventory <- purrr::map_df(.x        = country,
+                                  .f        = country_ds,
+                                  inventory = inventory,
+                                  time      = time,
+                                  user      = user)
+
+    #minimal database of new inventory
+    dsi <- ds_inventory[,
+                        c("country_code", "data_signature")
+                        ]
 
     # check signature of current fst file
-    ds_inventory_path <- paste0(maindir, "_inventory/inventory_datasignature.txt")  # data signature in production
+    ds_inventory_path <- paste0(maindir, "_inventory/inventory_datasignature.fst")
 
     if (file.exists(ds_inventory_path)) {
 
       # read data signature in production
-      ds_inventory_production <- readr::read_lines(ds_inventory_path)[[1]]
+      ds_inventory_production <- fst::read_fst(ds_inventory_path)
+      setDT(ds_inventory_production)
 
-    } else {
+    } else { # if ds files does not exist
 
-      # fake signature
-      ds_inventory_production <- "0000"
+      # we try to create it using the inventory file
+      if (file.exists(inv_file)) {
+
+        df                   <- fst::read_fst(inv_file)
+        inventory_production <- df[, "orig"]
+
+        ds_inventory_production <- purrr::map_df(.x        = country,
+                                                 .f        = country_ds,
+                                                 inventory = inventory_production,
+                                                 time      = time,
+                                                 user      = user)
+
+
+      } else {
+        # fake signature
+
+        ds_inventory_production <-
+          data.table::data.table(country_code   = list_of_countries(maindir),
+                                 data_signature = "0000",
+                                 time           = time,
+                                 user           = user)
+
+      } # end of if inventory file does not exist
     }
 
-    #--------- if Signature is different from the one in production ---------
+    #minimal database of current inventory
+    # get only the countries to compare
+    dsip <- ds_inventory_production[country_code %chin% country,
+                                    c("country_code", "data_signature")
+                                    ]
+
+    #--------- Compare data signatures ---------
+
+
+    #----------------------------------------------------------
+    #   Update data if Signature is different from
+    #   the one in production
+    #----------------------------------------------------------
 
     if (ds_inventory_production != ds_inventory || force == TRUE) {
 
@@ -110,7 +247,7 @@ pip_inventory <- function(action    = "load",
                      path = paste0(wholedir, "inventory", "_", time,".fst")
                       )
 
-      ds_text <- c(ds_inventory, time, Sys.info()[8])
+      ds_text <- c(ds_inventory, time, user)
 
       readr::write_lines(x = ds_text,
                          path = ds_inventory_path)
@@ -120,13 +257,12 @@ pip_inventory <- function(action    = "load",
                       paste0("`inventory.fst` has been updated")
       )
       rlang::inform(infmsg)
-      return(invisible(inventory))
 
     } else {
 
         rlang::inform("Data signature is up to date.\nNo update performed")
-        return(invisible(FALSE))
     }
+    return(invisible(inventory))
 
 
   } else {
@@ -138,4 +274,31 @@ pip_inventory <- function(action    = "load",
               class = "pipload_error"
               )
   }
+}
+
+
+country_ds <- function(x, inventory, time, user) {
+  y <- inventory[grepl(x, inventory)]
+  ds <- digest::digest(y, algo = "xxhash64")
+
+  df <- data.table::data.table(country_code   = x,
+                               data_signature = ds,
+                               time           = time,
+                               user           = user
+  )
+
+  return(df)
+}
+
+
+list_of_countries <- function(maindir) {
+
+  countries <- fs::dir_ls(path    = maindir,
+                          recurse = FALSE,
+                          type    = "directory"
+  )
+
+  country_list <- gsub(maindir, "", countries)
+  country_list <- country_list[!grepl("^_", country_list)]
+  return(country_list)
 }
