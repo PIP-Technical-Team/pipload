@@ -15,9 +15,11 @@ pip_inventory <- function(action            = "load",
                           inventory_version = NULL
                           ) {
 
-  #----------------------------------------------------------
-  #   Initial parameters
-  #----------------------------------------------------------
+
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  # ---------   Initial parameters  ---------
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   # inventory file to be used everywhere
   inv_file <- paste0(maindir, "_inventory/inventory.fst")
@@ -30,9 +32,9 @@ pip_inventory <- function(action            = "load",
 
   if (action == "load" ) {
 
-    #----------------------------------------------------------
-    #   Load data
-    #----------------------------------------------------------
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # ---------   Load data  ---------
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     if (file.exists(inv_file)) {
       df       <- fst::read_fst(inv_file)
@@ -49,12 +51,12 @@ pip_inventory <- function(action            = "load",
 
 
   } else if (action == "update") {
-    #----------------------------------------------------------
-    #   Update data
-    #----------------------------------------------------------
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #--------- Update data   ---------
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-    #--------- If user wants to update the whoe inventory ---------
+    #--------- If user wants to update the whole inventory ---------
 
     if (maindir == getOption("pip.maindir") && is.null(country)) {
 
@@ -107,9 +109,9 @@ pip_inventory <- function(action            = "load",
     } # end of condition when whole inventory to be updated
 
 
-    #----------------------------------------------------------
-    #   Look for data and organize
-    #----------------------------------------------------------
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #--------- Look for data and organize    ---------
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     # search all data available for selected countries
     inventory <- fs::dir_ls(path    = paste0(maindir, country),
@@ -118,9 +120,9 @@ pip_inventory <- function(action            = "load",
                             )
     inventory <- as.character(inventory) # necessary for the data signature
 
-    #----------------------------------------------------------
-    #   Data signature
-    #----------------------------------------------------------
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #--------- Data signature    ---------
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     #--------- Get data signature of inventory just created ---------
     if (is.null(country)) {
@@ -185,10 +187,10 @@ pip_inventory <- function(action            = "load",
     diff_inv <- fsetdiff(dsi, dsip)
     ldiff    <- dim(diff_inv)[1]
 
-    #----------------------------------------------------------
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     #   Update data if Signature is different from
-    #   the one in production
-    #----------------------------------------------------------
+    #--------- the one in production   ---------
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     if (ldiff > 0 || force == TRUE) {
 
@@ -281,7 +283,9 @@ pip_inventory <- function(action            = "load",
                      path = paste0(wholedir, "inventory", "_", time,".fst")
                       )
 
-      #--------- save data signature ---------
+      #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      #---------   Save data signature   ---------
+      #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
       if (file.exists(ds_inventory_path) && length(diff_cty) > 0) {
 

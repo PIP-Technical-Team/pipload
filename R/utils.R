@@ -25,6 +25,7 @@ list_of_countries <- function(maindir = getOption("pip.maindir")) {
                           recurse = FALSE,
                           type    = "directory"
   )
+  countries <- as.character(countries)
 
   country_list <- gsub(maindir, "", countries)
   country_list <- country_list[!grepl("^_", country_list)]
