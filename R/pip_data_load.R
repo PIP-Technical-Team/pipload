@@ -9,10 +9,7 @@
 #'
 #' @examples
 #' # all years for one country
-#' pip_data_load(country = "ARG")
-#'
-#' #' # all years for more than one country
-#' pip_data_load(country = c("COL", "ARG"))
+#' pip_data_load(country = "PRY")
 #'
 #' # specific years for one country
 #' pip_data_load(
@@ -95,10 +92,10 @@ pip_data_load <- function(country          = NULL,
 
 
   if (type == "dataframe") {
-    dt <- purrr::map2_df(.x = df$orig,
-                         .y = df$filename,
-                         .f = data_to_df)
-    setDT(dt)
+    dt <- purrr::map2(.x = df$orig,
+                      .y = df$filename,
+                      .f = data_to_df)
+    dt <- rbindlist(dt, fill = TRUE)
     return(dt)
 
   } else if (type == "list") {
@@ -130,5 +127,6 @@ data_to_df <- function(x, y) {
   df <- haven::read_dta(x)
   y  <- gsub("\\.dta", "", y)
   df$survey_id <- y
+  setDT(df)
   return(df)
 }

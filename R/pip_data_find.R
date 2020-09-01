@@ -3,7 +3,7 @@
 #'
 #' @param country character: vector of ISO3 country codes.
 #' @param year    numeric: survey year
-#' @param survey  character: Survey acronym
+#' @param survey_acronym  character: Survey acronym
 #' @param vermast character: Master version in the form v## or ##
 #' @param veralt  character: Alternative version in the form v## or ##
 #' @param module  character: combination of `tool` and `source` separated by
