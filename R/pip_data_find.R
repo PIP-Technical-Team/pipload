@@ -1,4 +1,4 @@
-#' pip_datafind
+#' pip_data_find
 #' Find surveys available for PIP
 #'
 #' @param country character: vector of ISO3 country codes.
@@ -20,44 +20,44 @@
 #'
 #' @examples
 #' # all years for one country
-#' pip_datafind(country = "ARG")
+#' pip_data_find(country = "ARG")
 #'
 #' #' # all years for more than one country
-#' pip_datafind(country = c("COL", "ARG"))
+#' pip_data_find(country = c("COL", "ARG"))
 #'
 #' # specific years for one country
-#' pip_datafind(
+#' pip_data_find(
 #'             country = "COL",
 #'             year = c(2010, 2012)
 #' )
 #'
 #' # country FHF does not exist so it will be part of `fail` output (No error)
-#' pip_datafind(
+#' pip_data_find(
 #'        country = c("ARG", "FHF"),
 #'        year = 2010
 #' )
 #'
 #' # Load a different module (e.g., GPWG)
-#' pip_datafind(country = "PRY",
+#' pip_data_find(country = "PRY",
 #'              year = 2010,
 #'              module = "PC-GPWG")
 #'
 #' # Load different sources
-#' pip_datafind(country = "COL",
+#' pip_data_find(country = "COL",
 #'              source = "HIST")
 #
 #' \dontrun{
 #' # more than two years for more than one country (only firt year will be used)
-#' pip_datafind(
+#' pip_data_find(
 #'        country = c("COL", "ARG"),
 #'        year = c(2010, 2012)
 #' )
 #'
 #' # all countries and years
-#' pip_datafind()
+#' pip_data_find()
 #' }
 
-pip_datafind <- function(country          = NULL,
+pip_data_find <- function(country         = NULL,
                          year             = NULL,
                          survey_acronym   = NULL,
                          vermast          = NULL,
