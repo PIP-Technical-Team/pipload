@@ -6,9 +6,12 @@
 #' @param survey  character: Survey acronym
 #' @param vermast character: Master version in the form v## or ##
 #' @param veralt  character: Alternative version in the form v## or ##
-#' @param module
-#' @param tool
-#' @param source
+#' @param module  character: combination of `tool` and `source` separated by
+#' a hyphen (e.g., PC-GPWG)
+#' @param tool    character: PIP tool in which data will be used. It could be
+#' `PC` for Poverty Calculator or `TB` for Table Maker. Others will be added
+#' @param source  character: Source of data. It could be `GPWG`, `HIST`, `GROUP`,
+#' `synth`, `BIN`, and `ALL`. The latter is used only in Table Maker.
 #' @param maindir character: Main directory
 #'
 #' @return data.frame: list of filenames to be loaded with pcn_load()
@@ -37,7 +40,12 @@
 #' # Load a different module (e.g., GPWG)
 #' pip_datafind(country = "PRY",
 #'              year = 2010,
-#'              module = "GPWG")
+#'              module = "PC-GPWG")
+#'
+#' # Load different sources
+#' pip_datafind(country = "COL",
+#'              source = "HIST")
+#
 #' \dontrun{
 #' # more than two years for more than one country (only firt year will be used)
 #' pip_datafind(
@@ -82,10 +90,10 @@ pip_datafind <- function(country          = NULL,
   #----------------------------------------------------------
 
   if (is.null(country)) {
-    argum <- c(year, survey, vermast, veralt)
+    argum <- c(year, survey_acronym, vermast, veralt)
     if (length(argum)) {
       rlang::inform(
-        paste("if `country` is NULL, arguments `year`, `survey`\n",
+        paste("if `country` is NULL, arguments `year`, `survey_acronym`\n",
               "`vermast`, and `veralt` should be NULL as well\n",
               "These arguments are coerced to NULL")
       )
@@ -96,6 +104,8 @@ pip_datafind <- function(country          = NULL,
     countries <- fs::dir_ls(maindir)
     countries <- gsub(maindir, "", countries)
     countries <- countries[!grepl("^_", countries)]  # remove _aux folder
+
+    years      <- NULL
 
   } else { # country is selected
     lyear      <- length(year)
@@ -144,7 +154,7 @@ pip_datafind <- function(country          = NULL,
     condi <- paste(condi, "& year %chin% as.character(years)")
   }
 
-  # The other arguments work fine
+  # The other arguments work fine. Just add "alt_" prefix
   argus <-
     c("survey_acronym",
       "vermast",
@@ -169,13 +179,16 @@ pip_datafind <- function(country          = NULL,
   condi <- parse(text = condi)
 
   df <- pip_inventory_load()
-  # df <- df[ country_code %chin% (countries)]
   df <- df[ eval(condi)]
 
   return(df)
 }
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#---------   Auxiliary functions   ---------
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 create_cond <- function(x) {
   cd <- paste0("& ", x, " %chin% (alt_", x, ")")
   return(cd)
 }
+

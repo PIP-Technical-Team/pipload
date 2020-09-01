@@ -8,10 +8,12 @@ Find surveys available for PIP}
 pip_datafind(
   country = NULL,
   year = NULL,
-  survey = NULL,
+  survey_acronym = NULL,
   vermast = NULL,
   veralt = NULL,
-  characteristics = TRUE,
+  module = NULL,
+  tool = NULL,
+  source = NULL,
   maindir = getOption("pip.maindir")
 )
 }
@@ -20,17 +22,22 @@ pip_datafind(
 
 \item{year}{numeric: survey year}
 
-\item{survey}{character: Survey acronym}
-
 \item{vermast}{character: Master version in the form v## or ##}
 
 \item{veralt}{character: Alternative version in the form v## or ##}
 
+\item{module}{character: combination of \code{tool} and \code{source} separated by
+a hyphen (e.g., PC-GPWG)}
+
+\item{tool}{character: PIP tool in which data will be used. It could be
+\code{PC} for Poverty Calculator or \code{TB} for Table Maker. Others will be added}
+
+\item{source}{character: Source of data. It could be \code{GPWG}, \code{HIST}, \code{GROUP},
+\code{synth}, \code{BIN}, and \code{ALL}. The latter is used only in Table Maker.}
+
 \item{maindir}{character: Main directory}
 
-\item{type}{character: Type of alternative version}
-
-\item{drive}{character: mapped drive}
+\item{survey}{character: Survey acronym}
 }
 \value{
 data.frame: list of filenames to be loaded with pcn_load()
@@ -61,7 +68,11 @@ pip_datafind(
 # Load a different module (e.g., GPWG)
 pip_datafind(country = "PRY",
              year = 2010,
-             module = "GPWG")
+             module = "PC-GPWG")
+
+# Load different sources
+pip_datafind(country = "COL",
+             source = "HIST")
 \dontrun{
 # more than two years for more than one country (only firt year will be used)
 pip_datafind(
