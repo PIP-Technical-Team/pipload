@@ -10,7 +10,7 @@
 #' @import data.table
 #'
 #' @examples
-pip_inventory_update <- function(country = NULL,
+pip_update_inventory <- function(country = NULL,
                                  maindir = getOption("pip.maindir"),
                                  force   = FALSE,
                                  time    = format(Sys.time(), "%Y%m%d%H%M%S"),
