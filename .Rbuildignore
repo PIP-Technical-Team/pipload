@@ -1,3 +1,5 @@
+^renv$
+^renv\.lock$
 ^pipload\.Rproj$
 ^\.Rproj\.user$
 ^README\.Rmd$
