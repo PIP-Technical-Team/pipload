@@ -30,17 +30,61 @@ devtools::install_github("PIP-Technical-Team/pipload")
 ```
 ## Example
 
-This is a basic example which shows you how to solve a common problem:
-
-```{r example}
+Load library
+```{r load}
 library(pipload)
-## basic example code
-df <- pip_data_find(
+```
+
+### Microdata
+
+Load Two datasets for Paraguay for the Poverty Calculator tool:
+
+```{r example-md}
+# Find the data available. 
+df <- pip_find_data(
              country = "PRY",
              year    = c(2017, 2018),
              tool    = "PC"
 )
 
 df$filename
+
+# load the data
+df2 <- pip_find_data(
+             country = "PRY",
+             year    = c(2017, 2018),
+             tool    = "PC"
+)
+
+
 ```
 
+
+### load Auxiliary data
+
+Load different types of auxiliary data
+
+```{r example-aux}
+# Load CPI
+pip_load_aux("cpi")
+
+# load PPP
+pip_load_aux("ppp")
+
+# Load GDP
+pip_load_aux("gdp")
+```
+
+
+### Inventory of microdata
+
+Check if inventory is up to data and udpate
+
+```{r inventory}
+# Update inventory of PRY
+pip_inventory("update", country = "PRY")
+
+# Load inventory
+df <- pip_inventory()
+df$filename[1:5]
+```
