@@ -1,6 +1,6 @@
 #' Load PIP microdata in different way
 #'
-#' @inheritParams pip_data_find
+#' @inheritParams pip_find_data
 #' @param type character: Either `dataframe` or `list`. Defaults is `dataframe`.
 #'
 #' @return
@@ -8,41 +8,42 @@
 #' @import data.table
 #'
 #' @examples
-#' # all years for one country
-#' pip_data_load(country = "PRY")
+#' # ONe year and one country
+#' pip_load_data(country = "PRY",
+#'               year    = 2017)
 #'
 #' # specific years for one country
-#' pip_data_load(
+#' pip_load_data(
 #'             country = "COL",
 #'             year = c(2010, 2012)
 #' )
 #'
 #' # country FHF does not exist so it will be part of `fail` output (No error)
-#' pip_data_load(
+#' pip_load_data(
 #'        country = c("ARG", "FHF"),
 #'        year = 2010
 #' )
 #'
 #' # Load a different module (e.g., GPWG)
-#' pip_data_load(country = "PRY",
+#' pip_load_data(country = "PRY",
 #'              year = 2010,
 #'              module = "PC-GPWG")
 #'
 #' # Load different sources
-#' pip_data_load(country = "COL",
+#' pip_load_data(country = "COL",
 #'              source = "HIST")
 #
 #' \dontrun{
 #' # more than two years for more than one country (only firt year will be used)
-#' pip_data_load(
+#' pip_load_data(
 #'        country = c("COL", "ARG"),
 #'        year = c(2010, 2012)
 #' )
 #'
 #' # all countries and years
-#' pip_data_load()
+#' pip_load_data()
 #' }
-pip_data_load <- function(country          = NULL,
+pip_load_data <- function(country          = NULL,
                           year             = NULL,
                           survey_acronym   = NULL,
                           vermast          = NULL,
@@ -55,7 +56,7 @@ pip_data_load <- function(country          = NULL,
                           ) {
 
   # Call data find to get inventory
-  df <- pip_data_find(country          = country       ,
+  df <- pip_find_data(country          = country       ,
                       year             = year          ,
                       survey_acronym   = survey_acronym,
                       vermast          = vermast       ,

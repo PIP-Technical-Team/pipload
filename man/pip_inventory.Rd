@@ -2,8 +2,8 @@
 % Please edit documentation in R/pip_inventory.R
 \name{pip_inventory}
 \alias{pip_inventory}
-\title{Load or Update PIP microdata inventory. Wrapper of function pip_inventory_load and
-pip_inventory_update}
+\title{Load or Update PIP microdata inventory. Wrapper of function pip_load_inventory and
+pip_update_inventory}
 \usage{
 pip_inventory(
   action = "load",
@@ -29,6 +29,6 @@ uses \code{getOption("pip.maindir")}}
 
 }
 \description{
-Load or Update PIP microdata inventory. Wrapper of function pip_inventory_load and
-pip_inventory_update
+Load or Update PIP microdata inventory. Wrapper of function pip_load_inventory and
+pip_update_inventory
 }

@@ -1,5 +1,5 @@
-#' Load or Update PIP microdata inventory. Wrapper of function pip_inventory_load and
-#' pip_inventory_update
+#' Load or Update PIP microdata inventory. Wrapper of function pip_load_inventory and
+#' pip_update_inventory
 #'
 #' @param action character: Either `load` or `update`
 #' @param country character: vector with ISO3 country code to update
@@ -38,12 +38,12 @@ pip_inventory <- function(action            = "load",
   if (action == "load" ) {
     # ---------   Load data  ---------
 
-    return(pip_inventory_load(inv_file))
+    return(pip_load_inventory(inv_file))
 
   } else if (action == "update") {
     #--------- Update data   ---------
 
-    inventory <- pip_inventory_update(country = country,
+    inventory <- pip_update_inventory(country = country,
                                       maindir = maindir,
                                       force   = force,
                                       time    = time,

@@ -10,12 +10,15 @@
 #' @import data.table
 #'
 #' @examples
-pip_inventory_update <- function(country = NULL,
+pip_update_inventory <- function(country = NULL,
                                  maindir = getOption("pip.maindir"),
                                  force   = FALSE,
                                  time    = format(Sys.time(), "%Y%m%d%H%M%S"),
                                  user    = Sys.info()[8]
                                  ) {
+
+  # inventory file to be used everywhere
+  inv_file <- paste0(maindir, "_inventory/inventory.fst")
 
   if (maindir == getOption("pip.maindir") && is.null(country)) {
 
@@ -110,7 +113,7 @@ pip_inventory_update <- function(country = NULL,
 
   } else { # if ds files does not exist
 
-    # we try to create it using the inventory file
+    # we try to create signature using the inventory file
     if (file.exists(inv_file)) {
 
       df                   <- fst::read_fst(inv_file)
