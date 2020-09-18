@@ -8,8 +8,9 @@
 #' @import data.table
 #'
 #' @examples
-#' # all years for one country
-#' pip_load_data(country = "PRY")
+#' # ONe year and one country
+#' pip_load_data(country = "PRY",
+#'               year    = 2017)
 #'
 #' # specific years for one country
 #' pip_load_data(
