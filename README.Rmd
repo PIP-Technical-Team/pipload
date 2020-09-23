@@ -56,6 +56,7 @@ df2 <- pip_find_data(
              tool    = "PC"
 )
 
+names(df2)
 
 ```
 
@@ -66,13 +67,16 @@ Load different types of auxiliary data
 
 ```{r example-aux}
 # Load CPI
-pip_load_aux("cpi")
+df <- pip_load_aux("cpi")
+head(df)
 
 # load PPP
-pip_load_aux("ppp")
+df <- pip_load_aux("ppp")
+head(df)
 
 # Load GDP
-pip_load_aux("gdp")
+df <- pip_load_aux("gdp")
+head(df)
 ```
 
 
