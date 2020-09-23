@@ -129,5 +129,39 @@ data_to_df <- function(x, y) {
   y  <- gsub("\\.dta", "", y)
   df$survey_id <- y
   setDT(df)
+
+  # create variables for merging
+  cnames <-
+    c(
+      "country_code",
+      "surveyid_year",
+      "survey_acronym",
+      "vermast",
+      "M",
+      "veralt",
+      "A",
+      "collection",
+      "module"
+    )
+
+  df[,
+     # Name sections of surveyID into variables
+     (cnames) := tstrsplit(survey_id, "_", fixed=TRUE)
+  ][,
+
+    # create tool and source
+    c("tool", "source") := tstrsplit(module, "-", fixed = TRUE)
+  ][,
+    # change to lower case
+    c("vermast", "veralt") := lapply(.SD, tolower),
+    .SDcols = c("vermast", "veralt")
+  ][,
+    surveyid_year := as.numeric(surveyid_year)
+  ][
+    ,
+    # Remove unnecessary variables
+    c("M", "A") := NULL
+  ]
+
   return(df)
 }
