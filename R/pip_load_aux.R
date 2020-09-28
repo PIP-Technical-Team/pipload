@@ -26,6 +26,7 @@ pip_load_aux <- function(measure,
 
     file_to_load <- paste0(msrdir, measure ,".fst")
     load_msg     <- paste("Most recent version of data loaded")
+    apply_label  <- TRUE
 
   } else {
     # Find Vintages options
@@ -39,11 +40,18 @@ pip_load_aux <- function(measure,
 
     # Get just the dates
     vers      <- as.character(sort(vers, decreasing = TRUE))
-    ver_dates <- gsub("(.*cpi_)([0-9]+)(.*)", "\\2", vers)
-    ver_dates <- as.POSIXct(ver_dates, "%Y%m%d%H%M%S", tz=Sys.timezone())
+    tvers     <- gsub("(.*cpi_)([0-9]+)(.*)", "\\2", vers)
+    ver_dates <- as.POSIXct(tvers, "%Y%m%d%H%M%S", tz=Sys.timezone())
 
     # If the user wants to pick the version.
-    if (version %in% c("select", "pick", "choose")) {
+    if (version == "available") {
+
+      message(paste("Versions available for", measure))
+      print(ver_dates)
+
+      return(invisible(tvers))
+
+    } else if (version %in% c("select", "pick", "choose")) {
 
       ans <- menu(ver_dates,
                   title=paste("There are", length(ver_dates), "versions available.\n",
@@ -69,6 +77,28 @@ pip_load_aux <- function(measure,
                       )
       }
 
+    } else if (!(is.na(as.POSIXct(version, "%Y%m%d%H%M%S", tz=Sys.timezone())))) {
+
+      if (any(grepl(version, vers))) {
+
+        ans <- which(grepl(version, vers))
+
+      } else {
+        msg     <- "The date you provided is not an available vintage version"
+        hint    <- paste0("run `pip_load_aux('", measure, "', version('available')`",
+                          "\nto check for available versions")
+        problem <- paste("you selected", as.POSIXct(version, "%Y%m%d%H%M%S", tz=Sys.timezone()))
+        rlang::abort(c(
+                      msg,
+                      i = hint,
+                      x = problem
+                      ),
+                      class = "pipload_error"
+                      )
+
+      }
+
+
     } else {
       msg     <- "The version selected is not available"
       hint    <- paste("Make sure `version` is either \n",
@@ -87,6 +117,7 @@ pip_load_aux <- function(measure,
 
     file_to_load <- vers[ans]
     load_msg     <- paste("Version of data loaded:", ver_dates[ans])
+    apply_label  <- FALSE
 
   } # End of condition if version is different to NULL
 
@@ -106,7 +137,11 @@ pip_load_aux <- function(measure,
     )
 
   }
-  df <- pip_add_aux_labels(df,
-                       measure = measure)
+
+  if (apply_label) {
+    df <- pip_add_aux_labels(df,
+                             measure = measure)
+
+  }
   return(df)
 }
