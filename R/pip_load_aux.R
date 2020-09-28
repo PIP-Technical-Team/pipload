@@ -15,6 +15,17 @@
 #'
 #' # Load GDP
 #' pip_load_aux("gdp")
+#'
+#' measure <- "cpi"
+#' df      <- pip_load_aux(measure, version = "available")
+#' df
+#' df      <- pip_load_aux(measure, version = "20200807101548")
+#' head(df)
+#' df      <- pip_load_aux(measure, version = -1)
+#' head(df)
+#' \dontrun{
+#' df      <- pip_load_aux(measure, version = "pick")
+#' }
 pip_load_aux <- function(measure,
                          msrdir = paste0(getOption("pip.maindir"),
                                          "_aux/",
