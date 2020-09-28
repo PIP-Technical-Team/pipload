@@ -15,24 +15,12 @@
 #'
 #' # Load GDP
 #' pip_load_aux("gdp")
-pip_load_aux <- function(measure = NULL,
+pip_load_aux <- function(measure,
                          msrdir = paste0(getOption("pip.maindir"),
                                          "_aux/",
                                          measure, "/"),
                          version = NULL
                          ){
-
-  if (is.null(measure)) {
-
-    rlang::abort(c(
-                  "`measure` must be defined, as it does not have default value",
-                  i = "make sure `measure` is not NULL."
-                  ),
-                  class = "pipaux_error"
-                  )
-
-
-  }
 
   if (is.null(version)) {
 
