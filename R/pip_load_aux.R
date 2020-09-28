@@ -47,11 +47,12 @@ pip_load_aux <- function(measure,
     vers <- fs::dir_ls(path    = vint_dir,
                        recurse = FALSE,
                        type    = "file",
-                       regexp  = "cpi_[0-9]+")
+                       regexp  = paste0(measure, "_[0-9]+")
+                       )
 
     # Get just the dates
     vers      <- as.character(sort(vers, decreasing = TRUE))
-    tvers     <- gsub("(.*cpi_)([0-9]+)(.*)", "\\2", vers)
+    tvers     <- gsub( paste0("(.*", measure,"_)([0-9]+)(.*)"), "\\2", vers)
     ver_dates <- as.POSIXct(tvers, "%Y%m%d%H%M%S", tz=Sys.timezone())
 
     # If the user wants to pick the version.
