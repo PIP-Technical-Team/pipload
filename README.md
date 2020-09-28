@@ -66,6 +66,7 @@ Load different types of auxiliary data
 ``` r
 # Load CPI
 df <- pip_load_aux("cpi")
+#> Most recent version of data loaded
 head(df)
 #>   country_code surveyid_year reference_year        cpi ccf cpi_domain
 #> 1          AGO          2000        2000.21 0.03384806   1          1
@@ -84,6 +85,7 @@ head(df)
 
 # load PPP
 df <- pip_load_aux("ppp")
+#> Most recent version of data loaded
 head(df)
 #>   country_code ppp_year release_version adaptation_version      ppp ppp_default
 #> 1          ABW     2005              v1                 v1       NA       FALSE
@@ -102,6 +104,7 @@ head(df)
 
 # Load GDP
 df <- pip_load_aux("gdp")
+#> Most recent version of data loaded
 head(df)
 #>   country_code year gdp_data_level      gdp gdp_domain
 #> 1          ABW 1986              2 15669.62          1
@@ -110,6 +113,56 @@ head(df)
 #> 4          ABW 1989              2 24837.95          1
 #> 5          ABW 1990              2 25357.79          1
 #> 6          ABW 1991              2 26329.31          1
+
+measure <- "cpi"
+
+# see versions available
+df      <- pip_load_aux(measure, version = "available")
+#> Versions available for cpi
+#>  [1] "2020-09-25 23:30:28 EDT" "2020-09-23 07:37:31 EDT"
+#>  [3] "2020-09-22 21:30:54 EDT" "2020-09-22 21:14:13 EDT"
+#>  [5] "2020-09-08 11:44:31 EDT" "2020-09-08 11:42:41 EDT"
+#>  [7] "2020-09-08 11:41:11 EDT" "2020-08-24 14:25:08 EDT"
+#>  [9] "2020-08-24 14:22:42 EDT" "2020-08-24 10:14:32 EDT"
+#> [11] "2020-08-11 10:24:42 EDT" "2020-08-11 10:17:47 EDT"
+#> [13] "2020-08-11 10:09:44 EDT" "2020-08-07 10:15:48 EDT"
+#> [15] "2020-08-06 14:22:36 EDT"
+df
+#>  [1] "20200925233028" "20200923073731" "20200922213054" "20200922211413"
+#>  [5] "20200908114431" "20200908114241" "20200908114111" "20200824142508"
+#>  [9] "20200824142242" "20200824101432" "20200811102442" "20200811101747"
+#> [13] "20200811100944" "20200807101548" "20200806142236"
+
+# Load version of "2020-08-07 10:15:48 EDT"
+df      <- pip_load_aux(measure, version = "20200807101548")
+#> Version of data loaded: 2020-08-07 10:15:48
+head(df)
+#>   country_code surveyid_year reference_year    cpi2011 ccf datalevel
+#> 1          AGO          2000        2000.21 0.03384806   1         2
+#> 2          AGO          2008        2008.50 0.72333720   1         2
+#> 3          AGO          2018        2018.17 3.06059498   1         2
+#> 4          ALB          1996        1996.00 0.44443273   1         2
+#> 5          ALB          2002        2002.00 0.78028772   1         2
+#> 6          ALB          2005        2005.00 0.83847346   1         2
+
+# Load one version before current one (i.e., load previous version)
+df      <- pip_load_aux(measure, version = -1)
+#> Version of data loaded: 2020-09-23 07:37:31
+head(df)
+#>   country_code surveyid_year reference_year        cpi ccf cpi_domain
+#> 1          AGO          2000        2000.21 0.03384806   1          1
+#> 2          AGO          2008        2008.50 0.72333720   1          1
+#> 3          AGO          2018        2018.17 3.06059498   1          1
+#> 4          ALB          1996        1996.00 0.44443273   1          1
+#> 5          ALB          2002        2002.00 0.78028772   1          1
+#> 6          ALB          2005        2005.00 0.83847346   1          1
+#>   cpi_data_level survey_acronym
+#> 1       national            HBS
+#> 2       national      IBEP-MICS
+#> 3       national          IDREA
+#> 4       national            EWS
+#> 5       national           LSMS
+#> 6       national           LSMS
 ```
 
 ### Inventory of microdata
@@ -119,8 +172,9 @@ Check if inventory is up to data and udpate
 ``` r
 # Update inventory of PRY
 pip_inventory("update", country = "PRY")
-#> Data signature is up to date.
-#> No update performed
+#> data inventory changed for PRY.
+#> Data signature has changed, it was not found, or update was forced.
+#>  `inventory.fst` has been updated
 
 # Load inventory
 df <- pip_inventory()

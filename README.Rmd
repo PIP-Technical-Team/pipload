@@ -77,6 +77,20 @@ head(df)
 # Load GDP
 df <- pip_load_aux("gdp")
 head(df)
+
+measure <- "cpi"
+
+# see versions available
+df      <- pip_load_aux(measure, version = "available")
+df
+
+# Load version of "2020-08-07 10:15:48 EDT"
+df      <- pip_load_aux(measure, version = "20200807101548")
+head(df)
+
+# Load one version before current one (i.e., load previous version)
+df      <- pip_load_aux(measure, version = -1)
+head(df)
 ```
 
 
