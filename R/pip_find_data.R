@@ -169,7 +169,7 @@ pip_find_data <- function(country         = NULL,
     y <- argus[i]
     if (!(is.null(get(y)))) {
 
-      assign(paste0("alt_", y), get(y))
+      assign(paste0("alt_", y), toupper(get(y)))
       condi <- paste(condi, create_cond(y))
 
     }
@@ -188,7 +188,7 @@ pip_find_data <- function(country         = NULL,
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 create_cond <- function(x) {
-  cd <- paste0("& ", x, " %chin% (alt_", x, ")")
+  cd <- paste0("& toupper(", x, ") %chin% (alt_", x, ")")
   return(cd)
 }
 
