@@ -107,7 +107,9 @@ pip_find_data <- function(country         = NULL,
 
     years      <- NULL
 
-  } else { # country is selected
+  } else { # country is defined
+
+    country    <- toupper(country)
     lyear      <- length(year)
     lcountry   <- length(country)
 
