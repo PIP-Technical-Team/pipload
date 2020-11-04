@@ -232,6 +232,23 @@ pip_load_data <- function(country          = NULL,
 data_to_df <- function(x, y) {
   sp$spin()
   df <- haven::read_dta(x)
+
+  #--------- leaving just the 'label' attribute ---------
+  nn  <- names(df)
+  for (x in seq_along(nn)) {
+
+    ats       <- attributes(df[[x]])
+    atsn      <- names(ats)
+    to_remove <- atsn[!grepl("label", atsn)]
+
+    for (i in seq_along(to_remove)) {
+      attr(df[[x]], to_remove[i]) <- NULL
+    }
+
+  }
+
+  #--------- Survey ID and its components ---------
+
   y  <- gsub("\\.dta", "", y)
   df$survey_id <- y
   setDT(df)
@@ -275,6 +292,19 @@ data_to_df <- function(x, y) {
 just_load_data <- function(x) {
   sp$spin()
   df <- haven::read_dta(x)
+  #--------- leaving just the 'label' attribute ---------
+  nn  <- names(df)
+  for (x in seq_along(nn)) {
+
+    ats       <- attributes(df[[x]])
+    atsn      <- names(ats)
+    to_remove <- atsn[!grepl("label", atsn)]
+
+    for (i in seq_along(to_remove)) {
+      attr(df[[x]], to_remove[i]) <- NULL
+    }
+
+  }
   return(df)
 }
 
