@@ -8,17 +8,17 @@
 #'
 #' @examples
 #' # Load CPI
-#' pip_load_aux("cpi")
+#' cpi <- pip_load_aux("cpi")
 #'
 #' # load PPP
-#' pip_load_aux("ppp")
+#' ppp <- pip_load_aux("ppp")
 #'
 #' # Load GDP
-#' pip_load_aux("gdp")
+#' gdp <- pip_load_aux("gdp")
 #'
 #' measure <- "cpi"
 #' df      <- pip_load_aux(measure, version = "available")
-#' df
+#' head(df)
 #' df      <- pip_load_aux(measure, version = "20200807101548")
 #' head(df)
 #' df      <- pip_load_aux(measure, version = -1)
@@ -47,7 +47,7 @@ pip_load_aux <- function(measure,
     vers <- fs::dir_ls(path    = vint_dir,
                        recurse = FALSE,
                        type    = "file",
-                       regexp  = paste0(measure, "_[0-9]+")
+                       regexp  = paste0(measure, "_[0-9]+\\.fst")
                        )
 
     # Get just the dates
