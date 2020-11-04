@@ -52,7 +52,6 @@
 #' # all countries and years
 #' pip_load_data()
 #' }
-sp <- cli::make_spinner("dots", template = "Loading data {spin}")
 pip_load_data <- function(country          = NULL,
                           year             = NULL,
                           survey_acronym   = NULL,
@@ -65,6 +64,7 @@ pip_load_data <- function(country          = NULL,
                           type             = "dataframe",
                           maindir          = getOption("pip.maindir")
                           ) {
+
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   #---------   Find Data   ---------
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -264,3 +264,6 @@ just_load_data <- function(x) {
   df <- haven::read_dta(x)
   return(df)
 }
+
+# Make spinner
+sp <- cli::make_spinner("dots", template = "Loading data {spin}")
