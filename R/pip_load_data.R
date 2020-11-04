@@ -8,6 +8,7 @@
 #' @return
 #' @export
 #' @import data.table
+#' @import cli
 #' @importFrom magrittr %>%
 #'
 #' @examples
@@ -134,7 +135,7 @@ pip_load_data <- function(country          = NULL,
 
     tryCatch({
 
-      cli::cli_process_start("Loading data {.field (creating dataframe)}")
+      cli::cli_process_start("Loading data and creating a {.field dataframe}")
       dt <- purrr::map2(.x = df$orig,
                         .y = df$filename,
                         .f = poss_data_to_df)
@@ -178,7 +179,7 @@ pip_load_data <- function(country          = NULL,
 
     tryCatch({
 
-      cli::cli_process_start("Loading data {.field (creating list)}")
+      cli::cli_process_start("Loading data and creating a {.field list}")
       dl <- purrr::map(.x = df$orig,
                        .f = poss_read_dta)
       cli::cli_process_done()
