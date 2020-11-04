@@ -81,6 +81,8 @@ pip_update_inventory <- function(country = NULL,
                           recurse = TRUE
   )
   inventory <- as.character(inventory) # necessary for the data signature
+  # Remove _vintage folder from inventory
+  inventory <- grep("_vintage", inventory, value = TRUE, invert = TRUE)
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   #--------- Data signature    ---------
