@@ -128,7 +128,6 @@ pip_load_data <- function(country          = NULL,
   #---------   Load data   ---------
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-
   if (type == "dataframe") {
 
     poss_data_to_df <- purrr::possibly(.f = data_to_df,
@@ -167,10 +166,24 @@ pip_load_data <- function(country          = NULL,
 
     #--------- getting rid of errors and create dataframe ---------
     dt <- purrr::compact(dt)
-    dt <- rbindlist(dt,
-                    fill      = TRUE,
-                    use.names	= TRUE,
-                    idcol     = TRUE)
+
+    # create data frame.If failed, list is returned.
+    tryCatch(
+      expr = {
+        dt <- rbindlist(dt,
+                        fill      = TRUE,
+                        use.names	= TRUE,
+                        idcol     = TRUE)
+      }, # end of expr section
+
+      error = function(e) {
+        cli::cli_alert_danger("Could not create data frame")
+        cli::cli_alert_danger("{e$message}")
+        cli::cli_alert_info("returning object is a list instead")
+      } # end of finally section
+
+    ) # End of trycatch
+
     return(dt)
 
   } else if (type == "list") {
