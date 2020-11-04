@@ -78,8 +78,8 @@ pip_update_inventory <- function(country = NULL,
   # search all data available for selected countries
   inventory <- fs::dir_ls(path    = paste0(maindir, country),
                           regexp  = "PIP.*dta$",
-                          recurse = TRUE
-  )
+                          recurse = TRUE)
+
   inventory <- as.character(inventory) # necessary for the data signature
   # Remove _vintage folder from inventory
   inventory <- grep("_vintage", inventory, value = TRUE, invert = TRUE)
@@ -158,14 +158,23 @@ pip_update_inventory <- function(country = NULL,
 
   if (ldiff > 0 || force == TRUE) {
 
-    diff_cty  <- diff_inv[, unique(country_code)]
+
+    if (ldiff > 0) {
+
+      diff_cty  <- diff_inv[, unique(country_code)]
+
+    } else {
+
+      diff_cty <- country
+
+    }
 
     inventory <- inventory[grepl(paste0("/(",
                                         paste(diff_cty, collapse = "|"),
                                         ")/"),
                                  inventory)
     ]
-    if (length(diff_cty) > 0) {
+    if (length(diff_cty) > 0 && ldiff > 0) {
       message(paste0("data inventory changed for ",
                      add_and(diff_cty),
                      ".\n"))
@@ -226,7 +235,7 @@ pip_update_inventory <- function(country = NULL,
     ]
 
     # Remove all data
-    if (file.exists(inv_file) && length(diff_cty) > 0) {
+    if (file.exists(inv_file)) {
       df <- fst::read_fst(inv_file)
       setDT(df)
 
