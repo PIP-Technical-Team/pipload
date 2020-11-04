@@ -52,6 +52,7 @@
 #' # all countries and years
 #' pip_load_data()
 #' }
+sp <- cli::make_spinner("dots", template = "Loading data {spin}")
 pip_load_data <- function(country          = NULL,
                           year             = NULL,
                           survey_acronym   = NULL,
@@ -139,6 +140,7 @@ pip_load_data <- function(country          = NULL,
       dt <- purrr::map2(.x = df$orig,
                         .y = df$filename,
                         .f = poss_data_to_df)
+      sp$finish()
       cli::cli_process_done()
 
       },
@@ -157,9 +159,9 @@ pip_load_data <- function(country          = NULL,
 
     if (!is.null(dt_errors)) {
 
-      cli::rule(center = cli::col_red(" * Problematic Datasets * "))
+      cli::cli_rule(center = "{length(dt_errors)} dataset{?s} could not be loaded")
       cli::cli_text("{.file {dt_errors}}")
-      cli::rule()
+      cli::cli_rule(right = "end")
 
     }
 
@@ -173,7 +175,7 @@ pip_load_data <- function(country          = NULL,
 
   } else if (type == "list") {
 
-    poss_read_dta <- purrr::possibly(.f = haven::read_dta,
+    poss_read_dta <- purrr::possibly(.f = just_load_data,
                                        otherwise = NULL)
 
 
@@ -215,6 +217,7 @@ pip_load_data <- function(country          = NULL,
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 data_to_df <- function(x, y) {
+  sp$spin()
   df <- haven::read_dta(x)
   y  <- gsub("\\.dta", "", y)
   df$survey_id <- y
@@ -253,5 +256,11 @@ data_to_df <- function(x, y) {
     c("M", "A") := NULL
   ]
 
+  return(df)
+}
+
+just_load_data <- function(x) {
+  sp$spin()
+  df <- haven::read_dta(x)
   return(df)
 }
