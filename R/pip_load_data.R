@@ -8,6 +8,7 @@
 #' @return
 #' @export
 #' @import data.table
+#' @importFrom magrittr %>%
 #'
 #' @examples
 #' # ONe year and one country
@@ -127,16 +128,42 @@ pip_load_data <- function(country          = NULL,
 
 
   if (type == "dataframe") {
+
+    poss_data_to_df <- purrr::possibly(.f = data_to_df,
+                                       otherwise = NULL)
+
     dt <- purrr::map2(.x = df$orig,
                       .y = df$filename,
-                      .f = data_to_df)
-    dt <- rbindlist(dt, fill = TRUE)
+                      .f = poss_data_to_df)
+
+    #--------- data with problems ---------
+    dt_errors = dt %>%
+      purrr::keep(~is.null(.x) ) %>%
+      names()
+
+    if (!is.null(dt_errors)) {
+
+      cli::rule(center = cli::col_red(" * Problematic Datasets * "))
+      cli::cli_text("{.file {dt_errors}}")
+      cli::rule()
+
+    }
+
+    #--------- getting rid of errors and create dataframe ---------
+    dt <- purrr::compact(dt)
+    dt <- rbindlist(dt,
+                    fill      = TRUE,
+                    use.names	= TRUE,
+                    idcol     = TRUE)
     return(dt)
 
   } else if (type == "list") {
 
+    poss_read_dta <- purrr::possibly(.f = haven::read_dta,
+                                       otherwise = NULL)
+
     dl <- purrr::map(.x = df$orig,
-                     .f = haven::read_dta)
+                     .f = poss_read_dta)
 
     y  <- gsub("\\.dta", "", unique(df$filename))
     names(dl) <- y

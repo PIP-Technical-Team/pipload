@@ -23,6 +23,8 @@ Imports:
     readr,
     fs,
     purrr,
-    dplyr
+    dplyr,
+    cli,
+    magrittr
 Suggests: 
     testthat
