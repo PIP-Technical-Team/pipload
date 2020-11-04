@@ -24,6 +24,7 @@ Imports:
     fs,
     purrr,
     dplyr,
-    cli
+    cli,
+    magrittr
 Suggests: 
     testthat

@@ -8,6 +8,7 @@
 #' @return
 #' @export
 #' @import data.table
+#' @importFrom magrittr %>%
 #'
 #' @examples
 #' # ONe year and one country
@@ -150,7 +151,10 @@ pip_load_data <- function(country          = NULL,
 
     #--------- getting rid of errors and create dataframe ---------
     dt <- purrr::compact(dt)
-    dt <- rbindlist(dt, fill = TRUE)
+    dt <- rbindlist(dt,
+                    fill      = TRUE,
+                    use.names	= TRUE,
+                    idcol     = TRUE)
     return(dt)
 
   } else if (type == "list") {
