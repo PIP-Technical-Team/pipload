@@ -2,6 +2,8 @@
 #'
 #' @inheritParams pip_find_data
 #' @param type character: Either `dataframe` or `list`. Defaults is `dataframe`.
+#' @param survey_id character: Vector with survey IDs like
+#' 'HND_2017_EPHPM_V01_M_V01_A_PIP_PC-GPWG'
 #'
 #' @return
 #' @export
@@ -32,7 +34,12 @@
 #' # Load different sources
 #' pip_load_data(country = "COL",
 #'              source = "HIST")
-#
+#'
+#' # Load using Survey ID
+#' pip_load_data(survey_id = c("HND_2017_EPHPM_V01_M_V01_A_PIP_PC-GPWG",
+#'                             "HND_2018_EPHPM_V01_M_V01_A_PIP_PC-GPWG")
+#'                             )
+#'
 #' \dontrun{
 #' # more than two years for more than one country (only firt year will be used)
 #' pip_load_data(
@@ -51,45 +58,72 @@ pip_load_data <- function(country          = NULL,
                           module           = NULL,
                           tool             = NULL,
                           source           = NULL,
+                          survey_id        = NULL,
                           type             = "dataframe",
                           maindir          = getOption("pip.maindir")
                           ) {
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #---------   Find Data   ---------
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  if (!is.null(survey_id)) {
+
+    #--------- Get full path ---------
+    # Raw inventory
+    ri <- pip_load_inventory()
+    setDT(ri)
+    ri[,
+       survey_id := gsub("\\.dta", "", filename)]
+
+    si <- data.table::data.table(survey_id = survey_id)
+
+    df <- ri[si,
+             on = .(survey_id)]
+
+  } else { # if country and year are provided
+
 
   # Call data find to get inventory
-  df <- pip_find_data(country          = country       ,
-                      year             = year          ,
-                      survey_acronym   = survey_acronym,
-                      vermast          = vermast       ,
-                      veralt           = veralt        ,
-                      module           = module        ,
-                      tool             = tool          ,
-                      source           = source        ,
-                      maindir          = maindir)
+    df <- pip_find_data(country          = country       ,
+                        year             = year          ,
+                        survey_acronym   = survey_acronym,
+                        vermast          = vermast       ,
+                        veralt           = veralt        ,
+                        module           = module        ,
+                        tool             = tool          ,
+                        source           = source        ,
+                        maindir          = maindir)
 
-  #--------- Filter most recent version ---------
-  # master version
-  if (is.null(vermast)) {
-    df[,
-       maxmast := vermast == max(vermast),
-       by = .(country_code, year, survey_acronym, module)
-       ][
-         maxmast == 1
-         ][,
-           maxmast := NULL
-         ]
+    #--------- Filter most recent version ---------
+    # master version
+    if (is.null(vermast)) {
+      df[,
+         maxmast := vermast == max(vermast),
+         by = .(country_code, year, survey_acronym, module)
+      ][
+        maxmast == 1
+      ][,
+        maxmast := NULL
+      ]
+    }
+
+    # Alternative version
+    if (is.null(veralt)) {
+      df[,
+         maxalt := veralt == max(veralt),
+         by = .(country_code, year, survey_acronym, module)
+      ][
+        maxalt == 1
+      ][,
+        maxalt := NULL
+      ]
+    }
   }
 
-  # Alternative version
-  if (is.null(veralt)) {
-    df[,
-       maxalt := veralt == max(veralt),
-       by = .(country_code, year, survey_acronym, module)
-       ][
-         maxalt == 1
-         ][,
-           maxalt := NULL
-         ]
-  }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #---------   Load data   ---------
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
   if (type == "dataframe") {

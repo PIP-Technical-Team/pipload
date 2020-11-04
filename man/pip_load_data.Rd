@@ -13,6 +13,7 @@ pip_load_data(
   module = NULL,
   tool = NULL,
   source = NULL,
+  survey_id = NULL,
   type = "dataframe",
   maindir = getOption("pip.maindir")
 )
@@ -36,6 +37,9 @@ a hyphen (e.g., PC-GPWG)}
 
 \item{source}{character: Source of data. It could be \code{GPWG}, \code{HIST}, \code{GROUP},
 \code{synth}, \code{BIN}, and \code{ALL}. The latter is used only in Table Maker.}
+
+\item{survey_id}{character: Vector with survey IDs like
+'HND_2017_EPHPM_V01_M_V01_A_PIP_PC-GPWG'}
 
 \item{type}{character: Either \code{dataframe} or \code{list}. Defaults is \code{dataframe}.}
 
@@ -72,6 +76,12 @@ pip_load_data(country = "PRY",
 # Load different sources
 pip_load_data(country = "COL",
              source = "HIST")
+
+# Load using Survey ID
+pip_load_data(survey_id = c("HND_2017_EPHPM_V01_M_V01_A_PIP_PC-GPWG",
+                            "HND_2018_EPHPM_V01_M_V01_A_PIP_PC-GPWG")
+                            )
+
 \dontrun{
 # more than two years for more than one country (only firt year will be used)
 pip_load_data(

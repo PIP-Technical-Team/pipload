@@ -23,17 +23,17 @@ Load any auxiliary data
 }
 \examples{
 # Load CPI
-pip_load_aux("cpi")
+cpi <- pip_load_aux("cpi")
 
 # load PPP
-pip_load_aux("ppp")
+ppp <- pip_load_aux("ppp")
 
 # Load GDP
-pip_load_aux("gdp")
+gdp <- pip_load_aux("gdp")
 
 measure <- "cpi"
 df      <- pip_load_aux(measure, version = "available")
-df
+head(df)
 df      <- pip_load_aux(measure, version = "20200807101548")
 head(df)
 df      <- pip_load_aux(measure, version = -1)
