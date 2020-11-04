@@ -132,9 +132,22 @@ pip_load_data <- function(country          = NULL,
     poss_data_to_df <- purrr::possibly(.f = data_to_df,
                                        otherwise = NULL)
 
-    dt <- purrr::map2(.x = df$orig,
-                      .y = df$filename,
-                      .f = poss_data_to_df)
+    tryCatch({
+
+      cli::cli_process_start("Loading data {.field (creating dataframe)}")
+      dt <- purrr::map2(.x = df$orig,
+                        .y = df$filename,
+                        .f = poss_data_to_df)
+      cli::cli_process_done()
+
+      },
+      error = function(err) {
+
+        cli::cli_process_failed()
+        cli::cli_alert_danger("Failed loading data")
+
+      }
+    )
 
     #--------- data with problems ---------
     dt_errors = dt %>%
@@ -162,8 +175,23 @@ pip_load_data <- function(country          = NULL,
     poss_read_dta <- purrr::possibly(.f = haven::read_dta,
                                        otherwise = NULL)
 
-    dl <- purrr::map(.x = df$orig,
-                     .f = poss_read_dta)
+
+    tryCatch({
+
+      cli::cli_process_start("Loading data {.field (creating list)}")
+      dl <- purrr::map(.x = df$orig,
+                       .f = poss_read_dta)
+      cli::cli_process_done()
+
+    },
+    error = function(err) {
+
+      cli::cli_process_failed()
+      cli::cli_alert_danger("Failed loading data")
+
+    }
+    )
+
 
     y  <- gsub("\\.dta", "", unique(df$filename))
     names(dl) <- y
