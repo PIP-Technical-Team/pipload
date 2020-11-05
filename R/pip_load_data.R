@@ -8,6 +8,7 @@
 #' @return
 #' @export
 #' @import data.table
+#' @import cli
 #' @importFrom magrittr %>%
 #'
 #' @examples
@@ -63,6 +64,7 @@ pip_load_data <- function(country          = NULL,
                           type             = "dataframe",
                           maindir          = getOption("pip.maindir")
                           ) {
+
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   #---------   Find Data   ---------
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -119,7 +121,8 @@ pip_load_data <- function(country          = NULL,
         maxalt := NULL
       ]
     }
-  }
+
+  } # end of creation of df with survey names and IDs
 
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -127,47 +130,69 @@ pip_load_data <- function(country          = NULL,
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-  if (type == "dataframe") {
+  poss_data_to_df <- purrr::possibly(.f = data_to_df,
+                                     otherwise = NULL)
 
-    poss_data_to_df <- purrr::possibly(.f = data_to_df,
-                                       otherwise = NULL)
+  # Make sure all data that is possible to load is loaded
+  tryCatch({
 
+    cli::cli_process_start("Loading data and creating a {.field {type}}")
     dt <- purrr::map2(.x = df$orig,
                       .y = df$filename,
                       .f = poss_data_to_df)
+    sp$finish()
+    cli::cli_process_done()
 
-    #--------- data with problems ---------
-    dt_errors = dt %>%
-      purrr::keep(~is.null(.x) ) %>%
-      names()
+  },
+  error = function(err) {
 
-    if (!is.null(dt_errors)) {
+    cli::cli_process_failed()
+    cli::cli_alert_danger("Failed loading data")
 
-      cli::rule(center = cli::col_red(" * Problematic Datasets * "))
-      cli::cli_text("{.file {dt_errors}}")
-      cli::rule()
+  }
+  ) # end of tryCatch
 
-    }
+  #--------- data with problems ---------
+  dt_errors = dt %>%
+    purrr::keep(~is.null(.x) ) %>%
+    names()
 
+  if (!is.null(dt_errors)) {
+
+    cli::cli_rule(center = "{length(dt_errors)} dataset{?s} could not be loaded")
+    cli::cli_text("{.file {dt_errors}}")
+    cli::cli_rule(right = "end")
+
+  }
+
+  # If type is dataframe
+  if (type == "dataframe") {
     #--------- getting rid of errors and create dataframe ---------
     dt <- purrr::compact(dt)
-    dt <- rbindlist(dt,
-                    fill      = TRUE,
-                    use.names	= TRUE,
-                    idcol     = TRUE)
-    return(dt)
 
-  } else if (type == "list") {
+    # create data frame. If failed, list is returned.
+    tryCatch(
+      expr = {
+        dt <- rbindlist(dt,
+                        fill      = TRUE,
+                        use.names	= TRUE,
+                        idcol     = TRUE)
+      }, # end of expr section
 
-    poss_read_dta <- purrr::possibly(.f = haven::read_dta,
-                                       otherwise = NULL)
+      error = function(e) {
+        cli::cli_alert_danger("Could not create data frame")
+        cli::cli_alert_danger("{e$message}")
+        cli::cli_alert_info("returning object is a list instead")
+        y  <- gsub("\\.dta", "", unique(df$filename))
+        names(dt) <- y
+      } # end of finally section
 
-    dl <- purrr::map(.x = df$orig,
-                     .f = poss_read_dta)
+    ) # End of trycatch
+
+  } else if (type == "list") { # if output type if list
 
     y  <- gsub("\\.dta", "", unique(df$filename))
-    names(dl) <- y
-    return(dl)
+    names(dt) <- y
 
   } else {
     rlang::abort(c(
@@ -179,14 +204,34 @@ pip_load_data <- function(country          = NULL,
                 )
   }
 
-}
+    return(dt)
+
+} # end of pip_load_data
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #---------   Auxiliary functions   ---------
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 data_to_df <- function(x, y) {
+  sp$spin()
   df <- haven::read_dta(x)
+
+  #--------- leaving just the 'label' attribute ---------
+  nn  <- names(df)
+  for (x in seq_along(nn)) {
+
+    ats       <- attributes(df[[x]])
+    atsn      <- names(ats)
+    to_remove <- atsn[!grepl("label", atsn)]
+
+    for (i in seq_along(to_remove)) {
+      attr(df[[x]], to_remove[i]) <- NULL
+    }
+
+  }
+
+  #--------- Survey ID and its components ---------
+
   y  <- gsub("\\.dta", "", y)
   df$survey_id <- y
   setDT(df)
@@ -226,3 +271,6 @@ data_to_df <- function(x, y) {
 
   return(df)
 }
+
+# Make spinner
+sp <- cli::make_spinner("dots", template = "Loading data {spin}")
