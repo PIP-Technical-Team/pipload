@@ -62,8 +62,10 @@ pip_load_data <- function(country          = NULL,
                           source           = NULL,
                           survey_id        = NULL,
                           type             = "dataframe",
-                          maindir          = getOption("pip.maindir")
+                          maindir          = getOption("pip.maindir"),
+                          noisy            = TRUE
                           ) {
+
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   #---------   Find Data   ---------
@@ -136,12 +138,22 @@ pip_load_data <- function(country          = NULL,
   # Make sure all data that is possible to load is loaded
   tryCatch({
 
-    cli::cli_process_start("Loading data and creating a {.field {type}}")
-    dt <- purrr::map2(.x = df$orig,
-                      .y = df$filename,
-                      .f = poss_data_to_df)
-    sp$finish()
-    cli::cli_process_done()
+    if (noisy) {
+
+      cli::cli_process_start("Loading data and creating a {.field {type}}")
+      dt <- purrr::map2(.x = df$orig,
+                        .y = df$filename,
+                        .f = poss_data_to_df,
+                        noisy = noisy)
+      sp$finish()
+      cli::cli_process_done()
+
+    } else {
+      dt <- purrr::map2(.x = df$orig,
+                        .y = df$filename,
+                        .f = poss_data_to_df,
+                        noisy = noisy)
+    }
 
   },
   error = function(err) {
@@ -212,8 +224,10 @@ pip_load_data <- function(country          = NULL,
 #---------   Auxiliary functions   ---------
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-data_to_df <- function(x, y) {
-  sp$spin()
+data_to_df <- function(x, y, noisy) {
+  if (noisy) {
+    sp$spin()
+  }
   df <- haven::read_dta(x)
 
   #--------- leaving just the 'label' attribute ---------
@@ -273,4 +287,5 @@ data_to_df <- function(x, y) {
 }
 
 # Make spinner
+
 sp <- cli::make_spinner("dots", template = "Loading data {spin}")
