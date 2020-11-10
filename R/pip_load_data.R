@@ -58,7 +58,7 @@ pip_load_data <- function(country          = NULL,
                           vermast          = NULL,
                           veralt           = NULL,
                           module           = NULL,
-                          tool             = NULL,
+                          tool             = "PC",
                           source           = NULL,
                           survey_id        = NULL,
                           type             = "dataframe",
@@ -138,7 +138,7 @@ pip_load_data <- function(country          = NULL,
   # Make sure all data that is possible to load is loaded
   tryCatch({
 
-    if (noisy) {
+    if (noisy) { # if user wants spinner
 
       cli::cli_process_start("Loading data and creating a {.field {type}}")
       dt <- purrr::map2(.x = df$orig,
@@ -148,7 +148,7 @@ pip_load_data <- function(country          = NULL,
       sp$finish()
       cli::cli_process_done()
 
-    } else {
+    } else { # if user does not want spinner... pipeline purposes
       dt <- purrr::map2(.x = df$orig,
                         .y = df$filename,
                         .f = poss_data_to_df,
