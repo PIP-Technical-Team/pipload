@@ -12,6 +12,12 @@
 #' `PC` for Poverty Calculator or `TB` for Table Maker. Others will be added
 #' @param source  character: Source of data. It could be `GPWG`, `HIST`, `GROUP`,
 #' `synth`, `BIN`, and `ALL`. The latter is used only in Table Maker.
+#' @param condition character: logical condition that applies to all surveys.
+#' For example, "year > 2012". Make sure the condition uses the names of the
+#' variables in `pip_load_inventory()`: orig, filename, country_code, year,
+#' survey_acronym, vermast, veralt, collection, module, tool, and source.
+#' Can't be used with arguments `country`, `year`,
+#' `survey_acronym` , `vermast`, `veralt`, `module` or `tool`.
 #' @param maindir character: Main directory
 #'
 #' @return data.frame: list of filenames to be loaded with pcn_load()
@@ -64,6 +70,7 @@ pip_find_data <- function(country         = NULL,
                          veralt           = NULL,
                          module           = NULL,
                          tool             = NULL,
+                         condition        = NULL,
                          source           = NULL,
                          maindir          = getOption("pip.maindir")
                          ) {
@@ -81,7 +88,6 @@ pip_find_data <- function(country         = NULL,
                   ),
                   class = "pipload_error"
                   )
-
   }
 
 
@@ -89,96 +95,105 @@ pip_find_data <- function(country         = NULL,
   #   Country condition
   #----------------------------------------------------------
 
-  if (is.null(country)) {
-    argum <- c(year, survey_acronym, vermast, veralt)
-    if (length(argum)) {
-      rlang::inform(
-        paste("if `country` is NULL, arguments `year`, `survey_acronym`\n",
-              "`vermast`, and `veralt` should be NULL as well\n",
-              "These arguments are coerced to NULL")
-      )
+  if (!is.null(condition)) { # if condition is used
 
-    }
+    condi <- parse(text = condition)
 
-    # Load country names when no country is selected
-    countries <- fs::dir_ls(maindir)
-    countries <- gsub(maindir, "", countries)
-    countries <- countries[!grepl("^_", countries)]  # remove _aux folder
+  } else { # if condition is not used
 
-    years      <- NULL
-
-  } else { # country is defined
-
-    country    <- toupper(country)
-    lyear      <- length(year)
-    lcountry   <- length(country)
-
-    if ( lyear != 0 ) {       # if year is selected along with country
-
-      if (lcountry != 1) {    # if more than one country selected
-
-        if ( lyear != 1) {
-          rlang::warn(c(
-                      paste0("Since `length(country)` is greater than 1,\n",
-                             "the first value of `year` (",
-                             year[[1]], ") wille be used"),
-                        i = paste("length(country) == " , lcountry)
-                        ),
-                        class = "pipload_warning"
-                        )
-        }
-
-        countries  <- country
-        years      <- rep(year[[1]], lcountry)
-
-      } else {              # if only one country selected
-
-        countries <- rep(country, lyear)
-        years     <- year
+    if (is.null(country)) {
+      argum <- c(year, survey_acronym, vermast, veralt)
+      if (length(argum)) {
+        rlang::inform(
+          paste("if `country` is NULL, arguments `year`, `survey_acronym`\n",
+                "`vermast`, and `veralt` should be NULL as well\n",
+                "These arguments are coerced to NULL")
+        )
 
       }
-    } else  { # if lyear == 0
-      countries  <- country
+
+      # Load country names when no country is selected
+      countries <- fs::dir_ls(maindir)
+      countries <- gsub(maindir, "", countries)
+      countries <- countries[!grepl("^_", countries)]  # remove _aux folder
+
       years      <- NULL
+
+    } else { # country is defined
+
+      country    <- toupper(country)
+      lyear      <- length(year)
+      lcountry   <- length(country)
+
+      if ( lyear != 0 ) {       # if year is selected along with country
+
+        if (lcountry != 1) {    # if more than one country selected
+
+          if ( lyear != 1) {
+            rlang::warn(c(
+              paste0("Since `length(country)` is greater than 1,\n",
+                     "the first value of `year` (",
+                     year[[1]], ") wille be used"),
+              i = paste("length(country) == " , lcountry)
+            ),
+            class = "pipload_warning"
+            )
+          }
+
+          countries  <- country
+          years      <- rep(year[[1]], lcountry)
+
+        } else {              # if only one country selected
+
+          countries <- rep(country, lyear)
+          years     <- year
+
+        }
+      } else  { # if lyear == 0
+        countries  <- country
+        years      <- NULL
+      }
+    }   # end of country no NULL
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #---------   Load Inventory database   ---------
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+    #--------- create conditions ---------
+    # Country and year are special because the names are different
+    condi <- "country_code %chin% (countries)"
+
+    if (!(is.null(years))) {
+      condi <- paste(condi, "& year %chin% as.character(years)")
     }
-  }   # end of country no NULL
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  #---------   Load Inventory database   ---------
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # The other arguments work fine. Just add "alt_" prefix
+    argus <-
+      c("survey_acronym",
+        "vermast",
+        "veralt",
+        "module",
+        "tool",
+        "source")
 
+    for (i in seq_along(argus)) {
 
-  #--------- create conditions ---------
-  # Country and year are special because the names are different
-  condi <- "country_code %chin% (countries)"
+      # if argument is NOT NULL
+      y <- argus[i]
+      if (!(is.null(get(y)))) {
 
-  if (!(is.null(years))) {
-    condi <- paste(condi, "& year %chin% as.character(years)")
-  }
+        assign(paste0("alt_", y), toupper(get(y)))
+        condi <- paste(condi, create_cond(y))
 
-  # The other arguments work fine. Just add "alt_" prefix
-  argus <-
-    c("survey_acronym",
-      "vermast",
-      "veralt",
-      "module",
-      "tool",
-      "source")
-
-  for (i in seq_along(argus)) {
-
-    # if argument is NOT NULL
-    y <- argus[i]
-    if (!(is.null(get(y)))) {
-
-      assign(paste0("alt_", y), toupper(get(y)))
-      condi <- paste(condi, create_cond(y))
-
+      }
     }
-  }
 
-  #--------- load data ---------
-  condi <- parse(text = condi)
+    #--------- load data ---------
+    condi <- parse(text = condi)
+
+  } # end of condition == NULL
+
 
   df <- pip_load_inventory()
   df <- df[ eval(condi)]

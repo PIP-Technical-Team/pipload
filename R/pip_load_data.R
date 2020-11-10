@@ -61,6 +61,7 @@ pip_load_data <- function(country          = NULL,
                           tool             = "PC",
                           source           = NULL,
                           survey_id        = NULL,
+                          condition        = NULL,
                           type             = "dataframe",
                           maindir          = getOption("pip.maindir"),
                           noisy            = TRUE
@@ -97,9 +98,24 @@ pip_load_data <- function(country          = NULL,
                         module           = module        ,
                         tool             = tool          ,
                         source           = source        ,
+                        condition        = condition     ,
                         maindir          = maindir)
 
     #--------- Filter most recent version ---------
+
+    # Tool
+    if (!is.null(tool)) {
+      if (grepl("tool", condition)) {
+        cli::cli_alert_warning(c("`tool` argument was specified ({.val {tool}}), but it was
+                                 also mentioned in the `condition` argument.
+                                 Thus, only the latter will take predominance."),
+                               wrap = TRUE)
+      } else {
+        alt_tool <- tool
+        df <- df[tool == (alt_tool)]
+      }
+    }
+
     # master version
     if (is.null(vermast)) {
       df[,
@@ -130,7 +146,6 @@ pip_load_data <- function(country          = NULL,
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   #---------   Load data   ---------
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
 
   poss_data_to_df <- purrr::possibly(.f = data_to_df,
                                      otherwise = NULL)
