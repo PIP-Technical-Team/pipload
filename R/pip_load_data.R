@@ -41,6 +41,9 @@
 #' pip_load_data(survey_id = c("HND_2017_EPHPM_V01_M_V01_A_PIP_PC-GPWG",
 #'                             "HND_2018_EPHPM_V01_M_V01_A_PIP_PC-GPWG")
 #'                             )
+#' # Use condition argument
+#' pip_find_data(condition = "country_code %chin% c('PRY', 'KGZ') &
+#'                             year >= 2012 & year < 2014")
 #'
 #' \dontrun{
 #' # more than two years for more than one country (only firt year will be used)
@@ -58,12 +61,15 @@ pip_load_data <- function(country          = NULL,
                           vermast          = NULL,
                           veralt           = NULL,
                           module           = NULL,
-                          tool             = NULL,
+                          tool             = "PC",
                           source           = NULL,
                           survey_id        = NULL,
+                          condition        = NULL,
                           type             = "dataframe",
-                          maindir          = getOption("pip.maindir")
+                          maindir          = getOption("pip.maindir"),
+                          noisy            = TRUE
                           ) {
+
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   #---------   Find Data   ---------
@@ -95,9 +101,24 @@ pip_load_data <- function(country          = NULL,
                         module           = module        ,
                         tool             = tool          ,
                         source           = source        ,
+                        condition        = condition     ,
                         maindir          = maindir)
 
     #--------- Filter most recent version ---------
+
+    # Tool
+    if (!is.null(tool) & !is.null(condition)) {
+      if (grepl("tool", condition)) {
+        cli::cli_alert_warning(c("`tool` argument was specified ({.val {tool}}), but it was
+                                 also mentioned in the `condition` argument.
+                                 Thus, only the latter will take predominance."),
+                               wrap = TRUE)
+      } else {
+        alt_tool <- tool
+        df <- df[tool == (alt_tool)]
+      }
+    }
+
     # master version
     if (is.null(vermast)) {
       df[,
@@ -129,19 +150,28 @@ pip_load_data <- function(country          = NULL,
   #---------   Load data   ---------
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-
   poss_data_to_df <- purrr::possibly(.f = data_to_df,
                                      otherwise = NULL)
 
   # Make sure all data that is possible to load is loaded
   tryCatch({
 
-    cli::cli_process_start("Loading data and creating a {.field {type}}")
-    dt <- purrr::map2(.x = df$orig,
-                      .y = df$filename,
-                      .f = poss_data_to_df)
-    sp$finish()
-    cli::cli_process_done()
+    if (noisy) { # if user wants spinner
+
+      cli::cli_process_start("Loading data and creating a {.field {type}}")
+      dt <- purrr::map2(.x = df$orig,
+                        .y = df$filename,
+                        .f = poss_data_to_df,
+                        noisy = noisy)
+      sp$finish()
+      cli::cli_process_done()
+
+    } else { # if user does not want spinner... pipeline purposes
+      dt <- purrr::map2(.x = df$orig,
+                        .y = df$filename,
+                        .f = poss_data_to_df,
+                        noisy = noisy)
+    }
 
   },
   error = function(err) {
@@ -212,8 +242,10 @@ pip_load_data <- function(country          = NULL,
 #---------   Auxiliary functions   ---------
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-data_to_df <- function(x, y) {
-  sp$spin()
+data_to_df <- function(x, y, noisy) {
+  if (noisy) {
+    sp$spin()
+  }
   df <- haven::read_dta(x)
 
   #--------- leaving just the 'label' attribute ---------
@@ -273,4 +305,5 @@ data_to_df <- function(x, y) {
 }
 
 # Make spinner
+
 sp <- cli::make_spinner("dots", template = "Loading data {spin}")

@@ -13,6 +13,7 @@ pip_find_data(
   veralt = NULL,
   module = NULL,
   tool = NULL,
+  condition = NULL,
   source = NULL,
   maindir = getOption("pip.maindir")
 )
@@ -33,6 +34,13 @@ a hyphen (e.g., PC-GPWG)}
 
 \item{tool}{character: PIP tool in which data will be used. It could be
 \code{PC} for Poverty Calculator or \code{TB} for Table Maker. Others will be added}
+
+\item{condition}{character: logical condition that applies to all surveys.
+For example, "year > 2012". Make sure the condition uses the names of the
+variables in \code{pip_load_inventory()}: orig, filename, country_code, year,
+survey_acronym, vermast, veralt, collection, module, tool, and source.
+Can't be used with arguments \code{country}, \code{year},
+\code{survey_acronym} , \code{vermast}, \code{veralt}, \code{module} or \code{tool}.}
 
 \item{source}{character: Source of data. It could be \code{GPWG}, \code{HIST}, \code{GROUP},
 \code{synth}, \code{BIN}, and \code{ALL}. The latter is used only in Table Maker.}
