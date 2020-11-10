@@ -11,11 +11,13 @@ pip_load_data(
   vermast = NULL,
   veralt = NULL,
   module = NULL,
-  tool = NULL,
+  tool = "PC",
   source = NULL,
   survey_id = NULL,
+  condition = NULL,
   type = "dataframe",
-  maindir = getOption("pip.maindir")
+  maindir = getOption("pip.maindir"),
+  noisy = TRUE
 )
 }
 \arguments{
@@ -40,6 +42,13 @@ a hyphen (e.g., PC-GPWG)}
 
 \item{survey_id}{character: Vector with survey IDs like
 'HND_2017_EPHPM_V01_M_V01_A_PIP_PC-GPWG'}
+
+\item{condition}{character: logical condition that applies to all surveys.
+For example, "year > 2012". Make sure the condition uses the names of the
+variables in \code{pip_load_inventory()}: orig, filename, country_code, year,
+survey_acronym, vermast, veralt, collection, module, tool, and source.
+Can't be used with arguments \code{country}, \code{year},
+\code{survey_acronym} , \code{vermast}, \code{veralt}, \code{module} or \code{tool}.}
 
 \item{type}{character: Either \code{dataframe} or \code{list}. Defaults is \code{dataframe}.}
 
@@ -81,6 +90,9 @@ pip_load_data(country = "COL",
 pip_load_data(survey_id = c("HND_2017_EPHPM_V01_M_V01_A_PIP_PC-GPWG",
                             "HND_2018_EPHPM_V01_M_V01_A_PIP_PC-GPWG")
                             )
+# Use condition argument
+pip_find_data(condition = "country_code \%chin\% c('PRY', 'KGZ') &
+                            year >= 2012 & year < 2014")
 
 \dontrun{
 # more than two years for more than one country (only firt year will be used)

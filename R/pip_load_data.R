@@ -41,6 +41,9 @@
 #' pip_load_data(survey_id = c("HND_2017_EPHPM_V01_M_V01_A_PIP_PC-GPWG",
 #'                             "HND_2018_EPHPM_V01_M_V01_A_PIP_PC-GPWG")
 #'                             )
+#' # Use condition argument
+#' pip_find_data(condition = "country_code %chin% c('PRY', 'KGZ') &
+#'                             year >= 2012 & year < 2014")
 #'
 #' \dontrun{
 #' # more than two years for more than one country (only firt year will be used)
@@ -104,7 +107,7 @@ pip_load_data <- function(country          = NULL,
     #--------- Filter most recent version ---------
 
     # Tool
-    if (!is.null(tool)) {
+    if (!is.null(tool) & !is.null(condition)) {
       if (grepl("tool", condition)) {
         cli::cli_alert_warning(c("`tool` argument was specified ({.val {tool}}), but it was
                                  also mentioned in the `condition` argument.
