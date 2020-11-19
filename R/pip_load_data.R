@@ -143,6 +143,31 @@ pip_load_data <- function(country          = NULL,
       ]
     }
 
+    # Select right module (source) if more than one available
+    if (is.null(source) && toupper(tool) == "PC") {
+      source_order <- c("GPWG", "HIST", "BIN", "GROUP", "synth")
+      source_avail <- df[, unique(source)]
+
+      out         <- FALSE
+      i           <- 0
+      maxi        <- seq_along(source_order)
+      source_keep <- NULL
+      while(out == FALSE && i <= maxi) {
+
+        i <- i + 1
+        if (source_order[i] %in% source_avail) {
+          source_keep <- source_order[i]
+          out         <- TRUE
+        }
+
+      }
+
+      if (!is.null(source_keep)) {
+        df <- df[source == (source_keep) ]
+      }
+
+    }
+
   } # end of creation of df with survey names and IDs
 
 
@@ -212,7 +237,7 @@ pip_load_data <- function(country          = NULL,
       error = function(e) {
         cli::cli_alert_danger("Could not create data frame")
         cli::cli_alert_danger("{e$message}")
-        cli::cli_alert_info("returning object is a list instead")
+        cli::cli_alert_info("returning a list instead")
         y  <- gsub("\\.dta", "", unique(df$filename))
         names(dt) <- y
       } # end of finally section
