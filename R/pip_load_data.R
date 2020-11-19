@@ -136,12 +136,73 @@ pip_load_data <- function(country          = NULL,
       df[,
          maxalt := veralt == max(veralt),
          by = .(country_code, year, survey_acronym, module)
-      ][
-        maxalt == 1
-      ][,
-        maxalt := NULL
-      ]
+          ][
+            maxalt == 1
+          ][,
+            maxalt := NULL
+          ]
     }
+
+    # Select right module (source) if more than one available
+    if (is.null(source) && toupper(tool) == "PC") {
+      # Create grouping variable
+      df[,
+         survey_id := paste(country_code, year, survey_acronym, vermast, veralt,
+                            sep = "_")
+      ]
+
+      du <- df[, # get unique source by ID
+               .(source = unique(source)),
+               by = survey_id
+                ][, # count sources by ID
+                  n_source := .N,
+                  by = survey_id
+                ]
+
+      #--------- Only if there are more than one source in at least one ID ---------
+      if (du[, max(n_source)] > 1) {
+
+      # those with only one source
+        du1 <- du[n_source == 1
+                  ][,
+                    n_source := NULL
+                  ]
+
+        # treatment for those with more than one source
+        du2 <- du[n_source > 1
+        ][, # nest data by Survey ID. one dataframe for each ID with
+          # several sources.
+          .(data = .nest(source)),
+          by = survey_id
+
+        ][, # Keep one source per data using rule in `keep_source()`
+          filtered := purrr::map(data, ~sf_keep_source(df = .x))
+        ]
+
+        if (inherits(du2$filtered, "list")) {
+
+          du2 <- du2[, # Unnest data again so we get one source per ID
+                     .(source = .unnest(filtered)),
+                     by = survey_id
+          ]
+        } else {
+          du2[,
+              source := filtered
+          ][,
+            c("data", "filtered") := NULL
+          ]
+        }
+
+        # Append both sources in one
+        dun <- data.table::rbindlist(list(du1, du2),
+                                     use.names = TRUE,
+                                     fill      = TRUE)
+
+        # Filter df with only the value in dun
+        df <- df[dun,
+                 on = .(survey_id,source)]
+      }
+    } # end of source == NULL
 
   } # end of creation of df with survey names and IDs
 
@@ -205,14 +266,13 @@ pip_load_data <- function(country          = NULL,
       expr = {
         dt <- rbindlist(dt,
                         fill      = TRUE,
-                        use.names	= TRUE,
-                        idcol     = TRUE)
+                        use.names	= TRUE)
       }, # end of expr section
 
       error = function(e) {
         cli::cli_alert_danger("Could not create data frame")
         cli::cli_alert_danger("{e$message}")
-        cli::cli_alert_info("returning object is a list instead")
+        cli::cli_alert_info("returning a list instead")
         y  <- gsub("\\.dta", "", unique(df$filename))
         names(dt) <- y
       } # end of finally section
@@ -307,3 +367,41 @@ data_to_df <- function(x, y, noisy) {
 # Make spinner
 
 sp <- cli::make_spinner("dots", template = "Loading data {spin}")
+
+#--------- Keep source data ---------
+
+#' Make sure we keep only one module per survey ID when loading.
+#'
+#' @param df dataframe
+#'
+#' @return dataframe
+keep_source <- function(df){
+
+  source_order <- c("GPWG", "HIST", "BIN", "GROUP", "synth")
+  source_avail <- df[, unique(source)]
+
+  out         <- FALSE
+  i           <- 0
+  maxi        <- length(source_order)
+  source_keep <- NULL
+  while(out == FALSE && i <= maxi) {
+
+    i <- i + 1
+    if (source_order[i] %in% source_avail) {
+      source_keep <- source_order[i]
+      out         <- TRUE
+    }
+
+  }
+
+  if (!is.null(source_keep)) {
+    df <- df[source == (source_keep)]
+  }
+  return(df)
+}
+
+
+# make sure function runs fine
+sf_keep_source <- purrr::possibly(keep_source,
+                                  otherwise = NULL)
+
