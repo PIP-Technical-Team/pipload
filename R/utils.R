@@ -32,3 +32,14 @@ list_of_countries <- function(maindir = getOption("pip.maindir")) {
   return(country_list)
 }
 
+
+
+# Nesting and unnesting data.tables
+.nest   <- function(...) {
+  list(data.table::data.table(...))
+}
+
+.unnest <- function(...) {
+    unlist(data.table::data.table(...))
+}
+
