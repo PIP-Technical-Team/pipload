@@ -192,7 +192,7 @@ pip_update_inventory <- function(country = NULL,
     cnames <-
       c(
         "country_code",
-        "year",
+        "surveyid_year",
         "survey_acronym",
         "vermast",
         "M",
@@ -244,7 +244,7 @@ pip_update_inventory <- function(country = NULL,
     }
 
     # re-write inventory in production if data signature is not found
-    setorder(dt, country_code, year, vermast, veralt)
+    setorder(dt, country_code, surveyid_year, vermast, veralt)
     dt <- unique(dt) # Remove any duplicated row
 
     fst::write_fst(x = dt,
