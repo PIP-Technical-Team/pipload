@@ -240,7 +240,9 @@ pip_update_inventory <- function(country = NULL,
       setDT(df)
 
       df <- df[!(country_code %chin% diff_cty)]
-      dt <- rbindlist(list(dt, df), use.names = TRUE)
+      dt <- rbindlist(list(dt, df),
+                      use.names = TRUE,
+                      fill = TRUE)
     }
 
     # re-write inventory in production if data signature is not found
