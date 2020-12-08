@@ -165,7 +165,7 @@ pip_find_data <- function(country         = NULL,
     condi <- "country_code %chin% (countries)"
 
     if (!(is.null(years))) {
-      condi <- paste(condi, "& year %chin% as.character(years)")
+      condi <- paste(condi, "& surveyid_year %chin% as.character(years)")
     }
 
     # The other arguments work fine. Just add "alt_" prefix

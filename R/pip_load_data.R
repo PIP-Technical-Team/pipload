@@ -123,7 +123,7 @@ pip_load_data <- function(country          = NULL,
     if (is.null(vermast)) {
       df[,
          maxmast := vermast == max(vermast),
-         by = .(country_code, year, survey_acronym, module)
+         by = .(country_code, surveyid_year, survey_acronym, module)
       ][
         maxmast == 1
       ][,
@@ -135,7 +135,7 @@ pip_load_data <- function(country          = NULL,
     if (is.null(veralt)) {
       df[,
          maxalt := veralt == max(veralt),
-         by = .(country_code, year, survey_acronym, module)
+         by = .(country_code, surveyid_year, survey_acronym, module)
           ][
             maxalt == 1
           ][,
@@ -147,7 +147,7 @@ pip_load_data <- function(country          = NULL,
     if (is.null(source) && toupper(tool) == "PC") {
       # Create grouping variable
       df[,
-         survey_id := paste(country_code, year, survey_acronym, vermast, veralt,
+         survey_id := paste(country_code, surveyid_year, survey_acronym, vermast, veralt,
                             sep = "_")
       ]
 
