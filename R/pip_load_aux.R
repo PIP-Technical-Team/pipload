@@ -2,6 +2,13 @@
 #'
 #' @param msrdir character: measure (CPI) directory. created on `pip_prices()`.
 #' @param measure character: Measure to be used. e.g., "cpi" or "ppp".
+#' @param version An integer or a quoted directive. "available": displays list of
+#' available versions for `measure`. "select"|"pick"|"choose": allows user to
+#' select the vintage of `measure`. if the integer is a negative number
+#' (e.g., `-1`), `pip_load_aux` will load that number of versions before the
+#' most recent version available. So, if `-1` it will load the version before the
+#' current, `-2` loads two versions before the current one, and so on. If it is
+#' a positive number, it must be quoted and in the form "%Y%m%d%H%M%S".
 #'
 #' @return
 #' @export
