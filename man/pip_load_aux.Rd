@@ -14,6 +14,14 @@ pip_load_aux(
 \item{measure}{character: Measure to be used. e.g., "cpi" or "ppp".}
 
 \item{msrdir}{character: measure (CPI) directory. created on \code{pip_prices()}.}
+
+\item{version}{An integer or a quoted directive. "available": displays list of
+available versions for \code{measure}. "select"|"pick"|"choose": allows user to
+select the vintage of \code{measure}. if the integer is a negative number
+(e.g., \code{-1}), \code{pip_load_aux} will load that number of versions before the
+most recent version available. So, if \code{-1} it will load the version before the
+current, \code{-2} loads two versions before the current one, and so on. If it is
+a positive number, it must be quoted and in the form "\%Y\%m\%d\%H\%M\%S".}
 }
 \value{
 

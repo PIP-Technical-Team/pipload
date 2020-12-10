@@ -53,6 +53,9 @@ Can't be used with arguments \code{country}, \code{year},
 \item{type}{character: Either \code{dataframe} or \code{list}. Defaults is \code{dataframe}.}
 
 \item{maindir}{character: Main directory}
+
+\item{noisy}{logical: if FALSE, no loading messages will be displayed.
+Default is TRUE.}
 }
 \value{
 
