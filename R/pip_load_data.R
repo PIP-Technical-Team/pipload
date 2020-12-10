@@ -4,6 +4,8 @@
 #' @param type character: Either `dataframe` or `list`. Defaults is `dataframe`.
 #' @param survey_id character: Vector with survey IDs like
 #' 'HND_2017_EPHPM_V01_M_V01_A_PIP_PC-GPWG'
+#' @param noisy logical: if FALSE, no loading messages will be displayed.
+#' Default is TRUE.
 #'
 #' @return
 #' @export
@@ -234,6 +236,8 @@ pip_load_data <- function(country          = NULL,
                         noisy = noisy)
     }
 
+    names(dt) <- survey_id
+
   },
   error = function(err) {
 
@@ -249,11 +253,8 @@ pip_load_data <- function(country          = NULL,
     names()
 
   if (!is.null(dt_errors)) {
-
-    cli::cli_rule(center = "{length(dt_errors)} dataset{?s} could not be loaded")
-    cli::cli_text("{.file {dt_errors}}")
-    cli::cli_rule(right = "end")
-
+    usethis::ui_warn("{length(dt_errors)} {usethis::ui_field('survey_id')}(s) could not be loaded")
+    cli::cli_ul(dt_errors)
   }
 
   # If type is dataframe
@@ -294,7 +295,12 @@ pip_load_data <- function(country          = NULL,
                 )
   }
 
-    return(dt)
+  # return NULL instead of an empty dataset.
+  if (nrow(dt) == 0) {
+    dt <- NULL
+  }
+
+  return(dt)
 
 } # end of pip_load_data
 
@@ -302,6 +308,13 @@ pip_load_data <- function(country          = NULL,
 #---------   Auxiliary functions   ---------
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+#' Convert origianl dta files to data frame format suitable for PIP
+#'
+#' @param x character: file path
+#' @param y chradter: file name including format
+#' @param noisy logical: If TRUE, messages will display in console.
+#'
+#' @return
 data_to_df <- function(x, y, noisy) {
   if (noisy) {
     sp$spin()
