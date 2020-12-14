@@ -81,7 +81,7 @@ pip_load_data <- function(country          = NULL,
 
     #--------- Get full path ---------
     # Raw inventory
-    ri <- pip_load_inventory()
+    ri <- pip_load_inventory(maindir = maindir)
     setDT(ri)
     ri[,
        survey_id := gsub("\\.dta", "", filename)]
@@ -252,7 +252,7 @@ pip_load_data <- function(country          = NULL,
     purrr::keep(~is.null(.x) ) %>%
     names()
 
-  if (!is.null(dt_errors)) {
+  if (length(dt_errors) > 0) {
     usethis::ui_warn("{length(dt_errors)} {usethis::ui_field('survey_id')}(s) could not be loaded")
     cli::cli_ul(dt_errors)
   }
@@ -323,14 +323,14 @@ data_to_df <- function(x, y, noisy) {
 
   #--------- leaving just the 'label' attribute ---------
   nn  <- names(df)
-  for (x in seq_along(nn)) {
+  for (j in seq_along(nn)) {
 
-    ats       <- attributes(df[[x]])
+    ats       <- attributes(df[[j]])
     atsn      <- names(ats)
     to_remove <- atsn[!grepl("label", atsn)]
 
     for (i in seq_along(to_remove)) {
-      attr(df[[x]], to_remove[i]) <- NULL
+      attr(df[[j]], to_remove[i]) <- NULL
     }
 
   }
