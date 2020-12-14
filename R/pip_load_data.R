@@ -252,7 +252,7 @@ pip_load_data <- function(country          = NULL,
     purrr::keep(~is.null(.x) ) %>%
     names()
 
-  if (!is.null(dt_errors)) {
+  if (length(dt_errors) > 0) {
     usethis::ui_warn("{length(dt_errors)} {usethis::ui_field('survey_id')}(s) could not be loaded")
     cli::cli_ul(dt_errors)
   }
