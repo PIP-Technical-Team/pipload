@@ -8,7 +8,8 @@
 #' @import data.table
 #'
 #' @examples
-pip_load_inventory <- function(inv_file = paste0(getOption("pip.maindir"),
+pip_load_inventory <- function(maindir = getOption("pip.maindir"),
+                               inv_file = paste0(maindir,
                                                  "_inventory/inventory.fst"),
                                inventory_version = NULL
                                ) {
