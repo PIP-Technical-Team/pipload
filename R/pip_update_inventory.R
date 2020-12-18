@@ -100,9 +100,7 @@ pip_update_inventory <- function(country = NULL,
                                 user      = user)
 
   #minimal database of new inventory
-  dsi <- ds_inventory[,
-                      c("country_code", "data_signature")
-  ]
+  dsi <- ds_inventory[, c("country_code", "data_signature")]
 
   # check signature of current fst file
   ds_inventory_path <- paste0(maindir, "_inventory/inventory_datasignature.fst")
@@ -114,9 +112,12 @@ pip_update_inventory <- function(country = NULL,
     setDT(ds_inventory_production)
 
   } else { # if ds files does not exist
+    cli::cli_alert_info("Data signature of inventory was not found")
 
     # we try to create signature using the inventory file
     if (file.exists(inv_file)) {
+      cli::cli_alert("Creating data signature from current
+                     {.file inventory.fst} file", wrap = TRUE)
 
       df                   <- fst::read_fst(inv_file)
       inventory_production <- df[, "orig"]
@@ -130,12 +131,16 @@ pip_update_inventory <- function(country = NULL,
 
     } else {
       # fake signature
+      cli::cli_alert_info("file {.file inventory.fst} did not found")
 
       ds_inventory_production <-
         data.table::data.table(country_code   = list_of_countries(maindir),
                                data_signature = "0000",
                                time           = time,
                                user           = user)
+
+      cli::cli_alert("Creating fake data signature to make comparison"
+                     , wrap = TRUE)
 
     } # end of if inventory file does not exist
   }
@@ -187,8 +192,6 @@ pip_update_inventory <- function(country = NULL,
     }
 
     #--------- create nice dataframe ---------
-    dt <- data.table::data.table(orig = inventory)
-
     cnames <-
       c(
         "country_code",
@@ -206,8 +209,8 @@ pip_update_inventory <- function(country = NULL,
 
     #--------- Format data ---------
     dt[,
-       # Get filename only
-       filename := tstrsplit(orig, "/", fixed=TRUE, keep = (nobj))
+       # Get filenane only
+       filename := gsub("(.*[Dd]ata/)([^/]+)", "\\2", orig)
     ][,
 
       # Name sections of filename into variables
@@ -282,18 +285,20 @@ pip_update_inventory <- function(country = NULL,
     fst::write_fst(x = ds_inventory,
                    path = ds_inventory_path)
 
-    infmsg <- paste("Data signature has changed, it was not found,",
-                    "or update was forced.\n",
-                    paste0("`inventory.fst` has been updated")
-    )
-    rlang::inform(infmsg)
+    if (ldiff == 0 && force == TRUE) {
+      cli::cli_alert_warning("file {.file inventory.fst} has {cli::col_red('NOT')}
+                             changed, but it was forcefully updated",
+                             wrap = TRUE)
+    } else {
+      cli::cli_alert_success("file {.file inventory.fst} has been updated")
+    }
 
   } else {
 
-    rlang::inform("Data signature is up to date.\nNo update performed")
+    cli::cli_alert_info("file {.file inventory.fst} is up to date.
+                        No update performed")
   }
   return(invisible(inventory))
-
 }
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
