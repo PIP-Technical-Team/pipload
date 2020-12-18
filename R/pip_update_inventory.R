@@ -202,10 +202,9 @@ pip_update_inventory <- function(country = NULL,
         "module"
       )
 
-    # check number of items Pick third one by random (it could be any other row)
-    linv <- inventory[[3]]
-    nobj <- length(strsplit(linv, "/")[[1]])
+    dt <- data.table::data.table(orig = inventory)
 
+    #--------- Format data ---------
     dt[,
        # Get filename only
        filename := tstrsplit(orig, "/", fixed=TRUE, keep = (nobj))
