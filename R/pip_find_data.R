@@ -195,7 +195,7 @@ pip_find_data <- function(country         = NULL,
   } # end of condition == NULL
 
 
-  df <- pip_load_inventory()
+  df <- pip_load_inventory(maindir = maindir)
   df <- df[ eval(condi)]
 
   return(df)
