@@ -180,9 +180,8 @@ pip_update_inventory <- function(country = NULL,
                                  inventory)
     ]
     if (length(diff_cty) > 0 && ldiff > 0) {
-      message(paste0("data inventory changed for ",
-                     add_and(diff_cty),
-                     ".\n"))
+      cli::cli_alert_info("inventory has changed for {.file {diff_cty}}",
+                          wrap = TRUE)
     }
 
     # make sure directory exists
