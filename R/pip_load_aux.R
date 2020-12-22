@@ -11,6 +11,9 @@
 #' a positive number, it must be quoted and in the form "%Y%m%d%H%M%S".
 #' @param file_to_load character: file path to load. Does not work with any other
 #' argument
+#' @param apply_label logical: if TRUE, predefined labels will apply to data
+#' loaded using `file_to_load` argument. Default TRUE. Tip: change to FALSE if
+#' the main strcuture of data has changed and labels have not been updated
 #'
 #' @return
 #' @export
@@ -40,7 +43,8 @@ pip_load_aux <- function(measure     = NULL,
                                               "_aux/",
                                               measure, "/"),
                          version      = NULL,
-                         file_to_load = NULL) {
+                         file_to_load = NULL,
+                         apply_label  = TRUE) {
 
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -64,7 +68,7 @@ pip_load_aux <- function(measure     = NULL,
 
     measure  <- gsub("(.*/)([a-z]+)_?[0-9]*\\.fst$", "\\2", file_to_load)
     load_msg <- paste("Data loaded from file path")
-    apply_label  <- TRUE
+    apply_label  <- apply_label
 
   } else {
 
