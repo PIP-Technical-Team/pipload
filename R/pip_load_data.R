@@ -178,7 +178,7 @@ pip_load_data <- function(country          = NULL,
           by = survey_id
 
         ][, # Keep one source per data using rule in `keep_source()`
-          filtered := purrr::map(data, ~sf_keep_source(df = .x))
+          filtered := purrr::map(data, ~sf_keep_pc_source(df = .x))
         ]
 
         if (inherits(du2$filtered, "list")) {
@@ -383,6 +383,6 @@ sp <- cli::make_spinner("dots", template = "Loading data {spin}")
 
 
 # make sure function runs fine
-sf_keep_source <- purrr::possibly(pip_keep_pc_source,
+sf_keep_pc_source <- purrr::possibly(pip_keep_pc_source,
                                   otherwise = NULL)
 
