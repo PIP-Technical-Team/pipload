@@ -15,37 +15,37 @@
 #'
 #' @examples
 #' # ONe year and one country
-#' pip_load_data(country = "PRY",
+#' df <- pip_load_data(country = "PRY",
 #'               year    = 2017)
 #'
 #' # specific years for one country
-#' pip_load_data(
+#' df <- pip_load_data(
 #'             country = "COL",
 #'             year = c(2010, 2012)
 #' )
 #'
 #' # country FHF does not exist so it will be part of `fail` output (No error)
-#' pip_load_data(
+#' df <- pip_load_data(
 #'        country = c("ARG", "FHF"),
 #'        year = 2010
 #' )
 #'
 #' # Load a different module (e.g., GPWG)
-#' pip_load_data(country = "PRY",
+#' df <- pip_load_data(country = "PRY",
 #'              year = 2010,
 #'              module = "PC-GPWG")
 #'
 #' # Load different sources
-#' pip_load_data(country = "COL",
+#' df <- pip_load_data(country = "COL",
 #'              source = "HIST")
 #'
 #' # Load using Survey ID
-#' pip_load_data(survey_id = c("HND_2017_EPHPM_V01_M_V01_A_PIP_PC-GPWG",
+#' df <- pip_load_data(survey_id = c("HND_2017_EPHPM_V01_M_V01_A_PIP_PC-GPWG",
 #'                             "HND_2018_EPHPM_V01_M_V01_A_PIP_PC-GPWG")
 #'                             )
 #' # Use condition argument
-#' pip_find_data(condition = "country_code %chin% c('PRY', 'KGZ') &
-#'                             year >= 2012 & year < 2014")
+#' df <- pip_find_data(condition = "country_code %chin% c('PRY', 'KGZ') &
+#'                     (surveyid_year >= 2012 & surveyid_year < 2014)")
 #'
 #' \dontrun{
 #' # more than two years for more than one country (only firt year will be used)

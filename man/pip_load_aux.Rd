@@ -5,9 +5,11 @@
 \title{Load any auxiliary data}
 \usage{
 pip_load_aux(
-  measure,
+  measure = NULL,
   msrdir = paste0(getOption("pip.maindir"), "_aux/", measure, "/"),
-  version = NULL
+  version = NULL,
+  file_to_load = NULL,
+  apply_label = TRUE
 )
 }
 \arguments{
@@ -22,6 +24,13 @@ select the vintage of \code{measure}. if the integer is a negative number
 most recent version available. So, if \code{-1} it will load the version before the
 current, \code{-2} loads two versions before the current one, and so on. If it is
 a positive number, it must be quoted and in the form "\%Y\%m\%d\%H\%M\%S".}
+
+\item{file_to_load}{character: file path to load. Does not work with any other
+argument}
+
+\item{apply_label}{logical: if TRUE, predefined labels will apply to data
+loaded using \code{file_to_load} argument. Default TRUE. Tip: change to FALSE if
+the main strcuture of data has changed and labels have not been updated}
 }
 \value{
 
