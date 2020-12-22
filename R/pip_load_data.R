@@ -2,10 +2,10 @@
 #'
 #' @inheritParams pip_find_data
 #' @param type character: Either `dataframe` or `list`. Defaults is `dataframe`.
-#' @param survey_id character: Vector with survey IDs like
-#' 'HND_2017_EPHPM_V01_M_V01_A_PIP_PC-GPWG'
 #' @param noisy logical: if FALSE, no loading messages will be displayed.
 #' Default is TRUE.
+#' @param survey_id character: Vector with survey IDs like
+#' 'HND_2017_EPHPM_V01_M_V01_A_PIP_PC-GPWG'
 #'
 #' @return
 #' @export
@@ -69,7 +69,11 @@ pip_load_data <- function(country          = NULL,
                           condition        = NULL,
                           type             = "dataframe",
                           maindir          = getOption("pip.maindir"),
-                          noisy            = TRUE
+                          noisy            = TRUE,
+                          inv_file         = paste0(maindir,
+                                                  "_inventory/inventory.fst"),
+                          filter_to_pc = FALSE,
+                          filter_to_tm = FALSE
                           ) {
 
 
@@ -104,7 +108,10 @@ pip_load_data <- function(country          = NULL,
                         tool             = tool          ,
                         source           = source        ,
                         condition        = condition     ,
-                        maindir          = maindir)
+                        maindir          = maindir       ,
+                        inv_file         = inv_file      ,
+                        filter_to_pc     = filter_to_pc,
+                        filter_to_tm     = filter_to_tm)
 
     #--------- Filter most recent version ---------
 
@@ -119,93 +126,7 @@ pip_load_data <- function(country          = NULL,
         alt_tool <- tool
         df <- df[tool == (alt_tool)]
       }
-    }
-
-    # master version
-    if (is.null(vermast)) {
-      df[,
-         maxmast := vermast == max(vermast),
-         by = .(country_code, surveyid_year, survey_acronym, module)
-      ][
-        maxmast == 1
-      ][,
-        maxmast := NULL
-      ]
-    }
-
-    # Alternative version
-    if (is.null(veralt)) {
-      df[,
-         maxalt := veralt == max(veralt),
-         by = .(country_code, surveyid_year, survey_acronym, module)
-          ][
-            maxalt == 1
-          ][,
-            maxalt := NULL
-          ]
-    }
-
-    # Select right module (source) if more than one available
-    if (is.null(source) && toupper(tool) == "PC") {
-      # Create grouping variable
-      df[,
-         survey_id := paste(country_code, surveyid_year, survey_acronym, vermast, veralt,
-                            sep = "_")
-      ]
-
-      du <- df[, # get unique source by ID
-               .(source = unique(source)),
-               by = survey_id
-                ][, # count sources by ID
-                  n_source := .N,
-                  by = survey_id
-                ]
-
-      #--------- Only if there are more than one source in at least one ID ---------
-      if (du[, max(n_source)] > 1) {
-
-      # those with only one source
-        du1 <- du[n_source == 1
-                  ][,
-                    n_source := NULL
-                  ]
-
-        # treatment for those with more than one source
-        du2 <- du[n_source > 1
-        ][, # nest data by Survey ID. one dataframe for each ID with
-          # several sources.
-          .(data = .nest(source)),
-          by = survey_id
-
-        ][, # Keep one source per data using rule in `keep_source()`
-          filtered := purrr::map(data, ~sf_keep_pc_source(df = .x))
-        ]
-
-        if (inherits(du2$filtered, "list")) {
-
-          du2 <- du2[, # Unnest data again so we get one source per ID
-                     .(source = .unnest(filtered)),
-                     by = survey_id
-          ]
-        } else {
-          du2[,
-              source := filtered
-          ][,
-            c("data", "filtered") := NULL
-          ]
-        }
-
-        # Append both sources in one
-        dun <- data.table::rbindlist(list(du1, du2),
-                                     use.names = TRUE,
-                                     fill      = TRUE)
-
-        # Filter df with only the value in dun
-        df <- df[dun,
-                 on = .(survey_id,source)]
-      }
-    } # end of source == NULL
-
+    } # end of confliciting arguments
   } # end of creation of df with survey names and IDs
 
 
@@ -380,9 +301,4 @@ data_to_df <- function(x, y, noisy) {
 # Make spinner
 
 sp <- cli::make_spinner("dots", template = "Loading data {spin}")
-
-
-# make sure function runs fine
-sf_keep_pc_source <- purrr::possibly(pip_keep_pc_source,
-                                  otherwise = NULL)
 
