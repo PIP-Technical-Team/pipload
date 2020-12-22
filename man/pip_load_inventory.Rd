@@ -2,21 +2,22 @@
 % Please edit documentation in R/pip_load_inventory.R
 \name{pip_load_inventory}
 \alias{pip_load_inventory}
-\title{Title}
+\title{Load inventory of welfare aggregate datasets}
 \usage{
 pip_load_inventory(
-  inv_file = paste0(getOption("pip.maindir"), "_inventory/inventory.fst"),
-  inventory_version = NULL
+  maindir = getOption("pip.maindir"),
+  inv_file = paste0(maindir, "_inventory/inventory.fst")
 )
 }
 \arguments{
-\item{inv_file}{character: file path to be loaded.}
+\item{maindir}{character: main directory. By default it
+uses \code{getOption("pip.maindir")}}
 
-\item{inventory_version}{date: date of inventory version to load}
+\item{inv_file}{character: file path to be loaded.}
 }
 \value{
 
 }
 \description{
-Title
+Load inventory of welfare aggregate datasets
 }
