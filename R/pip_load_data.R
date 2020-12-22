@@ -381,40 +381,8 @@ data_to_df <- function(x, y, noisy) {
 
 sp <- cli::make_spinner("dots", template = "Loading data {spin}")
 
-#--------- Keep source data ---------
-
-#' Make sure we keep only one module per survey ID when loading.
-#'
-#' @param df dataframe
-#'
-#' @return dataframe
-keep_source <- function(df){
-
-  source_order <- c("GPWG", "HIST", "BIN", "GROUP", "synth")
-  source_avail <- df[, unique(source)]
-
-  out         <- FALSE
-  i           <- 0
-  maxi        <- length(source_order)
-  source_keep <- NULL
-  while(out == FALSE && i <= maxi) {
-
-    i <- i + 1
-    if (source_order[i] %in% source_avail) {
-      source_keep <- source_order[i]
-      out         <- TRUE
-    }
-
-  }
-
-  if (!is.null(source_keep)) {
-    df <- df[source == (source_keep)]
-  }
-  return(df)
-}
-
 
 # make sure function runs fine
-sf_keep_source <- purrr::possibly(keep_source,
+sf_keep_source <- purrr::possibly(pip_keep_pc_source,
                                   otherwise = NULL)
 
