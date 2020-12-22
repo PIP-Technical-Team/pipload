@@ -17,7 +17,10 @@ pip_load_data(
   condition = NULL,
   type = "dataframe",
   maindir = getOption("pip.maindir"),
-  noisy = TRUE
+  noisy = TRUE,
+  inv_file = paste0(maindir, "_inventory/inventory.fst"),
+  filter_to_pc = FALSE,
+  filter_to_tm = FALSE
 )
 }
 \arguments{
@@ -56,6 +59,14 @@ Can't be used with arguments \code{country}, \code{year},
 
 \item{noisy}{logical: if FALSE, no loading messages will be displayed.
 Default is TRUE.}
+
+\item{inv_file}{character: file path to be loaded.}
+
+\item{filter_to_pc}{logical: If TRUE filter most recent data to be included
+in the Poverty Calculator. Default if FALSE}
+
+\item{filter_to_tm}{logical: If TRUE filter most recent data to be included
+in the Table Maker. Default if FALSE}
 }
 \value{
 

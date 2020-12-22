@@ -15,7 +15,10 @@ pip_find_data(
   tool = NULL,
   condition = NULL,
   source = NULL,
-  maindir = getOption("pip.maindir")
+  maindir = getOption("pip.maindir"),
+  inv_file = paste0(maindir, "_inventory/inventory.fst"),
+  filter_to_pc = FALSE,
+  filter_to_tm = FALSE
 )
 }
 \arguments{
@@ -46,6 +49,14 @@ Can't be used with arguments \code{country}, \code{year},
 \code{synth}, \code{BIN}, and \code{ALL}. The latter is used only in Table Maker.}
 
 \item{maindir}{character: Main directory}
+
+\item{inv_file}{character: file path to be loaded.}
+
+\item{filter_to_pc}{logical: If TRUE filter most recent data to be included
+in the Poverty Calculator. Default if FALSE}
+
+\item{filter_to_tm}{logical: If TRUE filter most recent data to be included
+in the Table Maker. Default if FALSE}
 }
 \value{
 data.frame: list of filenames to be loaded with pcn_load()
