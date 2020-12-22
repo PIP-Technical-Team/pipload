@@ -117,7 +117,7 @@ pip_find_data <- function(country         = NULL,
   #----------------------------------------------------------
 
   if (!is.null(condition)) { # if condition is used
-    condit <- condi
+    condit <- condition
     condi  <- parse(text = condition)
 
   } else { # if condition is not used
