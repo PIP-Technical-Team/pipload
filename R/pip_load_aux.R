@@ -228,6 +228,7 @@ pip_load_aux <- function(measure     = NULL,
   } else {
     cli::cli_alert_info("Labels not applied to versioning data")
   }
+  data.table::setDT(df)
   return(df)
 }
 
