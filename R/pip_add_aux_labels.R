@@ -12,10 +12,10 @@ pip_add_aux_labels <- function(x, measure) {
   if (measure == "cpi") {
 
     # Label variables
-    attr(x$reference_year, "label") <- "Proportion of first year of survey"
+    #attr(x$survey_year, "label") <- "Proportion of first year of survey"
     attr(x$cpi_domain,     "label") <- "CPI domain to join with microdata"
     attr(x$cpi_data_level, "label") <- "Values to use as keys to join with cpi_domain_var"
-    attr(x$surveyid_year,  "label") <- "Year of survey ID"
+    #attr(x$cpi_year,  "label") <- "Year of survey ID"
     attr(x$ccf,            "label") <- "Currency conversion factor"
     attr(x$cpi,            "label") <- "Consumer Price Index (Based on 2011)."
 
@@ -37,14 +37,14 @@ pip_add_aux_labels <- function(x, measure) {
   } else if (measure == "maddison") {
 
     # Label Variables
-      attr(x$country_name, "label")  <- "Country name"
-      attr(x$country_code, "label")  <- "Country code"
-      attr(x$year,         "label")  <- "Year"
-      attr(x$cgdppc,       "label")  <- "Real GDP per capita in 2011US$, multiple benchmarks"
-      attr(x$mpd_gdp,      "label")  <- "GDP per capita in 2011US$, 2011 benchmark (Maddison)"
-      attr(x$pop,          "label")  <- "Population, mid-year (thousands)"
-      attr(x$i_cig,        "label")  <- "0/1/2: observation is extrapolated (0), benchmark (1), or interpolated (2)"
-      attr(x$i_bm,         "label")  <- "1-5: type of benchmark estimate, see note i_bm"
+    #attr(x$country_name, "label")  <- "Country name"
+    attr(x$country_code, "label")  <- "Country code"
+    attr(x$year,         "label")  <- "Year"
+    #attr(x$cgdppc,       "label")  <- "Real GDP per capita in 2011US$, multiple benchmarks"
+    attr(x$mpd_gdp,      "label")  <- "GDP per capita in 2011US$, 2011 benchmark (Maddison)"
+    # attr(x$pop,          "label")  <- "Population, mid-year (thousands)"
+    #attr(x$i_cig,        "label")  <- "0/1/2: observation is extrapolated (0), benchmark (1), or interpolated (2)"
+    #attr(x$i_bm,         "label")  <- "1-5: type of benchmark estimate, see note i_bm"
 
   } else if (measure == "gdp") {
     # Label Variables
