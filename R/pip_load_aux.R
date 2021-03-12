@@ -29,9 +29,9 @@
 #' gdp <- pip_load_aux("gdp")
 #'
 #' measure <- "cpi"
-#' df      <- pip_load_aux(measure, version = "available")
-#' head(df)
-#' df      <- pip_load_aux(measure, version = "20200807101548")
+#' av      <- pip_load_aux(measure, version = "available")
+#' head(av)
+#' df      <- pip_load_aux(measure, version = av[1])
 #' head(df)
 #' df      <- pip_load_aux(measure, version = -1)
 #' head(df)
