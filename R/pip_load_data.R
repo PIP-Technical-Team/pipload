@@ -86,7 +86,7 @@ pip_load_data <- function(country          = NULL,
     #--------- Get full path ---------
     # Raw inventory
     ri <- pip_load_inventory(maindir = maindir)
-    setDT(ri)
+
     ri[,
        survey_id := gsub("\\.dta", "", filename)]
 
@@ -260,7 +260,7 @@ data_to_df <- function(x, y, noisy) {
 
   y  <- gsub("\\.dta", "", y)
   df$survey_id <- y
-  setDT(df)
+  data.table::setDT(df)
 
   # create variables for merging
   cnames <-

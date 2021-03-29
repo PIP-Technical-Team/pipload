@@ -108,8 +108,8 @@ pip_update_inventory <- function(country = NULL,
   if (file.exists(ds_inventory_path)) {
 
     # read data signature in production
-    ds_inventory_production <- fst::read_fst(ds_inventory_path)
-    setDT(ds_inventory_production)
+    ds_inventory_production <- fst::read_fst(ds_inventory_path,
+                                             as.data.table = TRUE)
 
   } else { # if ds files does not exist
     cli::cli_alert_info("Data signature of inventory was not found")
@@ -119,7 +119,8 @@ pip_update_inventory <- function(country = NULL,
       cli::cli_alert("Creating data signature from current
                      {.file inventory.fst} file", wrap = TRUE)
 
-      df                   <- fst::read_fst(inv_file)
+      df                   <- fst::read_fst(inv_file,
+                                            as.data.table = TRUE)
       inventory_production <- df[, "orig"]
       avaiable_countries   <- unique(df$country_code)
 
@@ -237,8 +238,8 @@ pip_update_inventory <- function(country = NULL,
 
     # Remove all data
     if (file.exists(inv_file)) {
-      df <- fst::read_fst(inv_file)
-      setDT(df)
+      df <- fst::read_fst(inv_file,
+                          as.data.table = TRUE)
 
       df <- df[!(country_code %chin% diff_cty)]
       dt <- rbindlist(list(dt, df),
@@ -272,8 +273,8 @@ pip_update_inventory <- function(country = NULL,
       # read data signature in production, remove old signatures from
       # both dataframes and append
 
-      dsp <- fst::read_fst(ds_inventory_path)
-      setDT(dsp)
+      dsp <- fst::read_fst(ds_inventory_path,
+                           as.data.table = TRUE)
 
       dsp          <- dsp[!(country_code %chin% diff_cty)]
       ds_inventory <- ds_inventory[country_code %chin% diff_cty]
