@@ -210,7 +210,8 @@ pip_load_aux <- function(measure     = NULL,
 
   # check file exists
   if (file.exists(file_to_load)) {
-    df <- fst::read_fst(file_to_load)
+    df <- fst::read_fst(file_to_load,
+                        as.data.table = TRUE)
     cli::cli_alert_success("{load_msg}\n{.file {file_to_load}}")
 
   } else {
@@ -228,7 +229,6 @@ pip_load_aux <- function(measure     = NULL,
   } else {
     cli::cli_alert_info("Labels not applied to versioning data")
   }
-  data.table::setDT(df)
   return(df)
 }
 

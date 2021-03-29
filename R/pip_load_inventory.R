@@ -16,8 +16,8 @@ pip_load_inventory <- function(maindir = getOption("pip.maindir"),
   #--------- Load Data ---------
 
   if (file.exists(inv_file)) {
-    df       <- fst::read_fst(inv_file)
-    setDT(df)
+    df       <- fst::read_fst(inv_file,
+                              as.data.table = TRUE)
     return(df)
 
   } else {

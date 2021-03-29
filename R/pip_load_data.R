@@ -20,7 +20,7 @@
 #'
 #' # specific years for one country
 #' df <- pip_load_data(
-#'             country = "COL",
+#'             country = "PRY",
 #'             year = c(2010, 2012)
 #' )
 #'
@@ -40,8 +40,8 @@
 #'              source = "HIST")
 #'
 #' # Load using Survey ID
-#' df <- pip_load_data(survey_id = c("HND_2017_EPHPM_V01_M_V01_A_PIP_PC-GPWG",
-#'                             "HND_2018_EPHPM_V01_M_V01_A_PIP_PC-GPWG")
+#' df <- pip_load_data(survey_id = c("HND_2017_EPHPM_V01_M_V02_A_PIP_PC-GPWG",
+#'                             "HND_2018_EPHPM_V01_M_V02_A_PIP_PC-GPWG")
 #'                             )
 #' # Use condition argument
 #' df <- pip_find_data(condition = "country_code %chin% c('PRY', 'KGZ') &
@@ -50,7 +50,7 @@
 #' \dontrun{
 #' # more than two years for more than one country (only firt year will be used)
 #' pip_load_data(
-#'        country = c("COL", "ARG"),
+#'        country = c("PRY", "ARG"),
 #'        year = c(2010, 2012)
 #' )
 #'
@@ -86,7 +86,7 @@ pip_load_data <- function(country          = NULL,
     #--------- Get full path ---------
     # Raw inventory
     ri <- pip_load_inventory(maindir = maindir)
-    setDT(ri)
+
     ri[,
        survey_id := gsub("\\.dta", "", filename)]
 
@@ -260,7 +260,7 @@ data_to_df <- function(x, y, noisy) {
 
   y  <- gsub("\\.dta", "", y)
   df$survey_id <- y
-  setDT(df)
+  data.table::setDT(df)
 
   # create variables for merging
   cnames <-
