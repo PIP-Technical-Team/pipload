@@ -3,12 +3,12 @@
 #' @inheritParams pip_find_data
 #' @inheritParams pip_load_data
 #'
-#' @param source
-#' @param welfare_type
-#' @param data_level
-#' @param cache_id
-#' @param pipedir
-#' @param verbose
+#' @param welfare_type character: Either "CON" for consumption or "INC" for income
+#' @param data_level character: either "D1" for national, "D2" for urban/rural,
+#'  "D3" for subnational
+#' @param cache_id character: If user knows the precise cache ID
+#' @param pipedir charater: directory of pipeline. Default is `getOption("pip.pipedir")`
+#' @param verbose logical: If TRUE, display informative messages. Default TRUE
 #'
 #' @return
 #' @export
@@ -57,11 +57,6 @@ pip_load_cache <- function(country          = NULL,
     cli::cli_alert("There is no cache files yet for table maker. Return NULL")
     return(NULL)
   }
-
-
-
-
-
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   #---------   If Cache_id is selected   ---------

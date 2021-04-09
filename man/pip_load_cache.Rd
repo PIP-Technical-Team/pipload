@@ -29,11 +29,18 @@ pip_load_cache(
 
 \item{survey_acronym}{character: Survey acronym}
 
+\item{data_level}{character: either "D1" for national, "D2" for urban/rural,
+"D3" for subnational}
+
+\item{welfare_type}{character: Either "CON" for consumption or "INC" for income}
+
 \item{source}{character: Source of data. It could be \code{GPWG}, \code{HIST}, \code{GROUP},
 \code{synth}, \code{BIN}, and \code{ALL}. The latter is used only in Table Maker.}
 
 \item{tool}{character: PIP tool in which data will be used. It could be
 \code{PC} for Poverty Calculator or \code{TB} for Table Maker. Others will be added}
+
+\item{cache_id}{character: If user knows the precise cache ID}
 
 \item{condition}{character: logical condition that applies to all surveys.
 For example, "year > 2012". Make sure the condition uses the names of the
@@ -44,7 +51,9 @@ Can't be used with arguments \code{country}, \code{year},
 
 \item{type}{character: Either \code{dataframe} or \code{list}. Defaults is \code{dataframe}.}
 
-\item{verbose}{}
+\item{pipedir}{charater: directory of pipeline. Default is \code{getOption("pip.pipedir")}}
+
+\item{verbose}{logical: If TRUE, display informative messages. Default TRUE}
 
 \item{inv_file}{character: file path to be loaded.}
 
