@@ -23,7 +23,7 @@ pip_load_cache <- function(country          = NULL,
                            tool             = c("PC", "TM"),
                            cache_id         = NULL,
                            condition        = NULL,
-                           type             = "dataframe",
+                           type             = c("dataframe", "list"),
                            pipedir          = getOption("pip.pipedir"),
                            verbose          = TRUE,
                            inv_file         = paste0(maindir,
@@ -37,6 +37,7 @@ pip_load_cache <- function(country          = NULL,
 
   # right arguments
   tool <- match.arg(tool)
+  type <- match.arg(type)
   if (!is.null(welfare_type)) {
     wt_ok <- any(toupper(welfare_type) %in% c("CON", "INC"))
 
@@ -145,6 +146,43 @@ pip_load_cache <- function(country          = NULL,
 
   }
   ) # end of tryCatch
+  #--------- data with problems ---------
+  dt_errors = dt %>%
+    purrr::keep(~is.null(.x) ) %>%
+    names()
+
+  if (length(dt_errors) > 0) {
+    cli::cli_alert_warning("{length(dt_errors)} survey{?s} could not be loaded")
+    cli::cli_ul(dt_errors)
+  }
+
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  # convert depending on type   ---------
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  if (type == "dataframe") {
+    #--------- getting rid of errors and create dataframe ---------
+    dt <- purrr::compact(dt)
+
+    # create data frame. If failed, list is returned.
+    dt <- tryCatch(
+      expr = {
+        dt <- rbindlist(dt,
+                        fill      = TRUE,
+                        use.names	= TRUE)
+      }, # end of expr section
+
+      error = function(e) {
+        cli::cli_alert_danger("Could not create data frame")
+        cli::cli_alert_danger("{e$message}")
+        cli::cli_alert_info("returning a list instead")
+        dt
+      } # end of finally section
+
+    ) # End of trycatch
+
+  }
 
   return(dt)
 }
