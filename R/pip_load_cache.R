@@ -93,24 +93,23 @@ pip_load_cache <- function(country          = NULL,
                          source           = source,
                          tool             = tool,
                          pipedir          = pipedir)
-
-    ldf <- length(df)
-    if (verbose) {
-      if (ldf == 0) {
-        cli::cli_alert_danger("No table matched the pattern. Return NULL")
-      } else if (ldf > 0 && ldf <= 5) {
-        cli::cli_alert_info("The following {ldf} table{?s} matched the pattern")
-        cli::cli_ul(df)
-      } else {
-        cli::cli_alert_info("More than 5 tables matched the pattern")
-      }
-    } # end of verbose
-
   }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   #                   Load data   ---------
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  ldf <- length(df)
+  if (verbose) {
+    if (ldf == 0) {
+      cli::cli_alert_danger("No table matched the pattern. Return NULL")
+    } else if (ldf > 0 && ldf <= 5) {
+      cli::cli_alert_info("The following {ldf} table{?s} matched the pattern")
+      cli::cli_ul(df)
+    } else {
+      cli::cli_alert_info("More than 5 tables matched the pattern")
+    }
+  } # end of verbose
 
   if (ldf == 0) {
     return(NULL)
