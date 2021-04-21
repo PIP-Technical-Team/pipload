@@ -308,11 +308,30 @@ pip_find_data <- function(country         = NULL,
 
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  #--------- Filter Data to TM ingest   ---------
+  #--------- Filter Data to TB ingest   ---------
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  if (filter_to_pc == TRUE) {
-    df <- df
+  if (filter_to_tb == TRUE) {
+    df <-
+      df[ # keep just the ones used in PC
+        tool == "TB"
+      ][,
+        # Get max master version and filter
+        maxmast := vermast == max(vermast),
+        by = .(country_code, surveyid_year, survey_acronym, module)
+      ][
+        maxmast == 1
+      ][,
+        # Get max veralt version and filter
+        maxalt := veralt == max(veralt),
+        by = .(country_code, surveyid_year, survey_acronym, module)
+      ][,
+        c("maxalt",  "maxmast") := NULL
+      ][,
+        # Create grouping variable
+        survey_id := paste(country_code, surveyid_year, survey_acronym, vermast, veralt,
+                           sep = "_")
+      ]
   }
 
   return(df)
