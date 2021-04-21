@@ -21,7 +21,7 @@
 #' @param maindir character: Main directory
 #' @param filter_to_pc logical: If TRUE filter most recent data to be included
 #' in the Poverty Calculator. Default if FALSE
-#' @param filter_to_tm logical: If TRUE filter most recent data to be included
+#' @param filter_to_tb logical: If TRUE filter most recent data to be included
 #' in the Table Maker. Default if FALSE
 #' @inheritParams pip_load_inventory
 #'
@@ -81,7 +81,7 @@ pip_find_data <- function(country         = NULL,
                          inv_file         = paste0(maindir,
                                            "_inventory/inventory.fst"),
                          filter_to_pc = FALSE,
-                         filter_to_tm = FALSE
+                         filter_to_tb = FALSE
                          ) {
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   #---------   Initial conditions   ---------
@@ -102,10 +102,10 @@ pip_find_data <- function(country         = NULL,
   }
 
   #--------- Filter conditions ---------
-  if (filter_to_pc == TRUE && filter_to_tm == TRUE) {
+  if (filter_to_pc == TRUE && filter_to_tb == TRUE) {
     rlang::abort(c(
       "Syntax error",
-      x = "`filter_to_pc` and `filter_to_tm` can't both be TRUE"
+      x = "`filter_to_pc` and `filter_to_tb` can't both be TRUE"
     ),
     class = "pipload_error"
     )
