@@ -7,7 +7,7 @@
 #' @return
 #' @export
 pip_load_cache_inventory <- function(pipedir = getOption("pip.pipedir"),
-                                     tool    = c("PC", "TM")
+                                     tool    = c("PC", "TB")
                                      ) {
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -20,8 +20,7 @@ pip_load_cache_inventory <- function(pipedir = getOption("pip.pipedir"),
   if (tool == "PC") {
     inv_file <- paste0(pipedir, "pc_data/cache/clean_survey_data/_crr_inventory/crr_inventory.fst")
   } else {
-    cli::cli_alert("There is not cache inventory file yet for table maker. Return NULL")
-    return(NULL)
+    inv_file <- paste0(pipedir, "tb_data/cache/clean_survey_data/_crr_inventory/crr_inventory.fst")
   }
 
   #--------- Load Data ---------
