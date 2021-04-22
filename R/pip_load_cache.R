@@ -20,7 +20,6 @@ pip_load_cache <- function(country          = NULL,
                            data_level       = NULL,
                            welfare_type     = NULL,
                            source           = NULL,
-                           tool             = c("PC", "TB"),
                            cache_id         = NULL,
                            condition        = NULL,
                            type             = c("dataframe", "list"),
@@ -35,8 +34,34 @@ pip_load_cache <- function(country          = NULL,
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   # right arguments
-  tool <- match.arg(tool)
   type <- match.arg(type)
+
+  #tool
+  if (length(tool) > 1) {
+    msg     <- "`tool` must be NULL or either 'TB' or 'PC'; length 1 "
+    rlang::abort(c(msg), class = "error_class")
+  }
+
+  # Correct tool
+
+  if (!is.null(cache_id)) {
+
+    if (all(grepl("ALL$", inv))) {
+
+      tool <- "TB"
+
+    } else if (all(!grepl("ALL$", inv))) {
+
+      tool <- "PC"
+
+    } else {
+      msg     <- "you can't combine cache_id from tool 'PC' with those with tool 'TB'"
+      rlang::abort(c(msg), class = "error_class")
+    }
+
+  }
+
+
   if (!is.null(welfare_type)) {
     wt_ok <- any(toupper(welfare_type) %in% c("CON", "INC"))
 
