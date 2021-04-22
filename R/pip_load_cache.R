@@ -20,16 +20,15 @@ pip_load_cache <- function(country          = NULL,
                            data_level       = NULL,
                            welfare_type     = NULL,
                            source           = NULL,
-                           tool             = c("PC", "TM"),
+                           tool             = c("PC", "TB"),
                            cache_id         = NULL,
                            condition        = NULL,
                            type             = c("dataframe", "list"),
                            pipedir          = getOption("pip.pipedir"),
                            verbose          = TRUE,
                            inv_file         = paste0(maindir,
-                                                     "_inventory/inventory.fst"),
-                           filter_to_pc = FALSE,
-                           filter_to_tm = FALSE) {
+                                                     "_inventory/inventory.fst")
+                           ) {
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   #                   Check parameters   ---------
@@ -55,8 +54,7 @@ pip_load_cache <- function(country          = NULL,
   if (tool == "PC") {
     cache_dir <- paste0(pipedir, "pc_data/cache/clean_survey_data/")
   } else {
-    cli::cli_alert("There is no cache files yet for table maker. Return NULL")
-    return(NULL)
+    cache_dir <- paste0(pipedir, "tb_data/cache/clean_survey_data/")
   }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
