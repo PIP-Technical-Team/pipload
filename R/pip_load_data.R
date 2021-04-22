@@ -73,7 +73,7 @@ pip_load_data <- function(country          = NULL,
                           inv_file         = paste0(maindir,
                                                   "_inventory/inventory.fst"),
                           filter_to_pc = FALSE,
-                          filter_to_tm = FALSE
+                          filter_to_tb = FALSE
                           ) {
 
 
@@ -111,7 +111,7 @@ pip_load_data <- function(country          = NULL,
                         maindir          = maindir       ,
                         inv_file         = inv_file      ,
                         filter_to_pc     = filter_to_pc,
-                        filter_to_tm     = filter_to_tm)
+                        filter_to_tb     = filter_to_tb)
 
     #--------- Filter most recent version ---------
 
