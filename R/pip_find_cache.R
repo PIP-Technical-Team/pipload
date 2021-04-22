@@ -12,7 +12,7 @@ pip_find_cache <- function(country          = NULL,
                            data_level       = NULL,
                            welfare_type     = NULL,
                            source           = NULL,
-                           tool             = c("PC", "TM"),
+                           tool             = c("PC", "TB"),
                            pipedir          = getOption("pip.pipedir")
                            )  {
 
