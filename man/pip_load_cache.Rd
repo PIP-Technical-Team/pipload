@@ -11,15 +11,12 @@ pip_load_cache(
   data_level = NULL,
   welfare_type = NULL,
   source = NULL,
-  tool = c("PC", "TM"),
   cache_id = NULL,
   condition = NULL,
-  type = "dataframe",
+  type = c("dataframe", "list"),
   pipedir = getOption("pip.pipedir"),
   verbose = TRUE,
-  inv_file = paste0(maindir, "_inventory/inventory.fst"),
-  filter_to_pc = FALSE,
-  filter_to_tm = FALSE
+  inv_file = paste0(maindir, "_inventory/inventory.fst")
 )
 }
 \arguments{
@@ -37,9 +34,6 @@ pip_load_cache(
 \item{source}{character: Source of data. It could be \code{GPWG}, \code{HIST}, \code{GROUP},
 \code{synth}, \code{BIN}, and \code{ALL}. The latter is used only in Table Maker.}
 
-\item{tool}{character: PIP tool in which data will be used. It could be
-\code{PC} for Poverty Calculator or \code{TB} for Table Maker. Others will be added}
-
 \item{cache_id}{character: If user knows the precise cache ID}
 
 \item{condition}{character: logical condition that applies to all surveys.
@@ -56,12 +50,6 @@ Can't be used with arguments \code{country}, \code{year},
 \item{verbose}{logical: If TRUE, display informative messages. Default TRUE}
 
 \item{inv_file}{character: file path to be loaded.}
-
-\item{filter_to_pc}{logical: If TRUE filter most recent data to be included
-in the Poverty Calculator. Default if FALSE}
-
-\item{filter_to_tm}{logical: If TRUE filter most recent data to be included
-in the Table Maker. Default if FALSE}
 }
 \value{
 

@@ -6,7 +6,7 @@
 \usage{
 pip_load_cache_inventory(
   pipedir = getOption("pip.pipedir"),
-  tool = c("PC", "TM")
+  tool = c("PC", "TB")
 )
 }
 \arguments{
