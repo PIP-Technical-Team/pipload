@@ -40,16 +40,16 @@ pip_load_cache <- function(country          = NULL,
 
   if (!is.null(cache_id)) {
 
-    if (all(grepl("ALL$", inv))) {
+    if (all(grepl("ALL$", cache_id))) {
 
       tool <- "TB"
 
-    } else if (all(!grepl("ALL$", inv))) {
+    } else if (all(!grepl("ALL$", cache_id))) {
 
       tool <- "PC"
 
     } else {
-      msg     <- "you can't combine cache_id from tool 'PC' with those with tool 'TB'"
+      msg     <- "you can't combine cache_id from tool 'PC' with those of tool 'TB'"
       rlang::abort(c(msg), class = "error_class")
     }
 
