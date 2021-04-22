@@ -36,12 +36,6 @@ pip_load_cache <- function(country          = NULL,
   # right arguments
   type <- match.arg(type)
 
-  #tool
-  if (length(tool) > 1) {
-    msg     <- "`tool` must be NULL or either 'TB' or 'PC'; length 1 "
-    rlang::abort(c(msg), class = "error_class")
-  }
-
   # Correct tool
 
   if (!is.null(cache_id)) {
