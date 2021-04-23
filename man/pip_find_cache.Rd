@@ -30,6 +30,9 @@ pip_find_cache(
 \item{source}{character: Source of data. It could be \code{GPWG}, \code{HIST}, \code{GROUP},
 \code{synth}, \code{BIN}, and \code{ALL}. The latter is used only in Table Maker.}
 
+\item{tool}{character: PIP tool in which data will be used. It could be
+\code{PC} for Poverty Calculator or \code{TB} for Table Maker. Others will be added}
+
 \item{pipedir}{charater: directory of pipeline. Default is \code{getOption("pip.pipedir")}}
 }
 \value{

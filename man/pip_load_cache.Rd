@@ -7,6 +7,7 @@
 pip_load_cache(
   country = NULL,
   year = NULL,
+  tool = c("PC", "TB"),
   survey_acronym = NULL,
   data_level = NULL,
   welfare_type = NULL,
@@ -23,6 +24,9 @@ pip_load_cache(
 \item{country}{character: vector of ISO3 country codes.}
 
 \item{year}{numeric: survey year}
+
+\item{tool}{character: PIP tool in which data will be used. It could be
+\code{PC} for Poverty Calculator or \code{TB} for Table Maker. Others will be added}
 
 \item{survey_acronym}{character: Survey acronym}
 

@@ -16,6 +16,7 @@
 #' @examples
 pip_load_cache <- function(country          = NULL,
                            year             = NULL,
+                           tool             = c("PC", "TB"),
                            survey_acronym   = NULL,
                            data_level       = NULL,
                            welfare_type     = NULL,
