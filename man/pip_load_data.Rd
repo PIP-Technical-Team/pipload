@@ -20,7 +20,7 @@ pip_load_data(
   noisy = TRUE,
   inv_file = paste0(maindir, "_inventory/inventory.fst"),
   filter_to_pc = FALSE,
-  filter_to_tm = FALSE
+  filter_to_tb = FALSE
 )
 }
 \arguments{
@@ -65,7 +65,7 @@ Default is TRUE.}
 \item{filter_to_pc}{logical: If TRUE filter most recent data to be included
 in the Poverty Calculator. Default if FALSE}
 
-\item{filter_to_tm}{logical: If TRUE filter most recent data to be included
+\item{filter_to_tb}{logical: If TRUE filter most recent data to be included
 in the Table Maker. Default if FALSE}
 }
 \value{

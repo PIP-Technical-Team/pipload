@@ -11,7 +11,7 @@ pip_find_cache(
   data_level = NULL,
   welfare_type = NULL,
   source = NULL,
-  tool = c("PC", "TM"),
+  tool = c("PC", "TB"),
   pipedir = getOption("pip.pipedir")
 )
 }

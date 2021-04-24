@@ -16,28 +16,47 @@
 #' @examples
 pip_load_cache <- function(country          = NULL,
                            year             = NULL,
+                           tool             = c("PC", "TB"),
                            survey_acronym   = NULL,
                            data_level       = NULL,
                            welfare_type     = NULL,
                            source           = NULL,
-                           tool             = c("PC", "TM"),
                            cache_id         = NULL,
                            condition        = NULL,
                            type             = c("dataframe", "list"),
                            pipedir          = getOption("pip.pipedir"),
                            verbose          = TRUE,
                            inv_file         = paste0(maindir,
-                                                     "_inventory/inventory.fst"),
-                           filter_to_pc = FALSE,
-                           filter_to_tm = FALSE) {
+                                                     "_inventory/inventory.fst")
+                           ) {
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   #                   Check parameters   ---------
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   # right arguments
-  tool <- match.arg(tool)
   type <- match.arg(type)
+
+  # Correct tool
+
+  if (!is.null(cache_id)) {
+
+    if (all(grepl("ALL$", cache_id))) {
+
+      tool <- "TB"
+
+    } else if (all(!grepl("ALL$", cache_id))) {
+
+      tool <- "PC"
+
+    } else {
+      msg     <- "you can't combine cache_id from tool 'PC' with those of tool 'TB'"
+      rlang::abort(c(msg), class = "error_class")
+    }
+
+  }
+
+
   if (!is.null(welfare_type)) {
     wt_ok <- any(toupper(welfare_type) %in% c("CON", "INC"))
 
@@ -55,8 +74,7 @@ pip_load_cache <- function(country          = NULL,
   if (tool == "PC") {
     cache_dir <- paste0(pipedir, "pc_data/cache/clean_survey_data/")
   } else {
-    cli::cli_alert("There is no cache files yet for table maker. Return NULL")
-    return(NULL)
+    cache_dir <- paste0(pipedir, "tb_data/cache/clean_survey_data/")
   }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

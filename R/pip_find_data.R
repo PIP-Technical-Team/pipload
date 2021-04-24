@@ -21,7 +21,7 @@
 #' @param maindir character: Main directory
 #' @param filter_to_pc logical: If TRUE filter most recent data to be included
 #' in the Poverty Calculator. Default if FALSE
-#' @param filter_to_tm logical: If TRUE filter most recent data to be included
+#' @param filter_to_tb logical: If TRUE filter most recent data to be included
 #' in the Table Maker. Default if FALSE
 #' @inheritParams pip_load_inventory
 #'
@@ -81,7 +81,7 @@ pip_find_data <- function(country         = NULL,
                          inv_file         = paste0(maindir,
                                            "_inventory/inventory.fst"),
                          filter_to_pc = FALSE,
-                         filter_to_tm = FALSE
+                         filter_to_tb = FALSE
                          ) {
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   #---------   Initial conditions   ---------
@@ -102,10 +102,10 @@ pip_find_data <- function(country         = NULL,
   }
 
   #--------- Filter conditions ---------
-  if (filter_to_pc == TRUE && filter_to_tm == TRUE) {
+  if (filter_to_pc == TRUE && filter_to_tb == TRUE) {
     rlang::abort(c(
       "Syntax error",
-      x = "`filter_to_pc` and `filter_to_tm` can't both be TRUE"
+      x = "`filter_to_pc` and `filter_to_tb` can't both be TRUE"
     ),
     class = "pipload_error"
     )
@@ -308,11 +308,30 @@ pip_find_data <- function(country         = NULL,
 
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  #--------- Filter Data to TM ingest   ---------
+  #--------- Filter Data to TB ingest   ---------
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  if (filter_to_pc == TRUE) {
-    df <- df
+  if (filter_to_tb == TRUE) {
+    df <-
+      df[ # keep just the ones used in PC
+        tool == "TB"
+      ][,
+        # Get max master version and filter
+        maxmast := vermast == max(vermast),
+        by = .(country_code, surveyid_year, survey_acronym, module)
+      ][
+        maxmast == 1
+      ][,
+        # Get max veralt version and filter
+        maxalt := veralt == max(veralt),
+        by = .(country_code, surveyid_year, survey_acronym, module)
+      ][,
+        c("maxalt",  "maxmast") := NULL
+      ][,
+        # Create grouping variable
+        survey_id := paste(country_code, surveyid_year, survey_acronym, vermast, veralt,
+                           sep = "_")
+      ]
   }
 
   return(df)
