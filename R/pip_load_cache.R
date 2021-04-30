@@ -219,6 +219,29 @@ load_chache <- function(x, verbose) {
     sp$spin()
   }
   df <- fst::read_fst(x, as.data.table = TRUE)
+
+  dist_type <- unique(df$distribution_type)
+
+  if (dist_type == 'micro') {
+
+    df <- as_pipmd(df)
+
+  } else if (dist_type == 'group') {
+
+    df <- as_pipgd(df)
+
+  } else if (dist_type == 'aggregate') {
+
+    df <- as_pipgd(df)
+
+  } else if (dist_type == 'imputed') {
+
+    df <- as_pipid(df)
+
+  } else {
+    stop("`dist_type` not valid")
+  }
+
   return(df)
 }
 
