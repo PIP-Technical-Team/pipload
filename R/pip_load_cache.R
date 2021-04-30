@@ -189,6 +189,29 @@ pip_load_cache <- function(country          = NULL,
         dt <- rbindlist(dt,
                         fill      = TRUE,
                         use.names	= TRUE)
+
+        dist_type <- unique(dt$distribution_type)
+
+        if (dist_type == 'micro') {
+
+          dt <- as_pipmd(dt)
+
+        } else if (dist_type == 'group') {
+
+          dt <- as_pipgd(dt)
+
+        } else if (dist_type == 'aggregate') {
+
+          dt <- as_pipgd(dt)
+
+        } else if (dist_type == 'imputed') {
+
+          dt <- as_pipid(dt)
+
+        } else {
+          stop("`dist_type` not valid")
+        }
+
       }, # end of expr section
 
       error = function(e) {
