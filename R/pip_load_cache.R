@@ -36,6 +36,7 @@ pip_load_cache <- function(country          = NULL,
 
   # right arguments
   type <- match.arg(type)
+  tool <- match.arg(tool)
 
   # Correct tool
 
