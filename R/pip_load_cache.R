@@ -36,6 +36,7 @@ pip_load_cache <- function(country          = NULL,
 
   # right arguments
   type <- match.arg(type)
+  tool <- match.arg(tool)
 
   # Correct tool
 
@@ -188,6 +189,29 @@ pip_load_cache <- function(country          = NULL,
         dt <- rbindlist(dt,
                         fill      = TRUE,
                         use.names	= TRUE)
+
+        dist_type <- unique(dt$distribution_type)
+
+        if (dist_type == 'micro') {
+
+          dt <- as_pipmd(dt)
+
+        } else if (dist_type == 'group') {
+
+          dt <- as_pipgd(dt)
+
+        } else if (dist_type == 'aggregate') {
+
+          dt <- as_pipgd(dt)
+
+        } else if (dist_type == 'imputed') {
+
+          dt <- as_pipid(dt)
+
+        } else {
+          stop("`dist_type` not valid")
+        }
+
       }, # end of expr section
 
       error = function(e) {
@@ -218,6 +242,29 @@ load_chache <- function(x, verbose) {
     sp$spin()
   }
   df <- fst::read_fst(x, as.data.table = TRUE)
+
+  dist_type <- unique(df$distribution_type)
+
+  if (dist_type == 'micro') {
+
+    df <- as_pipmd(df)
+
+  } else if (dist_type == 'group') {
+
+    df <- as_pipgd(df)
+
+  } else if (dist_type == 'aggregate') {
+
+    df <- as_pipgd(df)
+
+  } else if (dist_type == 'imputed') {
+
+    df <- as_pipid(df)
+
+  } else {
+    stop("`dist_type` not valid")
+  }
+
   return(df)
 }
 
