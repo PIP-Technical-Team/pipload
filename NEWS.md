@@ -1,3 +1,6 @@
+# pipload (development version)
+* make sure we return `survey_id` properly in `pip_find_data()`
+
 # pipload 0.1.0
 * load data with pip classes
 

@@ -251,7 +251,8 @@ pip_find_data <- function(country         = NULL,
         # Create grouping variable
         survey_id := paste(country_code, surveyid_year, survey_acronym, vermast, veralt,
                            sep = "_")
-      ]
+      ][,
+        survey_id_real := gsub("(.*)(\\.dta$)", "\\1", filename)]
 
     du <- df[, # get unique source by ID
              .(source = unique(source)),
@@ -304,6 +305,11 @@ pip_find_data <- function(country         = NULL,
     # Filter df with only the value in dun
     df <- df[dun,
              on = .(survey_id,source)]
+
+    df[,
+       survey_id := NULL]
+
+  data.table::setnames(df, "survey_id_real", "survey_id")
   }
 
 
@@ -329,8 +335,7 @@ pip_find_data <- function(country         = NULL,
         c("maxalt",  "maxmast") := NULL
       ][,
         # Create grouping variable
-        survey_id := paste(country_code, surveyid_year, survey_acronym, vermast, veralt,
-                           sep = "_")
+         survey_id := gsub("(.*)(\\.dta$)", "\\1", filename)
       ]
   }
 
