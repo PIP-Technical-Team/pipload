@@ -15,7 +15,8 @@ pip_find_data(
   tool = NULL,
   condition = NULL,
   source = NULL,
-  maindir = getOption("pip.maindir"),
+  root_dir = Sys.getenv("PIP_DATA_ROOT_FOLDER"),
+  maindir = pip_create_globals(root_dir)$PIP_DATA_DIR,
   inv_file = paste0(maindir, "_inventory/inventory.fst"),
   filter_to_pc = FALSE,
   filter_to_tb = FALSE

@@ -12,7 +12,8 @@ pip_find_cache(
   welfare_type = NULL,
   source = NULL,
   tool = c("PC", "TB"),
-  pipedir = getOption("pip.pipedir")
+  root_dir = Sys.getenv("PIP_DATA_ROOT_FOLDER"),
+  pipedir = pip_create_globals(root_dir)$PIP_PIPE_DIR
 )
 }
 \arguments{
@@ -32,6 +33,8 @@ pip_find_cache(
 
 \item{tool}{character: PIP tool in which data will be used. It could be
 \code{PC} for Poverty Calculator or \code{TB} for Table Maker. Others will be added}
+
+\item{root_dir}{character: root directory of the PIP data}
 
 \item{pipedir}{charater: directory of pipeline. Default is \code{getOption("pip.pipedir")}}
 }

@@ -24,6 +24,7 @@
 #' @param filter_to_tb logical: If TRUE filter most recent data to be included
 #' in the Table Maker. Default if FALSE
 #' @inheritParams pip_load_inventory
+#' @inheritParams pip_find_cache
 #'
 #' @return data.frame: list of filenames to be loaded with pcn_load()
 #' @import data.table
@@ -77,7 +78,8 @@ pip_find_data <- function(country         = NULL,
                          tool             = NULL,
                          condition        = NULL,
                          source           = NULL,
-                         maindir          = getOption("pip.maindir"),
+                         root_dir         = Sys.getenv("PIP_DATA_ROOT_FOLDER"),
+                         maindir          = pip_create_globals(root_dir)$PIP_DATA_DIR,
                          inv_file         = paste0(maindir,
                                            "_inventory/inventory.fst"),
                          filter_to_pc = FALSE,
