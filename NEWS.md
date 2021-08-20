@@ -1,5 +1,6 @@
 # pipload 0.1.1
 * make sure we return `survey_id` properly in `pip_find_data()`
+* replace directory paths in zzz.R for objects from `pip_create_globals()`
 
 # pipload 0.1.0
 * load data with pip classes
