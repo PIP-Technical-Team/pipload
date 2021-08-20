@@ -5,8 +5,6 @@
 #'
 #' @return
 #' @export
-#'
-#' @examples
 pip_add_aux_labels <- function(x, measure) {
 
   if (measure == "cpi") {

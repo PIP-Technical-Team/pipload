@@ -10,8 +10,12 @@
 #' @import data.table
 #'
 #' @examples
+#' \dontrun{
+#' pip_update_inventory("COL")
+#' }
 pip_update_inventory <- function(country = NULL,
-                                 maindir = getOption("pip.maindir"),
+                                 root_dir          = Sys.getenv("PIP_DATA_ROOT_FOLDER"),
+                                 maindir           = pip_create_globals(root_dir)$PIP_DATA_DIR,
                                  force   = FALSE,
                                  time    = format(Sys.time(), "%Y%m%d%H%M%S"),
                                  user    = Sys.info()[8]
@@ -20,7 +24,8 @@ pip_update_inventory <- function(country = NULL,
   # inventory file to be used everywhere
   inv_file <- paste0(maindir, "_inventory/inventory.fst")
 
-  if (maindir == getOption("pip.maindir") && is.null(country)) {
+  if (maindir == pip_create_globals(Sys.getenv("PIP_DATA_ROOT_FOLDER"))$PIP_DATA_DIR
+      && is.null(country)) {
 
     # display menu if user wants to updated the whole thing
 

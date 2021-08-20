@@ -8,7 +8,11 @@
 #' @import data.table
 #'
 #' @examples
-pip_load_inventory <- function(maindir = getOption("pip.maindir"),
+#' \dontrun{
+#' pip_load_inventory()
+#' }
+pip_load_inventory <- function(root_dir          = Sys.getenv("PIP_DATA_ROOT_FOLDER"),
+                               maindir           = pip_create_globals(root_dir)$PIP_DATA_DIR,
                                inv_file = paste0(maindir,
                                                  "_inventory/inventory.fst")
                                ) {

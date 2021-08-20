@@ -8,7 +8,8 @@ pip_update_inventory}
 pip_inventory(
   action = "load",
   country = NULL,
-  maindir = getOption("pip.maindir"),
+  root_dir = Sys.getenv("PIP_DATA_ROOT_FOLDER"),
+  maindir = pip_create_globals(root_dir)$PIP_DATA_DIR,
   force = FALSE,
   inventory_version = NULL
 )
@@ -19,7 +20,7 @@ pip_inventory(
 \item{country}{character: vector with ISO3 country code to update}
 
 \item{maindir}{character: main directory. By default it
-uses \code{getOption("pip.maindir")}}
+uses \code{pip_create_globals(root_dir)$PIP_DATA_DIR}}
 
 \item{force}{logical: If TRUE, forced update implemented}
 
@@ -31,4 +32,9 @@ uses \code{getOption("pip.maindir")}}
 \description{
 Load or Update PIP microdata inventory. Wrapper of function pip_load_inventory and
 pip_update_inventory
+}
+\examples{
+\dontrun{
+pip_inventory("load")
+}
 }

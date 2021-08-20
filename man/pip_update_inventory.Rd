@@ -6,7 +6,8 @@
 \usage{
 pip_update_inventory(
   country = NULL,
-  maindir = getOption("pip.maindir"),
+  root_dir = Sys.getenv("PIP_DATA_ROOT_FOLDER"),
+  maindir = pip_create_globals(root_dir)$PIP_DATA_DIR,
   force = FALSE,
   time = format(Sys.time(), "\%Y\%m\%d\%H\%M\%S"),
   user = Sys.info()[8]
@@ -16,7 +17,7 @@ pip_update_inventory(
 \item{country}{character: vector with ISO3 country code to update}
 
 \item{maindir}{character: main directory. By default it
-uses \code{getOption("pip.maindir")}}
+uses \code{pip_create_globals(root_dir)$PIP_DATA_DIR}}
 
 \item{force}{logical: If TRUE, forced update implemented}
 
@@ -30,4 +31,9 @@ is \code{format(Sys.time(), "\%Y\%m\%d\%H\%M\%S")}}
 }
 \description{
 Update PIP microdata inventory
+}
+\examples{
+\dontrun{
+pip_update_inventory("COL")
+}
 }

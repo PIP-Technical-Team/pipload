@@ -24,6 +24,7 @@
 #' @param filter_to_tb logical: If TRUE filter most recent data to be included
 #' in the Table Maker. Default if FALSE
 #' @inheritParams pip_load_inventory
+#' @inheritParams pip_find_cache
 #'
 #' @return data.frame: list of filenames to be loaded with pcn_load()
 #' @import data.table
@@ -67,7 +68,6 @@
 #' # all countries and years
 #' pip_find_data()
 #' }
-
 pip_find_data <- function(country         = NULL,
                          year             = NULL,
                          survey_acronym   = NULL,
@@ -77,7 +77,8 @@ pip_find_data <- function(country         = NULL,
                          tool             = NULL,
                          condition        = NULL,
                          source           = NULL,
-                         maindir          = getOption("pip.maindir"),
+                         root_dir         = Sys.getenv("PIP_DATA_ROOT_FOLDER"),
+                         maindir          = pip_create_globals(root_dir)$PIP_DATA_DIR,
                          inv_file         = paste0(maindir,
                                            "_inventory/inventory.fst"),
                          filter_to_pc = FALSE,
@@ -350,8 +351,6 @@ pip_find_data <- function(country         = NULL,
 #' @param x argument parsed through `pip_find_data`
 #'
 #' @return character
-#'
-#' @examples
 create_cond <- function(x) {
   cd <- paste0("& toupper(", x, ") %chin% (alt_", x, ")")
   return(cd)
@@ -363,11 +362,8 @@ create_cond <- function(x) {
 #' @param df dataframe from `pip_load_inventory()`
 #'
 #' @return
-#' @export
 #'
 #' @import data.table
-#'
-#' @examples
 pip_keep_pc_source <- function(df){
 
   source_order <- c("GPWG", "HIST", "BIN", "GROUP", "synth")

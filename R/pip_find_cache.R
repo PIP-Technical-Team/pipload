@@ -1,11 +1,15 @@
 #' Find cache data based on patterns
 #'
 #' @inheritParams pip_load_cache
+#' @inheritParams pip_create_globals
 #'
 #' @return
 #' @export
 #'
 #' @examples
+#' \dontrun{
+#' pip_find_cache()
+#' }
 pip_find_cache <- function(country          = NULL,
                            year             = NULL,
                            survey_acronym   = NULL,
@@ -13,7 +17,8 @@ pip_find_cache <- function(country          = NULL,
                            welfare_type     = NULL,
                            source           = NULL,
                            tool             = c("PC", "TB"),
-                           pipedir          = getOption("pip.pipedir")
+                           root_dir         = Sys.getenv("PIP_DATA_ROOT_FOLDER"),
+                           pipedir          = pip_create_globals(root_dir)$PIP_PIPE_DIR
                            )  {
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -22,6 +27,7 @@ pip_find_cache <- function(country          = NULL,
 
   # right arguments
   tool <- match.arg(tool)
+
   if (!is.null(welfare_type)) {
     wt_ok <- any(toupper(welfare_type) %in% c("CON", "INC"))
 
