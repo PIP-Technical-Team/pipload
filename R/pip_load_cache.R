@@ -25,9 +25,7 @@ pip_load_cache <- function(country          = NULL,
                            condition        = NULL,
                            type             = c("dataframe", "list"),
                            pipedir          = getOption("pip.pipedir"),
-                           verbose          = TRUE,
-                           inv_file         = paste0(maindir,
-                                                     "_inventory/inventory.fst")
+                           verbose          = TRUE
                            ) {
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
