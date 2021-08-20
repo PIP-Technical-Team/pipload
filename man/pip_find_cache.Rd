@@ -26,7 +26,8 @@ pip_find_cache(
 \item{data_level}{character: either "D1" for national, "D2" for urban/rural,
 "D3" for subnational}
 
-\item{welfare_type}{character: Either "CON" for consumption or "INC" for income}
+\item{welfare_type}{character: Either "CON" for consumption or "INC" for
+income}
 
 \item{source}{character: Source of data. It could be \code{GPWG}, \code{HIST}, \code{GROUP},
 \code{synth}, \code{BIN}, and \code{ALL}. The latter is used only in Table Maker.}
@@ -36,11 +37,17 @@ pip_find_cache(
 
 \item{root_dir}{character: root directory of the PIP data}
 
-\item{pipedir}{charater: directory of pipeline. Default is \code{getOption("pip.pipedir")}}
+\item{pipedir}{charater: directory of pipeline. Default is
+\code{pip_create_globals(root_dir)$PIP_PIPE_DIR}}
 }
 \value{
 
 }
 \description{
 Find cache data based on patterns
+}
+\examples{
+\dontrun{
+pip_find_cache()
+}
 }

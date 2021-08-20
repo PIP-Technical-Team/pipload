@@ -68,7 +68,6 @@
 #' # all countries and years
 #' pip_find_data()
 #' }
-
 pip_find_data <- function(country         = NULL,
                          year             = NULL,
                          survey_acronym   = NULL,
@@ -352,8 +351,6 @@ pip_find_data <- function(country         = NULL,
 #' @param x argument parsed through `pip_find_data`
 #'
 #' @return character
-#'
-#' @examples
 create_cond <- function(x) {
   cd <- paste0("& toupper(", x, ") %chin% (alt_", x, ")")
   return(cd)
@@ -365,11 +362,8 @@ create_cond <- function(x) {
 #' @param df dataframe from `pip_load_inventory()`
 #'
 #' @return
-#' @export
 #'
 #' @import data.table
-#'
-#' @examples
 pip_keep_pc_source <- function(df){
 
   source_order <- c("GPWG", "HIST", "BIN", "GROUP", "synth")

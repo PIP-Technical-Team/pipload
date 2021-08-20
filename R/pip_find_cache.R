@@ -7,6 +7,9 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
+#' pip_find_cache()
+#' }
 pip_find_cache <- function(country          = NULL,
                            year             = NULL,
                            survey_acronym   = NULL,

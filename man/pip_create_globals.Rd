@@ -15,3 +15,8 @@ pip_create_globals(root_dir = Sys.getenv("PIP_DATA_ROOT_FOLDER"))
 \description{
 Create global variables for PIP data management
 }
+\examples{
+\dontrun{
+pip_create_globals()
+}
+}

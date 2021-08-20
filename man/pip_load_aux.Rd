@@ -6,7 +6,9 @@
 \usage{
 pip_load_aux(
   measure = NULL,
-  msrdir = paste0(getOption("pip.maindir"), "_aux/", measure, "/"),
+  root_dir = Sys.getenv("PIP_DATA_ROOT_FOLDER"),
+  maindir = pip_create_globals(root_dir)$PIP_DATA_DIR,
+  msrdir = paste0(maindir, "_aux/", measure, "/"),
   version = NULL,
   file_to_load = NULL,
   apply_label = TRUE
@@ -14,6 +16,8 @@ pip_load_aux(
 }
 \arguments{
 \item{measure}{character: Measure to be used. e.g., "cpi" or "ppp".}
+
+\item{root_dir}{character: root directory of the PIP data}
 
 \item{msrdir}{character: measure (CPI) directory. created on \code{pip_prices()}.}
 

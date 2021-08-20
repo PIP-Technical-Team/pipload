@@ -5,13 +5,14 @@
 \title{Load inventory of welfare aggregate datasets}
 \usage{
 pip_load_inventory(
-  maindir = getOption("pip.maindir"),
+  root_dir = Sys.getenv("PIP_DATA_ROOT_FOLDER"),
+  maindir = pip_create_globals(root_dir)$PIP_DATA_DIR,
   inv_file = paste0(maindir, "_inventory/inventory.fst")
 )
 }
 \arguments{
 \item{maindir}{character: main directory. By default it
-uses \code{getOption("pip.maindir")}}
+uses \code{pip_create_globals(root_dir)$PIP_DATA_DIR}}
 
 \item{inv_file}{character: file path to be loaded.}
 }
@@ -20,4 +21,9 @@ uses \code{getOption("pip.maindir")}}
 }
 \description{
 Load inventory of welfare aggregate datasets
+}
+\examples{
+\dontrun{
+pip_load_inventory()
+}
 }

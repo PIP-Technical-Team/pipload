@@ -5,19 +5,25 @@
 \title{Load cache inventory}
 \usage{
 pip_load_cache_inventory(
-  pipedir = getOption("pip.pipedir"),
+  root_dir = Sys.getenv("PIP_DATA_ROOT_FOLDER"),
+  pipedir = pip_create_globals(root_dir)$PIP_PIPE_DIR,
   tool = c("PC", "TB")
 )
 }
 \arguments{
-\item{pipedir}{character: directory path of pipe lines ingestiion. Default is
-\code{getOption("pip.pipedir")}}
+\item{root_dir}{character: root directory of the PIP data}
 
-\item{tool}{character: Either "PC" for Poverty calculator or "TM" for table
+\item{pipedir}{charater: directory of pipeline. Default is
+\code{pip_create_globals(root_dir)$PIP_PIPE_DIR}}
+
+\item{tool}{character: Either "PC" for Poverty calculator or "TB" for table
 maker}
 }
 \value{
-
+data frame
+\dontrun{
+pip_load_cache_inventory()
+}
 }
 \description{
 Load cache inventory

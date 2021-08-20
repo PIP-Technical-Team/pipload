@@ -6,6 +6,9 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
+#' pip_create_globals()
+#' }
 pip_create_globals <- function(root_dir = Sys.getenv("PIP_DATA_ROOT_FOLDER")) {
   glbs <- list()
 

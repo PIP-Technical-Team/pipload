@@ -14,6 +14,7 @@
 #' @param apply_label logical: if TRUE, predefined labels will apply to data
 #' loaded using `file_to_load` argument. Default TRUE. Tip: change to FALSE if
 #' the main strcuture of data has changed and labels have not been updated
+#' @inheritParams pip_find_cache
 #'
 #' @return
 #' @export
@@ -39,7 +40,9 @@
 #' df      <- pip_load_aux(measure, version = "pick")
 #' }
 pip_load_aux <- function(measure     = NULL,
-                         msrdir      = paste0(getOption("pip.maindir"),
+                         root_dir    = Sys.getenv("PIP_DATA_ROOT_FOLDER"),
+                         maindir     = pip_create_globals(root_dir)$PIP_DATA_DIR,
+                         msrdir      = paste0(maindir,
                                               "_aux/",
                                               measure, "/"),
                          version      = NULL,

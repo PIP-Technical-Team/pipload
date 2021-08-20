@@ -15,9 +15,9 @@ pip_load_cache(
   cache_id = NULL,
   condition = NULL,
   type = c("dataframe", "list"),
-  pipedir = getOption("pip.pipedir"),
-  verbose = TRUE,
-  inv_file = paste0(maindir, "_inventory/inventory.fst")
+  root_dir = Sys.getenv("PIP_DATA_ROOT_FOLDER"),
+  pipedir = pip_create_globals(root_dir)$PIP_PIPE_DIR,
+  verbose = TRUE
 )
 }
 \arguments{
@@ -33,7 +33,8 @@ pip_load_cache(
 \item{data_level}{character: either "D1" for national, "D2" for urban/rural,
 "D3" for subnational}
 
-\item{welfare_type}{character: Either "CON" for consumption or "INC" for income}
+\item{welfare_type}{character: Either "CON" for consumption or "INC" for
+income}
 
 \item{source}{character: Source of data. It could be \code{GPWG}, \code{HIST}, \code{GROUP},
 \code{synth}, \code{BIN}, and \code{ALL}. The latter is used only in Table Maker.}
@@ -49,15 +50,19 @@ Can't be used with arguments \code{country}, \code{year},
 
 \item{type}{character: Either \code{dataframe} or \code{list}. Defaults is \code{dataframe}.}
 
-\item{pipedir}{charater: directory of pipeline. Default is \code{getOption("pip.pipedir")}}
+\item{pipedir}{charater: directory of pipeline. Default is
+\code{pip_create_globals(root_dir)$PIP_PIPE_DIR}}
 
 \item{verbose}{logical: If TRUE, display informative messages. Default TRUE}
-
-\item{inv_file}{character: file path to be loaded.}
 }
 \value{
-
+data frame
 }
 \description{
 Load cache data
+}
+\examples{
+\dontrun{
+pip_load_cache("PRY", 2017)
+}
 }

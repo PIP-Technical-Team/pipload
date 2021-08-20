@@ -3,17 +3,20 @@
 #' @inheritParams pip_find_data
 #' @inheritParams pip_load_data
 #'
-#' @param welfare_type character: Either "CON" for consumption or "INC" for income
+#' @param welfare_type character: Either "CON" for consumption or "INC" for
+#'   income
 #' @param data_level character: either "D1" for national, "D2" for urban/rural,
-#'  "D3" for subnational
+#'   "D3" for subnational
 #' @param cache_id character: If user knows the precise cache ID
-#' @param pipedir charater: directory of pipeline. Default is `getOption("pip.pipedir")`
+#' @param pipedir charater: directory of pipeline. Default is
+#'   `pip_create_globals(root_dir)$PIP_PIPE_DIR`
 #' @param verbose logical: If TRUE, display informative messages. Default TRUE
-#'
-#' @return
+#' @return data frame
 #' @export
-#'
 #' @examples
+#' \dontrun{
+#' pip_load_cache("PRY", 2017)
+#' }
 pip_load_cache <- function(country          = NULL,
                            year             = NULL,
                            tool             = c("PC", "TB"),
@@ -24,7 +27,8 @@ pip_load_cache <- function(country          = NULL,
                            cache_id         = NULL,
                            condition        = NULL,
                            type             = c("dataframe", "list"),
-                           pipedir          = getOption("pip.pipedir"),
+                           root_dir         = Sys.getenv("PIP_DATA_ROOT_FOLDER"),
+                           pipedir          = pip_create_globals(root_dir)$PIP_PIPE_DIR,
                            verbose          = TRUE
                            ) {
 
@@ -230,8 +234,8 @@ pip_load_cache <- function(country          = NULL,
 
 #' Load cache data
 #'
-#' @param x
-#' @param verbose
+#' @param x character: directory path with data frame
+#' @inheritParams pip_load_cache
 #'
 #' @return data.table
 #' @noRd

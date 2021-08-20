@@ -1,12 +1,15 @@
 #' Load cache inventory
 #'
-#' @param pipedir character: directory path of pipe lines ingestiion. Default is
-#'   `getOption("pip.pipedir")`
-#' @param tool character: Either "PC" for Poverty calculator or "TM" for table
+#' @param tool character: Either "PC" for Poverty calculator or "TB" for table
 #'   maker
-#' @return
+#' @inheritParams pip_find_cache
 #' @export
-pip_load_cache_inventory <- function(pipedir = getOption("pip.pipedir"),
+#' @return data frame
+#' \dontrun{
+#' pip_load_cache_inventory()
+#' }
+pip_load_cache_inventory <- function(root_dir         = Sys.getenv("PIP_DATA_ROOT_FOLDER"),
+                                     pipedir          = pip_create_globals(root_dir)$PIP_PIPE_DIR,
                                      tool    = c("PC", "TB")
                                      ) {
 
