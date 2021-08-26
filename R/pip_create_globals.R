@@ -27,6 +27,10 @@ pip_create_globals <- function(root_dir = Sys.getenv("PIP_DATA_ROOT_FOLDER")) {
   #  Estimations output dir
   glbs$OUT_EST_DIR      <- paste0(glbs$PIP_PIPE_DIR, 'pc_data/output/estimations/')
 
+
+  #  Estimations output dir of table baker
+  glbs$OUT_EST_DIR_TB   <- paste0(glbs$PIP_PIPE_DIR, 'tb_data/output/estimations/')
+
   # aux data output dir
   glbs$OUT_AUX_DIR      <- paste0(glbs$PIP_PIPE_DIR, 'pc_data/output/aux/')
 
@@ -37,7 +41,7 @@ pip_create_globals <- function(root_dir = Sys.getenv("PIP_DATA_ROOT_FOLDER")) {
 
   glbs$TB_ARROW         <- paste0(glbs$PIP_PIPE_DIR, 'tb_data/arrow/')
 
-  glbs$CACHE_SVY_TB_DIR <- paste0(glbs$TB_DATA, 'cache/clean_survey_data/')
+  glbs$CACHE_SVY_DIR_TB <- paste0(glbs$TB_DATA, 'cache/clean_survey_data/')
 
   ### Max dates --------
 

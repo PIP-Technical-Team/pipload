@@ -1,3 +1,6 @@
+# pipload 0.1.2
+* Add function `pip_load_results()` to load results from precalculated indicators
+
 # pipload 0.1.1
 * make sure we return `survey_id` properly in `pip_find_data()`
 * replace directory paths in zzz.R for objects from `pip_create_globals()`
