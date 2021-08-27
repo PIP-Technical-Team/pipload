@@ -1,4 +1,5 @@
 # pipload 0.1.3
+* replace global variables in .Renviron, so  PIP_DATA_ROOT_FOLDER for PIP_ROOT_DIR
 
 # pipload 0.1.2
 * Add function `pip_load_results()` to load results from precalculated indicators
