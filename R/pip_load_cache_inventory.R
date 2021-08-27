@@ -8,7 +8,7 @@
 #' \dontrun{
 #' pip_load_cache_inventory()
 #' }
-pip_load_cache_inventory <- function(root_dir         = Sys.getenv("PIP_DATA_ROOT_FOLDER"),
+pip_load_cache_inventory <- function(root_dir         = Sys.getenv("PIP_ROOT_DIR"),
                                      pipedir          = pip_create_globals(root_dir)$PIP_PIPE_DIR,
                                      tool    = c("PC", "TB")
                                      ) {

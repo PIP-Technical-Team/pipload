@@ -1,7 +1,7 @@
 context("PIP inventory")
 
 test_that("list of countries correct", {
-  root_dir  <-  Sys.getenv("PIP_DATA_ROOT_FOLDER")
+  root_dir  <-  Sys.getenv("PIP_ROOT_DIR")
   maindir   <-  pip_create_globals(root_dir)$PIP_DATA_DIR
 
   cdf <- fs::dir_ls(path    = paste0(maindir, "COL"),

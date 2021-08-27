@@ -12,7 +12,7 @@ pip_load_results <- function(output   = NULL,
                              year     = NULL,
                              tool     = c("PC", "TB"),
                              type     = c("dataframe", "list"),
-                             root_dir = Sys.getenv("PIP_DATA_ROOT_FOLDER"),
+                             root_dir = Sys.getenv("PIP_ROOT_DIR"),
                              verbose  = TRUE
                              ) {
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
