@@ -1,3 +1,5 @@
+# pipload 0.1.3
+
 # pipload 0.1.2
 * Add function `pip_load_results()` to load results from precalculated indicators
 
