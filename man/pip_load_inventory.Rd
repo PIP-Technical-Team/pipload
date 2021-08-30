@@ -5,7 +5,7 @@
 \title{Load inventory of welfare aggregate datasets}
 \usage{
 pip_load_inventory(
-  root_dir = Sys.getenv("PIP_DATA_ROOT_FOLDER"),
+  root_dir = Sys.getenv("PIP_ROOT_DIR"),
   maindir = pip_create_globals(root_dir)$PIP_DATA_DIR,
   inv_file = paste0(maindir, "_inventory/inventory.fst")
 )
