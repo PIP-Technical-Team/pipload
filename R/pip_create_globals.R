@@ -19,20 +19,19 @@ pip_create_globals <- function(root_dir = Sys.getenv("PIP_ROOT_DIR")) {
   glbs$PIP_PIPE_DIR     <- paste0(root_dir, 'pip_ingestion_pipeline/')
 
   # Cached survey data dir
-  glbs$CACHE_SVY_DIR    <- paste0(glbs$PIP_PIPE_DIR, 'pc_data/cache/clean_survey_data/')
+  glbs$CACHE_SVY_DIR_PC <- paste0(glbs$PIP_PIPE_DIR, 'pc_data/cache/clean_survey_data/')
 
   # Final survey data output dir
-  glbs$OUT_SVY_DIR      <- paste0(glbs$PIP_PIPE_DIR, 'pc_data/output/survey_data/')
+  glbs$OUT_SVY_DIR_PC   <- paste0(glbs$PIP_PIPE_DIR, 'pc_data/output/survey_data/')
 
   #  Estimations output dir
-  glbs$OUT_EST_DIR      <- paste0(glbs$PIP_PIPE_DIR, 'pc_data/output/estimations/')
+  glbs$OUT_EST_DIR_PC   <- paste0(glbs$PIP_PIPE_DIR, 'pc_data/output/estimations/')
 
+  # aux data output dir
+  glbs$OUT_AUX_DIR_PC   <- paste0(glbs$PIP_PIPE_DIR, 'pc_data/output/aux/')
 
   #  Estimations output dir of table baker
   glbs$OUT_EST_DIR_TB   <- paste0(glbs$PIP_PIPE_DIR, 'tb_data/output/estimations/')
-
-  # aux data output dir
-  glbs$OUT_AUX_DIR      <- paste0(glbs$PIP_PIPE_DIR, 'pc_data/output/aux/')
 
   glbs$TIME             <- format(Sys.time(), "%Y%m%d%H%M%S")
 
