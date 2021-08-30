@@ -9,7 +9,7 @@
 #' \dontrun{
 #' pip_create_globals()
 #' }
-pip_create_globals <- function(root_dir = Sys.getenv("PIP_DATA_ROOT_FOLDER")) {
+pip_create_globals <- function(root_dir = Sys.getenv("PIP_ROOT_DIR")) {
   glbs <- list()
 
   # Input dir
@@ -42,6 +42,13 @@ pip_create_globals <- function(root_dir = Sys.getenv("PIP_DATA_ROOT_FOLDER")) {
   glbs$TB_ARROW         <- paste0(glbs$PIP_PIPE_DIR, 'tb_data/arrow/')
 
   glbs$CACHE_SVY_DIR_TB <- paste0(glbs$TB_DATA, 'cache/clean_survey_data/')
+
+  # Old POVCalnet
+  glbs$POVCALNET        <-  "//wbntpcifs/povcalnet/01.PovcalNet/"
+
+  # Povcalnet master
+  glbs$PCN_MASTER       <- paste0(glbs$POVCALNET, "00.Master/02.vintage/")
+
 
   ### Max dates --------
 

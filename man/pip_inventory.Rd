@@ -8,7 +8,7 @@ pip_update_inventory}
 pip_inventory(
   action = "load",
   country = NULL,
-  root_dir = Sys.getenv("PIP_DATA_ROOT_FOLDER"),
+  root_dir = Sys.getenv("PIP_ROOT_DIR"),
   maindir = pip_create_globals(root_dir)$PIP_DATA_DIR,
   force = FALSE,
   inventory_version = NULL

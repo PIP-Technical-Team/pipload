@@ -4,7 +4,7 @@
 \alias{pip_create_globals}
 \title{Create global variables for PIP data management}
 \usage{
-pip_create_globals(root_dir = Sys.getenv("PIP_DATA_ROOT_FOLDER"))
+pip_create_globals(root_dir = Sys.getenv("PIP_ROOT_DIR"))
 }
 \arguments{
 \item{root_dir}{character: root directory of the PIP data}

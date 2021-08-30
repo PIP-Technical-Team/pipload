@@ -14,7 +14,7 @@
 #' pip_update_inventory("COL")
 #' }
 pip_update_inventory <- function(country = NULL,
-                                 root_dir          = Sys.getenv("PIP_DATA_ROOT_FOLDER"),
+                                 root_dir          = Sys.getenv("PIP_ROOT_DIR"),
                                  maindir           = pip_create_globals(root_dir)$PIP_DATA_DIR,
                                  force   = FALSE,
                                  time    = format(Sys.time(), "%Y%m%d%H%M%S"),
@@ -24,7 +24,7 @@ pip_update_inventory <- function(country = NULL,
   # inventory file to be used everywhere
   inv_file <- paste0(maindir, "_inventory/inventory.fst")
 
-  if (maindir == pip_create_globals(Sys.getenv("PIP_DATA_ROOT_FOLDER"))$PIP_DATA_DIR
+  if (maindir == pip_create_globals(Sys.getenv("PIP_ROOT_DIR"))$PIP_DATA_DIR
       && is.null(country)) {
 
     # display menu if user wants to updated the whole thing

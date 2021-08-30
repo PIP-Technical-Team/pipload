@@ -19,7 +19,7 @@ add_and <- function(x) {
 }
 
 
-list_of_countries <- function(root_dir          = Sys.getenv("PIP_DATA_ROOT_FOLDER"),
+list_of_countries <- function(root_dir          = Sys.getenv("PIP_ROOT_DIR"),
                               maindir           = pip_create_globals(root_dir)$PIP_DATA_DIR) {
 
   countries <- fs::dir_ls(path    = maindir,

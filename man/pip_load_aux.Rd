@@ -6,7 +6,7 @@
 \usage{
 pip_load_aux(
   measure = NULL,
-  root_dir = Sys.getenv("PIP_DATA_ROOT_FOLDER"),
+  root_dir = Sys.getenv("PIP_ROOT_DIR"),
   maindir = pip_create_globals(root_dir)$PIP_DATA_DIR,
   msrdir = paste0(maindir, "_aux/", measure, "/"),
   version = NULL,
