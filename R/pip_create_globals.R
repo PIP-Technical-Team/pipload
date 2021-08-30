@@ -43,6 +43,13 @@ pip_create_globals <- function(root_dir = Sys.getenv("PIP_ROOT_DIR")) {
 
   glbs$CACHE_SVY_DIR_TB <- paste0(glbs$TB_DATA, 'cache/clean_survey_data/')
 
+  # Old POVCalnet
+  glbs$POVCALNET        <-  "//wbntpcifs/povcalnet/01.PovcalNet/"
+
+  # Povcalnet master
+  glbs$PCN_MASTER       <- paste0(glbs$POVCALNET, "00.Master/02.vintage/")
+
+
   ### Max dates --------
 
   c_month  <- as.integer(format(Sys.Date(), "%m"))
