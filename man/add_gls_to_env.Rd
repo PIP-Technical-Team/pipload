@@ -10,5 +10,9 @@ add_gls_to_env()
 TRUE
 }
 \description{
-Add gls list to the global envirnment. To be used in zzz.R in other packages
+if you don't the official value in \code{Sys.getenv("PIP_ROOT_DIR")} you can
+provide the object \code{root_dir  <- "<you directory>"} before executing the first
+function. In this way, object \code{gls}, which is a promise, will be
+created using with you \code{root_dir}. Otherwise, you can specify the complete
+directory path for each function.
 }
