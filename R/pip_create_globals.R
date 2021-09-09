@@ -10,6 +10,16 @@
 #' pip_create_globals()
 #' }
 pip_create_globals <- function(root_dir = Sys.getenv("PIP_ROOT_DIR")) {
+
+  if (root_dir == "" || is.null(root_dir)) {
+    cli::cli_alert_warning("{.field root_dir} is not defined. Directory paths
+                           will lack network-drive root directory",
+                           wrap = TRUE)
+  } else if (root_dir != Sys.getenv("PIP_ROOT_DIR")) {
+    cli::cli_alert_info("Alternative root directory for {.field root_dir} set
+                           to {.url {root_dir}}",
+                           wrap = TRUE)
+  }
   glbs <- list()
 
   # Input dir
