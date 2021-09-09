@@ -1,6 +1,7 @@
 #' Add gls list to the global envirnment. To be used in zzz.R in other packages
 #'
 #' @return TRUE
+#' @export
 add_gls_to_env <- function() {
 
 
