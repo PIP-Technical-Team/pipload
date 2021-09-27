@@ -38,7 +38,7 @@ pip_create_globals <- function(root_dir = Sys.getenv("PIP_ROOT_DIR")) {
   glbs$OUT_EST_DIR_PC   <- paste0(glbs$PIP_PIPE_DIR, 'pc_data/output/estimations/')
 
   # aux data output dir
-  glbs$OUT_AUX_DIR_PC   <- paste0(glbs$PIP_PIPE_DIR, 'pc_data/output/aux/')
+  glbs$OUT_AUX_DIR_PC   <- paste0(glbs$PIP_PIPE_DIR, 'pc_data/output/_aux/')
 
   #  Estimations output dir of table baker
   glbs$OUT_EST_DIR_TB   <- paste0(glbs$PIP_PIPE_DIR, 'tb_data/output/estimations/')
