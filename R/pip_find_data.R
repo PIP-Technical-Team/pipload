@@ -25,6 +25,7 @@
 #' in the Table Maker. Default if FALSE
 #' @inheritParams pip_load_inventory
 #' @inheritParams pip_find_cache
+#' @inheritParams pip_load_aux
 #'
 #' @return data.frame: list of filenames to be loaded with pcn_load()
 #' @import data.table
@@ -82,7 +83,8 @@ pip_find_data <- function(country         = NULL,
                          inv_file         = paste0(maindir,
                                            "_inventory/inventory.fst"),
                          filter_to_pc = FALSE,
-                         filter_to_tb = FALSE
+                         filter_to_tb = FALSE,
+                         verbose      = getOption("pipload.verbose")
                          ) {
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   #---------   Initial conditions   ---------
@@ -126,11 +128,14 @@ pip_find_data <- function(country         = NULL,
     if (is.null(country)) {
       argum <- c(year, survey_acronym, vermast, veralt)
       if (length(argum)) {
-        rlang::inform(
-          paste("if `country` is NULL, arguments `year`, `survey_acronym`\n",
-                "`vermast`, and `veralt` should be NULL as well\n",
-                "These arguments are coerced to NULL")
-        )
+
+        if (verbose) {
+          cli::cli_alert_info(
+            paste("if `country` is NULL, arguments `year`, `survey_acronym`\n",
+                  "`vermast`, and `veralt` should be NULL as well\n",
+                  "These arguments are coerced to NULL")
+          )
+        }
 
       }
 

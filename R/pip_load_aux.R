@@ -49,7 +49,8 @@ pip_load_aux <- function(measure     = NULL,
                          version      = NULL,
                          file_to_load = NULL,
                          apply_label  = TRUE,
-                         verbose      = getOption("pipload.verbose")) {
+                         verbose      = getOption("pipload.verbose")
+                         ) {
 
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
