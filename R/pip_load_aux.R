@@ -232,7 +232,8 @@ pip_load_aux <- function(measure     = NULL,
 
   if (apply_label) {
     df <- pip_add_aux_labels(df,
-                             measure = measure)
+                             measure = measure,
+                             verbose = verbose)
 
   } else {
     if (verbose) {

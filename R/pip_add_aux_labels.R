@@ -2,10 +2,11 @@
 #'
 #' @param x Data frame to be labeled.
 #' @param measure type of data frame, e.g., "cpi" or "PPP".
+#' @inheritParams pip_load_aux
 #'
 #' @return
 #' @export
-pip_add_aux_labels <- function(x, measure) {
+pip_add_aux_labels <- function(x, measure, verbose) {
 
   if (measure == "cpi") {
 
@@ -70,7 +71,8 @@ pip_add_aux_labels <- function(x, measure) {
     attr(x$pop_domain,     "label")  <- "Population domain to join with microdata"
 
   } else {
-    cli::cli_alert_info(paste0("no labels available for measure {.field {measure}}"))
+    if (verbose)
+      cli::cli_alert_info(paste0("no labels available for measure {.field {measure}}"))
   }
 
   return(x)

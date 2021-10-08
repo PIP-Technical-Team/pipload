@@ -4,12 +4,14 @@
 \alias{pip_add_aux_labels}
 \title{Title}
 \usage{
-pip_add_aux_labels(x, measure)
+pip_add_aux_labels(x, measure, verbose)
 }
 \arguments{
 \item{x}{Data frame to be labeled.}
 
 \item{measure}{type of data frame, e.g., "cpi" or "PPP".}
+
+\item{verbose}{logical: whether to display message. Default is TRUE}
 }
 \value{
 
