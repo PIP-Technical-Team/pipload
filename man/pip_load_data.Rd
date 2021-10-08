@@ -18,10 +18,10 @@ pip_load_data(
   type = "dataframe",
   root_dir = Sys.getenv("PIP_ROOT_DIR"),
   maindir = pip_create_globals(root_dir)$PIP_DATA_DIR,
-  noisy = TRUE,
   inv_file = paste0(maindir, "_inventory/inventory.fst"),
   filter_to_pc = FALSE,
-  filter_to_tb = FALSE
+  filter_to_tb = FALSE,
+  verbose = getOption("pipload.verbose")
 )
 }
 \arguments{
@@ -58,9 +58,6 @@ Can't be used with arguments \code{country}, \code{year},
 
 \item{maindir}{character: Main directory}
 
-\item{noisy}{logical: if FALSE, no loading messages will be displayed.
-Default is TRUE.}
-
 \item{inv_file}{character: file path to be loaded.}
 
 \item{filter_to_pc}{logical: If TRUE filter most recent data to be included
@@ -68,6 +65,8 @@ in the Poverty Calculator. Default if FALSE}
 
 \item{filter_to_tb}{logical: If TRUE filter most recent data to be included
 in the Table Maker. Default if FALSE}
+
+\item{verbose}{logical: whether to display message. Default is TRUE}
 }
 \value{
 

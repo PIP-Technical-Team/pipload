@@ -19,7 +19,8 @@ pip_find_data(
   maindir = pip_create_globals(root_dir)$PIP_DATA_DIR,
   inv_file = paste0(maindir, "_inventory/inventory.fst"),
   filter_to_pc = FALSE,
-  filter_to_tb = FALSE
+  filter_to_tb = FALSE,
+  verbose = getOption("pipload.verbose")
 )
 }
 \arguments{
@@ -58,6 +59,8 @@ in the Poverty Calculator. Default if FALSE}
 
 \item{filter_to_tb}{logical: If TRUE filter most recent data to be included
 in the Table Maker. Default if FALSE}
+
+\item{verbose}{logical: whether to display message. Default is TRUE}
 }
 \value{
 data.frame: list of filenames to be loaded with pcn_load()

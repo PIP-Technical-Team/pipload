@@ -18,8 +18,6 @@ pip_load_aux(
 \arguments{
 \item{measure}{character: Measure to be used. e.g., "cpi" or "ppp".}
 
-\item{root_dir}{character: root directory of the PIP data}
-
 \item{msrdir}{character: measure (CPI) directory. created on \code{pip_prices()}.}
 
 \item{version}{An integer or a quoted directive. "available": displays list of
