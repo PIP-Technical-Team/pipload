@@ -1,4 +1,5 @@
 # pipload (development version)
+* Fix messaging in `pip_load_results()`
 
 # pipload 0.1.5
 * add `verbose` parameter
