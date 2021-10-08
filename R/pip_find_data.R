@@ -130,11 +130,11 @@ pip_find_data <- function(country         = NULL,
       if (length(argum)) {
 
         if (verbose) {
-          cli::cli_alert_info(
-            paste("if `country` is NULL, arguments `year`, `survey_acronym`\n",
-                  "`vermast`, and `veralt` should be NULL as well\n",
-                  "These arguments are coerced to NULL")
-          )
+          cli::cli_alert_info("if `country` is NULL, arguments `year`,
+                              `survey_acronym`, `vermast`, and `veralt` should
+                              be NULL as well These arguments are coerced to
+                              NULL",
+                              wrap = TRUE)
         }
 
       }
@@ -227,8 +227,10 @@ pip_find_data <- function(country         = NULL,
   df <- df[ eval(condi)]
 
   if (nrow(df) == 0) {
-    cli::cli_alert_danger("The inventory has no data for this condition,
-                          {.field {condit}}")
+    if (verbose)
+      cli::cli_alert_danger("The inventory has no data for this condition,
+                          {.field {condit}}",
+                          wrap = TRUE)
   }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
