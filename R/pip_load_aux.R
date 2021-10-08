@@ -13,7 +13,8 @@
 #' argument
 #' @param apply_label logical: if TRUE, predefined labels will apply to data
 #' loaded using `file_to_load` argument. Default TRUE. Tip: change to FALSE if
-#' the main strcuture of data has changed and labels have not been updated
+#' the main structure of data has changed and labels have not been updated
+#' @param verbose logical: whether to display message. Default is TRUE
 #' @inheritParams pip_find_cache
 #'
 #' @return
