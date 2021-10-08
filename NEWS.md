@@ -1,4 +1,4 @@
-# pipload (development version)
+# pipload 0.1.5
 
 # pipload 0.1.4
 * Improve messages when `root_dir` is not available
