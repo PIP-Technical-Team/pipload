@@ -1,9 +1,8 @@
 #' Load PIP microdata in different way
 #'
 #' @inheritParams pip_find_data
+#' @inheritParams pip_load_aux
 #' @param type character: Either `dataframe` or `list`. Defaults is `dataframe`.
-#' @param noisy logical: if FALSE, no loading messages will be displayed.
-#' Default is TRUE.
 #' @param survey_id character: Vector with survey IDs like
 #' 'HND_2017_EPHPM_V01_M_V01_A_PIP_PC-GPWG'
 #'
@@ -70,11 +69,11 @@ pip_load_data <- function(country          = NULL,
                           type             = "dataframe",
                           root_dir          = Sys.getenv("PIP_ROOT_DIR"),
                           maindir           = pip_create_globals(root_dir)$PIP_DATA_DIR,
-                          noisy            = TRUE,
                           inv_file         = paste0(maindir,
                                                   "_inventory/inventory.fst"),
                           filter_to_pc = FALSE,
-                          filter_to_tb = FALSE
+                          filter_to_tb = FALSE,
+                          verbose      = getOption("pipload.verbose")
                           ) {
 
 
@@ -119,9 +118,11 @@ pip_load_data <- function(country          = NULL,
     # Tool
     if (!is.null(tool) & !is.null(condition)) {
       if (grepl("tool", condition)) {
-        cli::cli_alert_warning(c("`tool` argument was specified ({.val {tool}}), but it was
+        if (verbose)
+          cli::cli_alert_warning("`tool` argument was specified as {.val {tool}},
+                                 but it was
                                  also mentioned in the `condition` argument.
-                                 Thus, only the latter will take predominance."),
+                                 The latter will take predominance.",
                                wrap = TRUE)
       } else {
         alt_tool <- tool
@@ -141,13 +142,13 @@ pip_load_data <- function(country          = NULL,
   # Make sure all data that is possible to load is loaded
   tryCatch({
 
-    if (noisy) { # if user wants spinner
+    if (verbose) { # if user wants spinner
 
       cli::cli_process_start("Loading data and creating a {.field {type}}")
       dt <- purrr::map2(.x = df$orig,
                         .y = df$filename,
                         .f = poss_data_to_df,
-                        noisy = noisy)
+                        verbose = verbose)
       sp$finish()
       cli::cli_process_done()
 
@@ -155,7 +156,7 @@ pip_load_data <- function(country          = NULL,
       dt <- purrr::map2(.x = df$orig,
                         .y = df$filename,
                         .f = poss_data_to_df,
-                        noisy = noisy)
+                        verbose = verbose)
     }
 
     names(dt) <- survey_id
@@ -234,11 +235,11 @@ pip_load_data <- function(country          = NULL,
 #'
 #' @param x character: file path
 #' @param y chradter: file name including format
-#' @param noisy logical: If TRUE, messages will display in console.
+#' @param verbose logical: If TRUE, messages will display in console.
 #'
 #' @return
-data_to_df <- function(x, y, noisy) {
-  if (noisy) {
+data_to_df <- function(x, y, verbose) {
+  if (verbose) {
     sp$spin()
   }
   df <- haven::read_dta(x)

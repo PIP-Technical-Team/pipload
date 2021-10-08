@@ -70,11 +70,10 @@ pip_add_aux_labels <- function(x, measure) {
     attr(x$pop_domain,     "label")  <- "Population domain to join with microdata"
 
   } else {
-    rlang::inform(paste0("no labels available for measure `", measure, "`"))
+    cli::cli_alert_info(paste0("no labels available for measure {.field {measure}}"))
   }
 
   return(x)
 }
-
 
 

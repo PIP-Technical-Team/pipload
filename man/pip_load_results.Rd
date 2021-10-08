@@ -11,7 +11,7 @@ pip_load_results(
   tool = c("PC", "TB"),
   type = c("dataframe", "list"),
   root_dir = Sys.getenv("PIP_ROOT_DIR"),
-  verbose = TRUE
+  verbose = getOption("pipload.verbose")
 )
 }
 \arguments{

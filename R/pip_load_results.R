@@ -13,7 +13,7 @@ pip_load_results <- function(output   = NULL,
                              tool     = c("PC", "TB"),
                              type     = c("dataframe", "list"),
                              root_dir = Sys.getenv("PIP_ROOT_DIR"),
-                             verbose  = TRUE
+                             verbose  = getOption("pipload.verbose")
                              ) {
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   # check arguments   ---------
@@ -23,7 +23,7 @@ pip_load_results <- function(output   = NULL,
   type <- match.arg(type)
 
   if (tool == "PC") {
-    resdir   = pip_create_globals(root_dir)$OUT_EST_DIR
+    resdir   = pip_create_globals(root_dir)$OUT_EST_DIR_PC
   } else{
     resdir   = pip_create_globals(root_dir)$OUT_EST_DIR_TB
   }
@@ -45,6 +45,9 @@ pip_load_results <- function(output   = NULL,
   full_path <- paste0(resdir, output, ".fst")
 
   dt <- fst::read_fst(full_path, as.data.table = TRUE)
+
+  if (verbose)
+    cli::cli_alert_info("{.path {output}} has been loaded")
 
   return(dt)
 

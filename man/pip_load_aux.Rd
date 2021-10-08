@@ -11,13 +11,12 @@ pip_load_aux(
   msrdir = paste0(maindir, "_aux/", measure, "/"),
   version = NULL,
   file_to_load = NULL,
-  apply_label = TRUE
+  apply_label = TRUE,
+  verbose = getOption("pipload.verbose")
 )
 }
 \arguments{
 \item{measure}{character: Measure to be used. e.g., "cpi" or "ppp".}
-
-\item{root_dir}{character: root directory of the PIP data}
 
 \item{msrdir}{character: measure (CPI) directory. created on \code{pip_prices()}.}
 
@@ -34,7 +33,9 @@ argument}
 
 \item{apply_label}{logical: if TRUE, predefined labels will apply to data
 loaded using \code{file_to_load} argument. Default TRUE. Tip: change to FALSE if
-the main strcuture of data has changed and labels have not been updated}
+the main structure of data has changed and labels have not been updated}
+
+\item{verbose}{logical: whether to display message. Default is TRUE}
 }
 \value{
 

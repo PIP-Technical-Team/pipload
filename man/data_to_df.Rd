@@ -4,14 +4,14 @@
 \alias{data_to_df}
 \title{Convert origianl dta files to data frame format suitable for PIP}
 \usage{
-data_to_df(x, y, noisy)
+data_to_df(x, y, verbose)
 }
 \arguments{
 \item{x}{character: file path}
 
 \item{y}{chradter: file name including format}
 
-\item{noisy}{logical: If TRUE, messages will display in console.}
+\item{verbose}{logical: If TRUE, messages will display in console.}
 }
 \value{
 

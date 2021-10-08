@@ -1,7 +1,5 @@
 pipuax_default_options <- list(
-  pip.dlwdir  = "//wbgfscifs01/GPWG-GMD/Datalib/GMD-DLW/Support/Support_2005_CPI/",
-  pip.maindir = "//w1wbgencifs01/pip/PIP-Data_QA/",
-  pip.pipedir = "//w1wbgencifs01/pip/pip_ingestion_pipeline/"
+  pipload.verbose = TRUE
 )
 
 .onLoad <- function(libname, pkgname) {
