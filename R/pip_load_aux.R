@@ -47,7 +47,8 @@ pip_load_aux <- function(measure     = NULL,
                                               measure, "/"),
                          version      = NULL,
                          file_to_load = NULL,
-                         apply_label  = TRUE) {
+                         apply_label  = TRUE,
+                         verbose      = getOption("pipload.verbose")) {
 
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -215,7 +216,9 @@ pip_load_aux <- function(measure     = NULL,
   if (file.exists(file_to_load)) {
     df <- fst::read_fst(file_to_load,
                         as.data.table = TRUE)
-    cli::cli_alert_success("{load_msg}\n{.file {file_to_load}}")
+    if (verbose) {
+      cli::cli_alert_success("{load_msg}\n{.file {file_to_load}}")
+    }
 
   } else {
     msg <- paste("file `", measure, ".fst` does not exist.")
@@ -230,7 +233,9 @@ pip_load_aux <- function(measure     = NULL,
                              measure = measure)
 
   } else {
-    cli::cli_alert_info("Labels not applied to versioning data")
+    if (verbose) {
+      cli::cli_alert_info("Labels not applied to versioning data")
+    }
   }
   return(df)
 }
