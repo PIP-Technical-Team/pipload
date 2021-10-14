@@ -104,7 +104,7 @@ pip_load_aux <- function(measure           = NULL,
     ## Find format --------
 
     av_files   <- list.files(path = msrdir, pattern = paste0("^", measure, "\\."))
-    av_formats <- gsub("([[:alpha:]]+\\.)([[:lower:]]+)$", "\\2", av_files)
+    av_formats <- gsub("(\\w+\\.)([[:lower:]]+)$", "\\2", av_files)
 
 
     if (all(!av_formats  %in% allowed_formats)) {
