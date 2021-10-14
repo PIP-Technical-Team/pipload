@@ -51,7 +51,7 @@ pip_load_aux <- function(measure           = NULL,
                          file_to_load      = NULL,
                          apply_label       = TRUE,
                          verbose           = getOption("pipload.verbose"),
-                         preferred_format  = c("fst", "rds", "dta")
+                         preferred_format  = NULL
                          ) {
 
 
@@ -59,8 +59,8 @@ pip_load_aux <- function(measure           = NULL,
   #---------   If file path IS provided   ---------
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  allowed_formats  <- preferred_format
-  preferred_format <- match.arg(preferred_format)
+  allowed_formats  <- c("fst", "rds", "dta")
+
 
   if (!(is.null(file_to_load))) {
     if (!(is.null(measure))) {
@@ -106,11 +106,6 @@ pip_load_aux <- function(measure           = NULL,
     av_files   <- list.files(path = msrdir, pattern = paste0("^", measure, "\\."))
     av_formats <- gsub("([[:alpha:]]+\\.)([[:lower:]]+)$", "\\2", av_files)
 
-    if (preferred_format %in% av_formats) {
-      cli::cli_abort(c("Preferred format ({.field {preferred_format}}) is not available",
-                       x = "Available formats are {.field {av_formats}}"),
-                     wrap = TRUE)
-    }
 
     if (all(!av_formats  %in% allowed_formats)) {
       cli::cli_abort(c("all the format available are not allowed",
@@ -119,11 +114,24 @@ pip_load_aux <- function(measure           = NULL,
                      wrap = TRUE)
     }
 
+
+    if (is.null(preferred_format)) {
+      # get the first of the allowed formats that is available
+      preferred_format <- allowed_formats[allowed_formats %in% av_formats][1]
+    } else {
+      if (!preferred_format %in% av_formats) {
+        cli::cli_abort(c("Preferred format ({.field {preferred_format}}) is not available",
+                         x = "Available formats are {.field {av_formats}}"),
+                       wrap = TRUE)
+      }
+    }
+
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## seelct version --------
 
     if (is.null(version)) {
-      file_to_load <- paste0(msrdir, measure , ".", preferred_format)
+      path_of_file <- paste0(msrdir, measure)
+      file_to_load <- paste0(path_of_file , ".", preferred_format)
       load_msg     <- paste("Most recent version of data loaded")
       apply_label  <- TRUE
 
@@ -230,6 +238,7 @@ pip_load_aux <- function(measure           = NULL,
       }
 
       file_to_load <- vers[ans]
+      path_of_file <- gsub(paste0(".", preferred_format), "", file_to_load)
       load_msg     <- paste("Version of data loaded:", ver_dates[ans])
       apply_label  <- FALSE
 
@@ -243,10 +252,11 @@ pip_load_aux <- function(measure           = NULL,
 
   # check file exists
   if (file.exists(file_to_load)) {
-    df <- fst::read_fst(file_to_load,
-                        as.data.table = TRUE)
+    df <- read_by_format(preferred_format)(path_of_file)
+
     if (verbose) {
-      cli::cli_alert_success("{load_msg}\n{.file {file_to_load}}")
+      cli::cli_alert_success("{load_msg}:
+                             {.file {path_of_file}.{preferred_format}}")
     }
 
   } else {
@@ -286,14 +296,17 @@ read_by_format <- function(pformat) {
 
     if (pformat == "fst") {
       x <- fst::read_fst(file2read, as.data.table = TRUE)
-    } else if (pformat == "rsd") {
+    } else if (pformat == "rds") {
 
       x <- readr::read_rds(file2read)
     } else if (pformat == "dta") {
       x <- haven::read_dta(file2read)
     }
 
-  data.table::setDT(x)
+  if (is.data.frame(x)) {
+    data.table::setDT(x)
+  }
+
   return(x)
   }
 }
