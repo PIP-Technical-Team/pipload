@@ -1,4 +1,4 @@
-# pipload (development version)
+# pipload 0.1.6
 * Fix messaging in `pip_load_results()`
 
 # pipload 0.1.5
