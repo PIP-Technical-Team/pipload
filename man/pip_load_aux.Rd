@@ -13,7 +13,7 @@ pip_load_aux(
   file_to_load = NULL,
   apply_label = TRUE,
   verbose = getOption("pipload.verbose"),
-  preferred_format = c("fst", "rds", "dta")
+  preferred_format = NULL
 )
 }
 \arguments{
