@@ -12,7 +12,8 @@ pip_load_aux(
   version = NULL,
   file_to_load = NULL,
   apply_label = TRUE,
-  verbose = getOption("pipload.verbose")
+  verbose = getOption("pipload.verbose"),
+  preferred_format = NULL
 )
 }
 \arguments{
@@ -38,6 +39,8 @@ loaded using \code{file_to_load} argument. Default TRUE. Tip: change to FALSE if
 the main structure of data has changed and labels have not been updated}
 
 \item{verbose}{logical: whether to display message. Default is TRUE}
+
+\item{preferred_format}{character: preferred format. default is "fst".}
 }
 \value{
 

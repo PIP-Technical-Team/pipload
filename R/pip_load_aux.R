@@ -15,6 +15,7 @@
 #' loaded using `file_to_load` argument. Default TRUE. Tip: change to FALSE if
 #' the main structure of data has changed and labels have not been updated
 #' @param verbose logical: whether to display message. Default is TRUE
+#' @param preferred_format character: preferred format. default is "fst".
 #' @inheritParams pip_find_cache
 #'
 #' @return
@@ -40,22 +41,26 @@
 #' \dontrun{
 #' df      <- pip_load_aux(measure, version = "pick")
 #' }
-pip_load_aux <- function(measure     = NULL,
-                         root_dir    = Sys.getenv("PIP_ROOT_DIR"),
-                         maindir     = pip_create_globals(root_dir)$PIP_DATA_DIR,
-                         msrdir      = paste0(maindir,
+pip_load_aux <- function(measure           = NULL,
+                         root_dir          = Sys.getenv("PIP_ROOT_DIR"),
+                         maindir           = pip_create_globals(root_dir)$PIP_DATA_DIR,
+                         msrdir            = paste0(maindir,
                                               "_aux/",
                                               measure, "/"),
-                         version      = NULL,
-                         file_to_load = NULL,
-                         apply_label  = TRUE,
-                         verbose      = getOption("pipload.verbose")
+                         version           = NULL,
+                         file_to_load      = NULL,
+                         apply_label       = TRUE,
+                         verbose           = getOption("pipload.verbose"),
+                         preferred_format  = NULL
                          ) {
 
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   #---------   If file path IS provided   ---------
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  allowed_formats  <- c("fst", "rds", "dta")
+
 
   if (!(is.null(file_to_load))) {
     if (!(is.null(measure))) {
@@ -95,8 +100,38 @@ pip_load_aux <- function(measure     = NULL,
                     )
     }
 
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Find format --------
+
+    av_files   <- list.files(path = msrdir, pattern = paste0("^", measure, "\\."))
+    av_formats <- gsub("([[:alpha:]]+\\.)([[:lower:]]+)$", "\\2", av_files)
+
+
+    if (all(!av_formats  %in% allowed_formats)) {
+      cli::cli_abort(c("all the format available are not allowed",
+                       x = "Only {.field {allowed_formats}} are allowed.
+                       Currently directory has formats {.field {av_formats}}"),
+                     wrap = TRUE)
+    }
+
+
+    if (is.null(preferred_format)) {
+      # get the first of the allowed formats that is available
+      preferred_format <- allowed_formats[allowed_formats %in% av_formats][1]
+    } else {
+      if (!preferred_format %in% av_formats) {
+        cli::cli_abort(c("Preferred format ({.field {preferred_format}}) is not available",
+                         x = "Available formats are {.field {av_formats}}"),
+                       wrap = TRUE)
+      }
+    }
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## seelct version --------
+
     if (is.null(version)) {
-      file_to_load <- paste0(msrdir, measure , ".fst")
+      path_of_file <- paste0(msrdir, measure)
+      file_to_load <- paste0(path_of_file , ".", preferred_format)
       load_msg     <- paste("Most recent version of data loaded")
       apply_label  <- TRUE
 
@@ -109,7 +144,7 @@ pip_load_aux <- function(measure     = NULL,
         path    = vint_dir,
         recurse = FALSE,
         type    = "file",
-        regexp  = paste0(measure, "_[0-9]+\\.fst")
+        regexp  = paste0(measure, "_[0-9]+\\.", preferred_format)
       )
 
       # Get just the dates
@@ -203,6 +238,7 @@ pip_load_aux <- function(measure     = NULL,
       }
 
       file_to_load <- vers[ans]
+      path_of_file <- gsub(paste0(".", preferred_format), "", file_to_load)
       load_msg     <- paste("Version of data loaded:", ver_dates[ans])
       apply_label  <- FALSE
 
@@ -216,14 +252,15 @@ pip_load_aux <- function(measure     = NULL,
 
   # check file exists
   if (file.exists(file_to_load)) {
-    df <- fst::read_fst(file_to_load,
-                        as.data.table = TRUE)
+    df <- read_by_format(preferred_format)(path_of_file)
+
     if (verbose) {
-      cli::cli_alert_success("{load_msg}\n{.file {file_to_load}}")
+      cli::cli_alert_success("{load_msg}:
+                             {.file {path_of_file}.{preferred_format}}")
     }
 
   } else {
-    msg <- paste("file `", measure, ".fst` does not exist.")
+    msg <- paste0("file `", measure, ".", preferred_format, "` does not exist.")
     rlang::abort(c(msg,
                    i = "check your connection or data availability"),
                  class = "pipload_error")
@@ -243,3 +280,33 @@ pip_load_aux <- function(measure     = NULL,
   return(df)
 }
 
+
+#' read file dependin on format and convert to data.table
+#'
+#' @param pformat character: format of the file.
+#'
+#' @return
+#' @export
+read_by_format <- function(pformat) {
+
+  force(pformat)
+
+  function(x) {
+    file2read <- paste0(x, ".", pformat)
+
+    if (pformat == "fst") {
+      x <- fst::read_fst(file2read, as.data.table = TRUE)
+    } else if (pformat == "rds") {
+
+      x <- readr::read_rds(file2read)
+    } else if (pformat == "dta") {
+      x <- haven::read_dta(file2read)
+    }
+
+  if (is.data.frame(x)) {
+    data.table::setDT(x)
+  }
+
+  return(x)
+  }
+}
