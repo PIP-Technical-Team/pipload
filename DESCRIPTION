@@ -1,5 +1,5 @@
 Package: pipload
-Version: 0.1.6.9001
+Version: 0.1.6.9002
 Title: Load PIP microdata into memory
 Description: provides a series of tools to load into memory the PIP microdata.
     You can load and update the inventory of PIP microdata, as well as find the
