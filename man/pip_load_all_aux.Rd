@@ -14,7 +14,8 @@ pip_load_all_aux(
   file_to_load = NULL,
   apply_label = TRUE,
   verbose = FALSE,
-  preferred_format = NULL
+  preferred_format = NULL,
+  replace = NULL
 )
 }
 \arguments{
@@ -47,6 +48,8 @@ the main structure of data has changed and labels have not been updated}
 \item{verbose}{logical: whether to display message. Default is TRUE}
 
 \item{preferred_format}{character: preferred format. default is "fst".}
+
+\item{replace}{logical or NULL. Whether to replace objects in \code{envir}}
 }
 \value{
 invisible TRUE
