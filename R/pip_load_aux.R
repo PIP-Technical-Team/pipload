@@ -79,7 +79,7 @@ pip_load_aux <- function(measure           = NULL,
 
     measure  <- gsub("(.*/)([a-z]+)_?[0-9]*\\.fst$", "\\2", file_to_load)
     load_msg <- paste("Data loaded from file path")
-    apply_label  <- apply_label
+
 
   } else {
 
