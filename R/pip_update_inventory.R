@@ -42,7 +42,7 @@ pip_update_inventory <- function(country = NULL,
     # Action depending on answer
     if (ans == 1) {
 
-      message("Go and have a coffee.\nThis may take a while!")
+      cli::cli_alert_info("Go and have a coffee. This may take a while!")
 
     } else if  (ans == 2) {
 
@@ -81,9 +81,11 @@ pip_update_inventory <- function(country = NULL,
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   # search all data available for selected countries
+  cli::cli_progress_step("reading PIP directory")
   inventory <- fs::dir_ls(path    = paste0(maindir, country),
                           regexp  = "PIP.*dta$",
                           recurse = TRUE)
+  cli::cli_progress_done()
 
   inventory <- as.character(inventory) # necessary for the data signature
   # Remove _vintage folder from inventory
@@ -95,7 +97,7 @@ pip_update_inventory <- function(country = NULL,
 
   #--------- Get data signature of inventory just created ---------
   if (is.null(country)) {
-    country <- list_of_countries(maindir)
+    country <- list_of_countries(maindir = maindir)
   }
 
   ds_inventory <- purrr::map_df(.x        = country,
