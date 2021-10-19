@@ -1,4 +1,5 @@
 # pipload (development version)
+* fix issue with several version in pip_find_data
 
 # pipload 0.1.7
 * implement function `pip_load_all_aux()`
