@@ -320,7 +320,8 @@ pip_find_data <- function(country         = NULL,
     # Filter df with only the value in dun
     df <- joyn::merge(df, dun,
                       by      = c("survey_id", "source"),
-                      verbose = FALSE)
+                      verbose = FALSE,
+                      keep    = "inner")
 
     # df <- df[dun,
     #          on = .(survey_id,source)]
