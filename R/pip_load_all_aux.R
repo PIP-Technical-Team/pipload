@@ -62,13 +62,7 @@ pip_load_all_aux <- function(replace           = NULL,
       cli::cli_alert_danger("{.field {aux_names[names_in_env]}} object{?s}
                             {?is/are} in used in {.field envir}.",
                             wrap = TRUE)
-      choice <- menu(c("yeah", "Nope"), title = "Do you want to replace them?")
-
-      if (choice == 1) {
-        replace <- TRUE
-      } else {
-        replace <- FALSE
-      }
+      replace <- usethis::ui_yeah("Do you want to replace them?")
     }
 
 
