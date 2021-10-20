@@ -5,6 +5,7 @@
 \title{Load all auxiliary files in memory}
 \usage{
 pip_load_all_aux(
+  replace = NULL,
   aux = c("cpi", "ppp", "pfw", "pop", "gdm"),
   aux_names = aux,
   envir = globalenv(),
@@ -14,11 +15,12 @@ pip_load_all_aux(
   file_to_load = NULL,
   apply_label = TRUE,
   verbose = FALSE,
-  preferred_format = NULL,
-  replace = NULL
+  preferred_format = NULL
 )
 }
 \arguments{
+\item{replace}{logical or NULL. Whether to replace objects in \code{envir}}
+
 \item{aux}{character: auxiliary files to load. Default is c("cpi", "ppp",
 "pfw", "pop", "gdm", "gdp", "pce")}
 
@@ -48,8 +50,6 @@ the main structure of data has changed and labels have not been updated}
 \item{verbose}{logical: whether to display message. Default is TRUE}
 
 \item{preferred_format}{character: preferred format. default is "fst".}
-
-\item{replace}{logical or NULL. Whether to replace objects in \code{envir}}
 }
 \value{
 invisible TRUE
