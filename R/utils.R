@@ -21,11 +21,13 @@ add_and <- function(x) {
 
 list_of_countries <- function(root_dir          = Sys.getenv("PIP_ROOT_DIR"),
                               maindir           = pip_create_globals(root_dir)$PIP_DATA_DIR) {
-
+  cli::cli_progress_step("getting list of countries")
   countries <- fs::dir_ls(path    = maindir,
                           recurse = FALSE,
                           type    = "directory"
   )
+  cli::cli_progress_done()
+
   countries <- as.character(countries)
 
   country_list <- gsub(maindir, "", countries)

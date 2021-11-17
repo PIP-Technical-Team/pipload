@@ -62,7 +62,7 @@ pip_load_data <- function(country          = NULL,
                           vermast          = NULL,
                           veralt           = NULL,
                           module           = NULL,
-                          tool             = "PC",
+                          tool             = c("PC", "TB"),
                           source           = NULL,
                           survey_id        = NULL,
                           condition        = NULL,
@@ -71,7 +71,7 @@ pip_load_data <- function(country          = NULL,
                           maindir           = pip_create_globals(root_dir)$PIP_DATA_DIR,
                           inv_file         = paste0(maindir,
                                                   "_inventory/inventory.fst"),
-                          filter_to_pc = FALSE,
+                          filter_to_pc = TRUE,
                           filter_to_tb = FALSE,
                           verbose      = getOption("pipload.verbose")
                           ) {
@@ -80,7 +80,7 @@ pip_load_data <- function(country          = NULL,
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   #---------   Find Data   ---------
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
+  tool <- match.arg(tool)
   if (!is.null(survey_id)) {
 
     #--------- Get full path ---------

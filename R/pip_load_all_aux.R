@@ -1,17 +1,18 @@
 #' Load all auxiliary files in memory
 #'
+#' @param replace logical or NULL. Whether to replace objects in `envir`
 #' @param aux character: auxiliary files to load. Default is c("cpi", "ppp",
 #'   "pfw", "pop", "gdm", "gdp", "pce")
 #' @param aux_names character of the same length of `aux`. Names of objects to
 #'   be loaded. default is `aux`
 #' @param envir environment where the data frame will be allocated. Default is
 #'   `globalenv()`
-#' @param  replace logical or NULL. Whether to replace objects in `envir`
 #' @inheritParams pip_load_aux
 #'
 #' @return invisible TRUE
 #' @export
-pip_load_all_aux <- function(aux               = c("cpi", "ppp", "pfw", "pop", "gdm"),
+pip_load_all_aux <- function(replace           = NULL,
+                             aux               = c("cpi", "ppp", "pfw", "pop", "gdm"),
                              aux_names         = aux,
                              envir             = globalenv(),
                              root_dir          = Sys.getenv("PIP_ROOT_DIR"),
@@ -20,8 +21,7 @@ pip_load_all_aux <- function(aux               = c("cpi", "ppp", "pfw", "pop", "
                              file_to_load      = NULL,
                              apply_label       = TRUE,
                              verbose           = FALSE,
-                             preferred_format  = NULL,
-                             replace           = NULL
+                             preferred_format  = NULL
                              ) {
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -62,13 +62,7 @@ pip_load_all_aux <- function(aux               = c("cpi", "ppp", "pfw", "pop", "
       cli::cli_alert_danger("{.field {aux_names[names_in_env]}} object{?s}
                             {?is/are} in used in {.field envir}.",
                             wrap = TRUE)
-      choice <- menu(c("yeah", "Nope"), title = "Do you want to replace them?")
-
-      if (choice == 1) {
-        replace <- TRUE
-      } else {
-        replace <- FALSE
-      }
+      replace <- usethis::ui_yeah("Do you want to replace them?")
     }
 
 

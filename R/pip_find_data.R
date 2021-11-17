@@ -252,6 +252,8 @@ pip_find_data <- function(country         = NULL,
         # Get max veralt version and filter
         maxalt := veralt == max(veralt),
         by = .(country_code, surveyid_year, survey_acronym, module)
+      ][
+        maxalt == 1
       ][,
         c("maxalt",  "maxmast") := NULL
       ][,
@@ -291,28 +293,38 @@ pip_find_data <- function(country         = NULL,
         filtered := purrr::map(data, ~sf_keep_pc_source(df = .x))
       ]
 
-    if (inherits(du2$filtered, "list")) {
+    if (nrow(du2) >= 1) {
 
-      du2 <- du2[, # Unnest data again so we get one source per ID
-                 .(source = .unnest(filtered)),
-                 by = survey_id
-      ]
+      if (inherits(du2$filtered, "list")) {
+
+        du2 <- du2[, # Unnest data again so we get one source per ID
+                   .(source = .unnest(filtered)),
+                   by = survey_id
+        ]
+      } else {
+        du2[,
+            source := filtered
+        ][,
+          c("data", "filtered") := NULL
+        ]
+      }
+
+      # Append both sources in one
+      dun <- data.table::rbindlist(list(du1, du2),
+                                   use.names = TRUE,
+                                   fill      = TRUE)
     } else {
-      du2[,
-          source := filtered
-      ][,
-        c("data", "filtered") := NULL
-      ]
+      dun <- data.table::copy(du1)
     }
 
-    # Append both sources in one
-    dun <- data.table::rbindlist(list(du1, du2),
-                                 use.names = TRUE,
-                                 fill      = TRUE)
-
     # Filter df with only the value in dun
-    df <- df[dun,
-             on = .(survey_id,source)]
+    df <- joyn::merge(df, dun,
+                      by      = c("survey_id", "source"),
+                      verbose = FALSE,
+                      keep    = "inner")
+
+    # df <- df[dun,
+    #          on = .(survey_id,source)]
 
     df[,
        survey_id := NULL]
