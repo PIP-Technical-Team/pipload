@@ -1,4 +1,5 @@
 # pipload (development version)
+* add max years for countries and aggregates
 
 # pipload 0.1.8
 * fix issue with several version in pip_find_data
