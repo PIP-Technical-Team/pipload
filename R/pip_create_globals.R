@@ -60,18 +60,25 @@ pip_create_globals <- function(root_dir = Sys.getenv("PIP_ROOT_DIR")) {
 
 
   ### Max dates --------
+  max_year_country   <- 2019
+  if (is.null(max_year_country)) {
 
-  c_month  <- as.integer(format(Sys.Date(), "%m"))
-  max_year <- ifelse(c_month >= 8,  # August
-                     as.integer(format(Sys.Date(), "%Y")) - 1, # After august
-                     as.integer(format(Sys.Date(), "%Y")) - 2) # Before August
+    c_month  <- as.integer(format(Sys.Date(), "%m"))
+    max_year <- ifelse(c_month >= 8,  # August
+                       as.integer(format(Sys.Date(), "%Y")) - 1, # After august
+                       as.integer(format(Sys.Date(), "%Y")) - 2) # Before August
+
+  } else {
+
+    max_year <- max_year_country
+
+  }
 
   glbs$PIP_YEARS        <- 1977:(max_year + 1) # Years used in PIP
   glbs$PIP_REF_YEARS    <- 1981:max_year # Years used in the interpolated means table
 
   glbs$FST_COMP_LVL     <- 100 # Compression level for .fst output files
 
-  glbs$max_year_country   <- 2019
   glbs$max_year_aggregate <- 2017
 
   return(glbs)
