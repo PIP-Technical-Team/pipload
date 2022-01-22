@@ -71,5 +71,8 @@ pip_create_globals <- function(root_dir = Sys.getenv("PIP_ROOT_DIR")) {
 
   glbs$FST_COMP_LVL     <- 100 # Compression level for .fst output files
 
+  glbs$max_year_country   <- 2019
+  glbs$max_year_aggregate <- 2017
+
   return(glbs)
 }

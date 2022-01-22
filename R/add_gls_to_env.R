@@ -35,16 +35,16 @@ add_gls_to_env <- function() {
   # create promises and assign to global env
   if (root_dir != "") {
     # globals
-    gls <- pipload::pip_create_globals(root_dir)
+    gls <- pip_create_globals(root_dir)
     assign('gls', gls, envir = globalenv())
 
   } else {
 
     # assign('root_dir', "", envir = globalenv())
-    delayedAssign("gls",
-                  pipload::pip_create_globals(root_dir),
+    delayedAssign(x          =  "gls",
+                  value      = pip_create_globals(root_dir),
                   assign.env =  globalenv(),
-                  eval.env = globalenv())
+                  eval.env   = globalenv())
   }
 
   return(invisible(TRUE))
