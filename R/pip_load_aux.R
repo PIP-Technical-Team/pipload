@@ -2,18 +2,19 @@
 #'
 #' @param msrdir character: measure (CPI) directory. created on `pip_prices()`.
 #' @param measure character: Measure to be used. e.g., "cpi" or "ppp".
-#' @param version An integer or a quoted directive. "available": displays list of
-#' available versions for `measure`. "select"|"pick"|"choose": allows user to
-#' select the vintage of `measure`. if the integer is a negative number
-#' (e.g., `-1`), `pip_load_aux` will load that number of versions before the
-#' most recent version available. So, if `-1` it will load the version before the
-#' current, `-2` loads two versions before the current one, and so on. If it is
-#' a positive number, it must be quoted and in the form "%Y%m%d%H%M%S".
-#' @param file_to_load character: file path to load. Does not work with any other
-#' argument
+#' @param version An integer or a quoted directive. "available": displays list
+#'   of available versions for `measure`. "select"|"pick"|"choose": allows user
+#'   to select the vintage of `measure`. if the integer is a zero or a negative
+#'   number (e.g., `-1`), `pip_load_aux` will load that number of versions
+#'   before the most recent version available. So, if `0`, it loads the current
+#'   version. If `-1`, it will load the version before the current, `-2` loads two
+#'   versions before the current one, and so on. If it is a positive number, it
+#'   must be quoted (as character) and in the form "%Y%m%d%H%M%S".
+#' @param file_to_load character: file path to load. Does not work with any
+#'   other argument
 #' @param apply_label logical: if TRUE, predefined labels will apply to data
-#' loaded using `file_to_load` argument. Default TRUE. Tip: change to FALSE if
-#' the main structure of data has changed and labels have not been updated
+#'   loaded using `file_to_load` argument. Default TRUE. Tip: change to FALSE if
+#'   the main structure of data has changed and labels have not been updated
 #' @param verbose logical: whether to display message. Default is TRUE
 #' @param preferred_format character: preferred format. default is "fst".
 #' @inheritParams pip_find_cache
