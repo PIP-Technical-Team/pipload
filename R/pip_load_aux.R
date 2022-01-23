@@ -129,6 +129,7 @@ pip_load_aux <- function(measure           = NULL,
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## seelct version --------
 
+    # select most recent version
     if (is.null(version)) {
       path_of_file <- paste0(msrdir, measure)
       file_to_load <- paste0(path_of_file , ".", preferred_format)
@@ -165,16 +166,15 @@ pip_load_aux <- function(measure           = NULL,
         ans <- menu(
           ver_dates,
           title = paste(
-            "There are",
-            length(ver_dates),
-            "versions available.\n",
+            "There are", length(ver_dates), "versions available.\n",
             "Please select the one you want to load."
+            )
           )
 
-        )
-      } else if (as.numeric(version) < 0) {
+        # If user select x number of versions before the current one
+      } else if (as.numeric(version) <= 0) {
 
-        ans <- (as.numeric(version) * -1) + 1
+        ans <- (as.numeric(version) * -1) + 1 # position in the vector of available versions
 
         if (ans > length(ver_dates)) {
           msg     <- "Invalid number of version"
@@ -194,7 +194,9 @@ pip_load_aux <- function(measure           = NULL,
                        class = "pipload_error")
         }
 
-      } else if (!(is.na(as.POSIXct(version, "%Y%m%d%H%M%S", tz = Sys.timezone())))) {
+        # If the user select a particular date or version.
+      } else if (!(is.na(as.POSIXct(as.character(version), "%Y%m%d%H%M%S", tz = Sys.timezone())))) {
+
         if (any(grepl(version, vers))) {
           ans <- which(grepl(version, vers))
 
