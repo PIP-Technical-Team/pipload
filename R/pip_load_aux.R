@@ -131,7 +131,7 @@ pip_load_aux <- function(measure           = NULL,
     ## seelct version --------
 
     # select most recent version
-    if (is.null(version)) {
+    if (is.null(version) || as.numeric(version) == 0) {
       path_of_file <- paste0(msrdir, measure)
       file_to_load <- paste0(path_of_file , ".", preferred_format)
       load_msg     <- paste("Most recent version of data loaded")
@@ -173,7 +173,7 @@ pip_load_aux <- function(measure           = NULL,
           )
 
         # If user select x number of versions before the current one
-      } else if (as.numeric(version) <= 0) {
+      } else if (as.numeric(version) < 0) {
 
         ans <- (as.numeric(version) * -1) + 1 # position in the vector of available versions
 
