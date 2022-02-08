@@ -5,10 +5,13 @@
 #' function. In this way, object `gls`, which is a promise, will be
 #' created using with you `root_dir`. Otherwise, you can specify the complete
 #' directory path for each function.
+#' @inheritParams pip_create_globals
 #'
 #' @return TRUE
 #' @export
-add_gls_to_env <- function() {
+add_gls_to_env <- function(vintage  = "lattest",
+                           suffix   = NULL,
+                           clean    = FALSE) {
 
 
   ## defined values --------
@@ -35,7 +38,10 @@ add_gls_to_env <- function() {
   # create promises and assign to global env
   if (root_dir != "") {
     # globals
-    gls <- pip_create_globals(root_dir)
+    gls <- pip_create_globals(root_dir = root_dir,
+                              vintage  = vintage,
+                              suffix   = suffix,
+                              clean    = clean)
     assign('gls', gls, envir = globalenv())
 
   } else {

@@ -1,6 +1,16 @@
 #' Create global variables for PIP data management
 #'
 #' @param root_dir character: root directory of the PIP data
+#' @param vintage character: name of output folder. It could be "lattest",
+#'   "new", or any other name. if it is "lattest" (default), the most recent
+#'   version available in the vintage directory of the form "%Y%m%d" will be
+#'   used. If it is "new", a new folder with a name of the form "%Y%m%d" will be
+#'   created. All the names will be coerced to lower cases
+#' @param suffix character: suffix to be added to the name of the vintage
+#'   folder. Useful for testing purposes. Something of the form "%Y%m%d_test"
+#'   won't be taken into account if the `vintage = "lattest"`
+#' @param clean logical: if TRUE it cleans all empty direcotories that have been
+#'   created by mistake. Default is FALSE.
 #'
 #' @return
 #' @export
@@ -9,7 +19,24 @@
 #' \dontrun{
 #' pip_create_globals()
 #' }
-pip_create_globals <- function(root_dir = Sys.getenv("PIP_ROOT_DIR")) {
+pip_create_globals <- function(root_dir = Sys.getenv("PIP_ROOT_DIR"),
+                               vintage  = "lattest",
+                               suffix   = NULL,
+                               clean    = FALSE) {
+
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  # setup   ---------
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  if (is.character(vintage)){
+    vintage <- tolower(vintage)
+  } else {
+    vint_type <- typeof(vintage)
+    cli::cli_abort("{.field vintage} must be character, not {vint_type}")
+  }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Read from Renviron --------
 
   if (root_dir == "" || is.null(root_dir)) {
     cli::cli_alert_warning("{.field root_dir} is not defined. Directory paths
@@ -20,30 +47,120 @@ pip_create_globals <- function(root_dir = Sys.getenv("PIP_ROOT_DIR")) {
                            to {.url {root_dir}}",
                            wrap = TRUE)
   }
+
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## init list and basic inputs --------
+
   glbs <- list()
 
-  # Input dir
+  glbs$TIME <- format(Sys.time(), "%Y%m%d%H%M%S")
+  glbs$DATE <- format(Sys.Date(), "%Y%m%d")
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  # input dirs   ---------
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  # welfare data dir
   glbs$PIP_DATA_DIR     <- paste0(root_dir, 'PIP-Data_QA/')
+
 
   # '//w1wbgencifs01/pip/pip_ingestion_pipeline/' # Output dir
   glbs$PIP_PIPE_DIR     <- paste0(root_dir, 'pip_ingestion_pipeline/')
 
-  # Cached survey data dir
+    # Cached survey data dir
   glbs$CACHE_SVY_DIR_PC <- paste0(glbs$PIP_PIPE_DIR, 'pc_data/cache/clean_survey_data/')
 
+  # Old POVCalnet
+  glbs$POVCALNET        <-  "//wbntpcifs/povcalnet/01.PovcalNet/"
+
+  # Povcalnet master
+  glbs$PCN_MASTER       <- paste0(glbs$POVCALNET, "00.Master/02.vintage/")
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  # OUTPUT dirs   ---------
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Poverty calculator --------
+
+  # Main output folder
+  glbs$OUT_DIR_PC   <- paste0(glbs$PIP_PIPE_DIR, 'pc_data/output/')
+
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## vintage directories --------
+
+  # create vintage dir
+  available_paths <- fs::dir_ls(path = glbs$OUT_DIR_PC,
+                               type = "directory")
+
+  available_dirs  <- gsub("(.+)/([^/]+)", "\\2",  available_paths)
+  vintages        <- gsub("(.*)([0-9]{8})(.*)", "\\2",  available_dirs)
+  lattest_vintage <- max(vintages)
+
+  if (vintage  == "lattest") {
+    out_dir <- lattest_vintage
+
+  } else if (vintage == "new") {
+    out_dir <- glbs$DATE
+
+  } else {
+    out_dir <- vintage
+  }
+
+  out_path <- paste0(glbs$OUT_DIR_PC, out_dir)
+  if (fs::dir_exists(out_path)) {
+
+    cli::cli_alert("directory {.url {out_dir}} already exist")
+
+  } else {
+
+    cli::cli_alert("directory {.url {out_dir}} will be created")
+    fs::dir_create(out_path)
+
+  }
+
+  if (isTRUE(clean)) {
+    for (i in seq_along(available_paths)) {
+      x <- available_paths[[i]]
+      di <- fs::dir_info(x)
+      if (nrow(di) == 0) {
+        fs::dir_delete(x)
+      }
+    }
+
+    available_paths <- fs::dir_ls(path = glbs$OUT_DIR_PC,
+                                  type = "directory")
+
+  }
+
+  glbs$available_OUT_DIR_PC <- available_paths
+
   # Final survey data output dir
-  glbs$OUT_SVY_DIR_PC   <- paste0(glbs$PIP_PIPE_DIR, 'pc_data/output/survey_data/')
+  glbs$OUT_SVY_DIR_PC   <- paste0(out_path, '/survey_data/')
 
   #  Estimations output dir
-  glbs$OUT_EST_DIR_PC   <- paste0(glbs$PIP_PIPE_DIR, 'pc_data/output/estimations/')
+  glbs$OUT_EST_DIR_PC   <- paste0(out_path, '/estimations/')
 
   # aux data output dir
-  glbs$OUT_AUX_DIR_PC   <- paste0(glbs$PIP_PIPE_DIR, 'pc_data/output/_aux/')
+  glbs$OUT_AUX_DIR_PC   <- paste0(out_path, '/_aux/')
+
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Table Maker --------
+
+  #  Main TB output folder
+  glbs$OUT_DIR_TB   <- paste0(glbs$PIP_PIPE_DIR, 'tb_data/output/')
+
 
   #  Estimations output dir of table baker
   glbs$OUT_EST_DIR_TB   <- paste0(glbs$PIP_PIPE_DIR, 'tb_data/output/estimations/')
 
-  glbs$TIME             <- format(Sys.time(), "%Y%m%d%H%M%S")
+
+  #  Estimations output dir of table baker
+  glbs$OUT_EST_DIR_TB   <- paste0(glbs$PIP_PIPE_DIR, 'tb_data/output/estimations/')
+
 
   # Table Maker paths
   glbs$TB_DATA          <- paste0(glbs$PIP_PIPE_DIR, 'tb_data/')
@@ -52,11 +169,6 @@ pip_create_globals <- function(root_dir = Sys.getenv("PIP_ROOT_DIR")) {
 
   glbs$CACHE_SVY_DIR_TB <- paste0(glbs$TB_DATA, 'cache/clean_survey_data/')
 
-  # Old POVCalnet
-  glbs$POVCALNET        <-  "//wbntpcifs/povcalnet/01.PovcalNet/"
-
-  # Povcalnet master
-  glbs$PCN_MASTER       <- paste0(glbs$POVCALNET, "00.Master/02.vintage/")
 
 
   ### Max dates --------
