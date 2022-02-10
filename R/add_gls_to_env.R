@@ -9,31 +9,50 @@
 #'
 #' @return TRUE
 #' @export
-add_gls_to_env <- function(vintage  = "lattest",
+add_gls_to_env <- function(root_dir = NULL,
+                           vintage  = "lattest",
                            suffix   = NULL,
                            clean    = FALSE) {
+
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  # evaluate global environment   ---------
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
   ## defined values --------
   obj <-  ls(pos = ".GlobalEnv")
 
-  # remove gls it  exists
+  # remove gls if it  exists
   rm(list = obj[obj %in% c("gls")], pos = ".GlobalEnv")
 
-  # If root_dir does not exist, create it
-  if (!("root_dir" %in% obj)) {
-    root_dir  <-  Sys.getenv("PIP_ROOT_DIR")
-    # root_dir  <-  Sys.getenv("PIP_ROOT_DIRfff")
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  # define root_dir   ---------
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    # assign('root_dir', root_dir, envir = globalenv())
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## if root_dir should come from Renviron --------
 
-  } else {
-    cli::cli_alert_info("object {.envvar root_dir} is already defined in
+  if (is.null(root_dir)) {
+
+    # If root_dir does not exist, create it
+    if (!("root_dir" %in% obj)) {
+      root_dir  <-  Sys.getenv("PIP_ROOT_DIR")
+      # root_dir  <-  Sys.getenv("PIP_ROOT_DIRfff")
+
+      # assign('root_dir', root_dir, envir = globalenv())
+
+    } else {
+      cli::cli_alert_info("object {.envvar root_dir} is already defined in
                    Global env to  {.url {root_dir}}. To get back to default
                    values, make sure you remove it from memory by typing
                    {.code rm(root_dir)}",
                    wrap = TRUE)
+    }
   }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## If root_dir is provided by user or not found in Renviron --------
 
   # create promises and assign to global env
   if (root_dir != "") {

@@ -43,8 +43,8 @@ pip_create_globals <- function(root_dir = Sys.getenv("PIP_ROOT_DIR"),
                            will lack network-drive root directory",
                            wrap = TRUE)
   } else if (root_dir != Sys.getenv("PIP_ROOT_DIR")) {
-    cli::cli_alert_info("Alternative root directory for {.field root_dir} set
-                           to {.url {root_dir}}",
+    cli::cli_alert_info("Alternative root directory for {.field root_dir} is
+                        set to {.url {root_dir}}",
                            wrap = TRUE)
   }
 
@@ -62,20 +62,21 @@ pip_create_globals <- function(root_dir = Sys.getenv("PIP_ROOT_DIR"),
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   # welfare data dir
-  glbs$PIP_DATA_DIR     <- paste0(root_dir, 'PIP-Data_QA/')
-
+  glbs$PIP_DATA_DIR     <- fs::path(root_dir, 'PIP-Data_QA/')
 
   # '//w1wbgencifs01/pip/pip_ingestion_pipeline/' # Output dir
-  glbs$PIP_PIPE_DIR     <- paste0(root_dir, 'pip_ingestion_pipeline/')
+  glbs$PIP_PIPE_DIR     <- fs::path(root_dir, 'pip_ingestion_pipeline/')
 
     # Cached survey data dir
-  glbs$CACHE_SVY_DIR_PC <- paste0(glbs$PIP_PIPE_DIR, 'pc_data/cache/clean_survey_data/')
+  glbs$CACHE_SVY_DIR_PC <- fs::path(glbs$PIP_PIPE_DIR, 'pc_data/cache/clean_survey_data/')
 
   # Old POVCalnet
   glbs$POVCALNET        <-  "//wbntpcifs/povcalnet/01.PovcalNet/"
 
   # Povcalnet master
-  glbs$PCN_MASTER       <- paste0(glbs$POVCALNET, "00.Master/02.vintage/")
+  glbs$PCN_MASTER       <- fs::path(glbs$POVCALNET, "00.Master/02.vintage/")
+
+
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   # OUTPUT dirs   ---------
@@ -85,8 +86,8 @@ pip_create_globals <- function(root_dir = Sys.getenv("PIP_ROOT_DIR"),
   ## Poverty calculator --------
 
   # Main output folder
-  glbs$OUT_DIR_PC   <- paste0(glbs$PIP_PIPE_DIR, 'pc_data/output/')
-
+  glbs$OUT_DIR_PC   <- fs::path(glbs$PIP_PIPE_DIR, 'pc_data/output/')
+  create_dir(glbs)
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## vintage directories --------
@@ -97,19 +98,26 @@ pip_create_globals <- function(root_dir = Sys.getenv("PIP_ROOT_DIR"),
 
   available_dirs  <- gsub("(.+)/([^/]+)", "\\2",  available_paths)
   vintages        <- gsub("(.*)([0-9]{8})(.*)", "\\2",  available_dirs)
-  lattest_vintage <- max(vintages)
+  if (length(vintages) == 0) {
+    lattest_vintage <- glbs$DATE
+  } else {
+    lattest_vintage <- max(vintages)
+
+  }
 
   if (vintage  == "lattest") {
-    out_dir <- lattest_vintage
+
+      out_dir <- lattest_vintage
 
   } else if (vintage == "new") {
+
     out_dir <- glbs$DATE
 
   } else {
     out_dir <- vintage
   }
 
-  out_path <- paste0(glbs$OUT_DIR_PC, out_dir)
+  out_path <- fs::path(glbs$OUT_DIR_PC, out_dir)
   if (fs::dir_exists(out_path)) {
 
     cli::cli_alert("directory {.url {out_dir}} already exist")
@@ -117,7 +125,7 @@ pip_create_globals <- function(root_dir = Sys.getenv("PIP_ROOT_DIR"),
   } else {
 
     cli::cli_alert("directory {.url {out_dir}} will be created")
-    fs::dir_create(out_path)
+    fs::dir_create(out_path, recurse = TRUE)
 
   }
 
@@ -138,40 +146,43 @@ pip_create_globals <- function(root_dir = Sys.getenv("PIP_ROOT_DIR"),
   glbs$available_OUT_DIR_PC <- available_paths
 
   # Final survey data output dir
-  glbs$OUT_SVY_DIR_PC   <- paste0(out_path, '/survey_data/')
+  glbs$OUT_SVY_DIR_PC   <- fs::path(out_path, '/survey_data/')
 
   #  Estimations output dir
-  glbs$OUT_EST_DIR_PC   <- paste0(out_path, '/estimations/')
+  glbs$OUT_EST_DIR_PC   <- fs::path(out_path, '/estimations/')
 
   # aux data output dir
-  glbs$OUT_AUX_DIR_PC   <- paste0(out_path, '/_aux/')
+  glbs$OUT_AUX_DIR_PC   <- fs::path(out_path, '/_aux/')
 
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Table Maker --------
 
   #  Main TB output folder
-  glbs$OUT_DIR_TB   <- paste0(glbs$PIP_PIPE_DIR, 'tb_data/output/')
+  glbs$OUT_DIR_TB   <- fs::path(glbs$PIP_PIPE_DIR, 'tb_data/output/')
 
 
   #  Estimations output dir of table baker
-  glbs$OUT_EST_DIR_TB   <- paste0(glbs$PIP_PIPE_DIR, 'tb_data/output/estimations/')
+  glbs$OUT_EST_DIR_TB   <- fs::path(glbs$PIP_PIPE_DIR, 'tb_data/output/estimations/')
 
 
   #  Estimations output dir of table baker
-  glbs$OUT_EST_DIR_TB   <- paste0(glbs$PIP_PIPE_DIR, 'tb_data/output/estimations/')
+  glbs$OUT_EST_DIR_TB   <- fs::path(glbs$PIP_PIPE_DIR, 'tb_data/output/estimations/')
 
 
   # Table Maker paths
-  glbs$TB_DATA          <- paste0(glbs$PIP_PIPE_DIR, 'tb_data/')
+  glbs$TB_DATA          <- fs::path(glbs$PIP_PIPE_DIR, 'tb_data/')
 
-  glbs$TB_ARROW         <- paste0(glbs$PIP_PIPE_DIR, 'tb_data/arrow/')
+  glbs$TB_ARROW         <- fs::path(glbs$PIP_PIPE_DIR, 'tb_data/arrow/')
 
-  glbs$CACHE_SVY_DIR_TB <- paste0(glbs$TB_DATA, 'cache/clean_survey_data/')
+  glbs$CACHE_SVY_DIR_TB <- fs::path(glbs$TB_DATA, 'cache/clean_survey_data/')
 
+  create_dir(glbs)
 
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  # Max dates   ---------
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  ### Max dates --------
   max_year_country   <- 2019
   if (is.null(max_year_country)) {
 
@@ -195,3 +206,14 @@ pip_create_globals <- function(root_dir = Sys.getenv("PIP_ROOT_DIR"),
 
   return(glbs)
 }
+
+#' Check if path is fs_path and then create folder
+#'
+#' @param glbs list of object. Some of them are fs_paths
+#'
+create_dir <- function(glbs) {
+  is_fs_path <- which(purrr::map_lgl(glbs, inherits, "fs_path"))
+  purrr::walk(glbs[is_fs_path], fs::dir_create, recurse = TRUE)
+  return(invisible(TRUE))
+}
+
