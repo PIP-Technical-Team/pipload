@@ -10,7 +10,7 @@
 #' @param suffix character: suffix to be added to the name of the vintage
 #'   folder. Useful for testing purposes. Something of the form "%Y%m%d_test"
 #'   won't be taken into account if the `vintage = "latest"`
-#' @param clean logical: if TRUE it cleans all empty direcotories that have been
+#' @param clean logical: if TRUE it cleans all empty directories that have been
 #'   created by mistake. Default is FALSE.
 #'
 #' @return
@@ -191,6 +191,12 @@ create_dir <- function(glbs) {
 
 
 
+#' check vintage version and create
+#'
+#' @param dir character: output directory
+#' @param DATE character: date of the form "%Y%m%d"
+#' @inheritParams pip_create_globals
+#'
 check_and_create <- function(dir, vintage, DATE, clean) {
 
   # on.exit ------------
