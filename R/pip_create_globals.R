@@ -1,14 +1,15 @@
 #' Create global variables for PIP data management
 #'
 #' @param root_dir character: root directory of the PIP data
-#' @param vintage character: name of output folder. It could be "lattest",
-#'   "new", or any other name. if it is "lattest" (default), the most recent
+#' @param out_dir character: Output Directory. Default is `root_dir`
+#' @param vintage character: name of output folder. It could be "latest",
+#'   "new", or any other name. if it is "latest" (default), the most recent
 #'   version available in the vintage directory of the form "%Y%m%d" will be
 #'   used. If it is "new", a new folder with a name of the form "%Y%m%d" will be
 #'   created. All the names will be coerced to lower cases
 #' @param suffix character: suffix to be added to the name of the vintage
 #'   folder. Useful for testing purposes. Something of the form "%Y%m%d_test"
-#'   won't be taken into account if the `vintage = "lattest"`
+#'   won't be taken into account if the `vintage = "latest"`
 #' @param clean logical: if TRUE it cleans all empty direcotories that have been
 #'   created by mistake. Default is FALSE.
 #'
@@ -20,7 +21,8 @@
 #' pip_create_globals()
 #' }
 pip_create_globals <- function(root_dir = Sys.getenv("PIP_ROOT_DIR"),
-                               vintage  = "lattest",
+                               out_dir  = root_dir,
+                               vintage  = "latest",
                                suffix   = NULL,
                                clean    = FALSE) {
 
@@ -86,88 +88,49 @@ pip_create_globals <- function(root_dir = Sys.getenv("PIP_ROOT_DIR"),
   ## Poverty calculator --------
 
   # Main output folder
-  glbs$OUT_DIR_PC   <- fs::path(glbs$PIP_PIPE_DIR, 'pc_data/output/')
+  glbs$OUT_DIR_PC   <- fs::path(out_dir, 'pip_ingestion_pipeline/pc_data/output/')
   create_dir(glbs)
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## vintage directories --------
 
-  # create vintage dir
+  # create vintage dir for PC
+  out_path_pc <- check_and_create(dir     = glbs$OUT_DIR_PC,
+                                  vintage = vintage,
+                                  DATE    = glbs$DATE,
+                                  clean   = clean)
+
+
   available_paths <- fs::dir_ls(path = glbs$OUT_DIR_PC,
                                type = "directory")
-
-  available_dirs  <- gsub("(.+)/([^/]+)", "\\2",  available_paths)
-  vintages        <- gsub("(.*)([0-9]{8})(.*)", "\\2",  available_dirs)
-  if (length(vintages) == 0) {
-    lattest_vintage <- glbs$DATE
-  } else {
-    lattest_vintage <- max(vintages)
-
-  }
-
-  if (vintage  == "lattest") {
-
-      out_dir <- lattest_vintage
-
-  } else if (vintage == "new") {
-
-    out_dir <- glbs$DATE
-
-  } else {
-    out_dir <- vintage
-  }
-
-  out_path <- fs::path(glbs$OUT_DIR_PC, out_dir)
-  if (fs::dir_exists(out_path)) {
-
-    cli::cli_alert("directory {.url {out_dir}} already exist")
-
-  } else {
-
-    cli::cli_alert("directory {.url {out_dir}} will be created")
-    fs::dir_create(out_path, recurse = TRUE)
-
-  }
-
-  if (isTRUE(clean)) {
-    for (i in seq_along(available_paths)) {
-      x <- available_paths[[i]]
-      di <- fs::dir_info(x)
-      if (nrow(di) == 0) {
-        fs::dir_delete(x)
-      }
-    }
-
-    available_paths <- fs::dir_ls(path = glbs$OUT_DIR_PC,
-                                  type = "directory")
-
-  }
 
   glbs$available_OUT_DIR_PC <- available_paths
 
   # Final survey data output dir
-  glbs$OUT_SVY_DIR_PC   <- fs::path(out_path, '/survey_data/')
+  glbs$OUT_SVY_DIR_PC   <- fs::path(out_path_pc, '/survey_data/')
 
   #  Estimations output dir
-  glbs$OUT_EST_DIR_PC   <- fs::path(out_path, '/estimations/')
+  glbs$OUT_EST_DIR_PC   <- fs::path(out_path_pc, '/estimations/')
 
   # aux data output dir
-  glbs$OUT_AUX_DIR_PC   <- fs::path(out_path, '/_aux/')
+  glbs$OUT_AUX_DIR_PC   <- fs::path(out_path_pc, '/_aux/')
 
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Table Maker --------
-
   #  Main TB output folder
-  glbs$OUT_DIR_TB   <- fs::path(glbs$PIP_PIPE_DIR, 'tb_data/output/')
+  glbs$OUT_DIR_TB   <- fs::path(out_dir, 'pip_ingestion_pipeline/tb_data/output/')
+  create_dir(glbs)
+
+  # create vintage dir for PC
+  out_path_tb <- check_and_create(dir     = glbs$OUT_DIR_TB,
+                                  vintage = vintage,
+                                  DATE    = glbs$DATE,
+                                  clean   = clean)
 
 
   #  Estimations output dir of table baker
-  glbs$OUT_EST_DIR_TB   <- fs::path(glbs$PIP_PIPE_DIR, 'tb_data/output/estimations/')
-
-
-  #  Estimations output dir of table baker
-  glbs$OUT_EST_DIR_TB   <- fs::path(glbs$PIP_PIPE_DIR, 'tb_data/output/estimations/')
+  glbs$OUT_EST_DIR_TB   <- fs::path(out_path_tb, 'estimations/')
 
 
   # Table Maker paths
@@ -213,7 +176,80 @@ pip_create_globals <- function(root_dir = Sys.getenv("PIP_ROOT_DIR"),
 #'
 create_dir <- function(glbs) {
   is_fs_path <- which(purrr::map_lgl(glbs, inherits, "fs_path"))
-  purrr::walk(glbs[is_fs_path], fs::dir_create, recurse = TRUE)
+  purrr::walk(.x = glbs[is_fs_path],
+              .f = ~{
+                if (!fs::dir_exists(.x)) {
+                  fs::dir_create(path    = .x,
+                                 recurse = TRUE)
+                }
+              })
+
   return(invisible(TRUE))
 }
 
+
+
+
+
+check_and_create <- function(dir, vintage, DATE, clean) {
+
+  # on.exit ------------
+  on.exit({
+
+  })
+
+  # Computations -------
+  # create vintage dir for PC
+  available_paths <- fs::dir_ls(path = dir,
+                                type = "directory")
+
+  available_dirs  <- gsub("(.+)/([^/]+)", "\\2",  available_paths)
+  vintages        <- gsub("(.*)([0-9]{8})(.*)", "\\2",  available_dirs)
+  if (length(vintages) == 0) {
+    latest_vintage <- DATE
+  } else {
+    latest_vintage <- max(vintages)
+
+  }
+
+  if (vintage  == "latest") {
+
+    out_dir <- latest_vintage
+
+  } else if (vintage == "new") {
+
+    out_dir <- DATE
+
+  } else {
+    out_dir <- vintage
+  }
+
+  out_path <- fs::path(dir, out_dir)
+  if (fs::dir_exists(out_path)) {
+
+    cli::cli_alert("directory {.url {out_dir}} already exist")
+
+  } else {
+
+    cli::cli_alert("directory {.url {out_path}} will be created")
+    fs::dir_create(out_path, recurse = TRUE)
+
+  }
+
+  if (isTRUE(clean)) {
+    for (i in seq_along(available_paths)) {
+      x <- available_paths[[i]]
+      di <- fs::dir_info(x)
+      if (nrow(di) == 0) {
+        fs::dir_delete(x)
+      }
+    }
+
+  }
+
+  # Return -------------
+  return(out_path)
+
+
+
+}

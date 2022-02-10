@@ -10,7 +10,8 @@
 #' @return TRUE
 #' @export
 add_gls_to_env <- function(root_dir = NULL,
-                           vintage  = "lattest",
+                           out_dir  = NULL,
+                           vintage  = "latest",
                            suffix   = NULL,
                            clean    = FALSE) {
 
@@ -44,20 +45,27 @@ add_gls_to_env <- function(root_dir = NULL,
 
     } else {
       cli::cli_alert_info("object {.envvar root_dir} is already defined in
-                   Global env to  {.url {root_dir}}. To get back to default
+                   Global env to  {.url {get('root_dir', envir = globalenv())}}.
+                   To get back to default
                    values, make sure you remove it from memory by typing
                    {.code rm(root_dir)}",
                    wrap = TRUE)
+      root_dir <- get('root_dir', envir = globalenv())
     }
   }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## If root_dir is provided by user or not found in Renviron --------
 
+  if (is.null(out_dir)) {
+    out_dir <- root_dir
+  }
+
   # create promises and assign to global env
   if (root_dir != "") {
     # globals
     gls <- pip_create_globals(root_dir = root_dir,
+                              out_dir  = out_dir,
                               vintage  = vintage,
                               suffix   = suffix,
                               clean    = clean)
@@ -67,7 +75,11 @@ add_gls_to_env <- function(root_dir = NULL,
 
     # assign('root_dir', "", envir = globalenv())
     delayedAssign(x          =  "gls",
-                  value      = pip_create_globals(root_dir),
+                  value      = pip_create_globals(root_dir = root_dir,
+                                                  out_dir  = out_dir,
+                                                  vintage  = vintage,
+                                                  suffix   = suffix,
+                                                  clean    = clean),
                   assign.env =  globalenv(),
                   eval.env   = globalenv())
   }
