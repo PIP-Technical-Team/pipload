@@ -45,9 +45,7 @@
 pip_load_aux <- function(measure           = NULL,
                          root_dir          = Sys.getenv("PIP_ROOT_DIR"),
                          maindir           = pip_create_globals(root_dir)$PIP_DATA_DIR,
-                         msrdir            = fs::path(maindir,
-                                              "_aux/",
-                                              measure, "/"),
+                         msrdir            = fs::path(maindir, "_aux", measure),
                          version           = NULL,
                          file_to_load      = NULL,
                          apply_label       = TRUE,
@@ -132,14 +130,14 @@ pip_load_aux <- function(measure           = NULL,
 
     # select most recent version
     if (is.null(version) || as.numeric(version) == 0) {
-      path_of_file <- paste0(msrdir, measure)
-      file_to_load <- paste0(path_of_file , ".", preferred_format)
+      path_of_file <- fs::path(msrdir, measure)
+      file_to_load <- fs::path(path_of_file ,  ext = preferred_format)
       load_msg     <- paste("Most recent version of data loaded")
       apply_label  <- TRUE
 
     } else {
       # Find Vintages options
-      vint_dir <- paste0(msrdir, "_vintage")
+      vint_dir <- fs::path(msrdir, "_vintage")
 
       # Get all version available
       vers <- fs::dir_ls(
@@ -295,7 +293,7 @@ read_by_format <- function(pformat) {
   force(pformat)
 
   function(x) {
-    file2read <- paste0(x, ".", pformat)
+    file2read <- fs::path(x, ext =  pformat)
 
     if (pformat == "fst") {
       x <- fst::read_fst(file2read, as.data.table = TRUE)
