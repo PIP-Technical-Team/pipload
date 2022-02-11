@@ -29,7 +29,7 @@ pip_load_cache <- function(country          = NULL,
                            type             = c("dataframe", "list"),
                            root_dir         = Sys.getenv("PIP_ROOT_DIR"),
                            pipedir          = pip_create_globals(root_dir)$PIP_PIPE_DIR,
-                           verbose      = getOption("pipload.verbose")
+                           verbose          = getOption("pipload.verbose")
                            ) {
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -76,9 +76,9 @@ pip_load_cache <- function(country          = NULL,
   }
 
   if (tool == "PC") {
-    cache_dir <- paste0(pipedir, "pc_data/cache/clean_survey_data/")
+    cache_dir <- fs::path(pipedir, "pc_data/cache/clean_survey_data/")
   } else {
-    cache_dir <- paste0(pipedir, "tb_data/cache/clean_survey_data/")
+    cache_dir <- fs::path(pipedir, "tb_data/cache/clean_survey_data/")
   }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
