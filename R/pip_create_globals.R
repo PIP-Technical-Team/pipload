@@ -12,6 +12,7 @@
 #'   won't be taken into account if the `vintage = "latest"`
 #' @param clean logical: if TRUE it cleans all empty directories that have been
 #'   created by mistake. Default is FALSE.
+#' @param verbose logical: display messages. Default is `getOption("pipload.verbose")`
 #'
 #' @return
 #' @export
@@ -24,7 +25,8 @@ pip_create_globals <- function(root_dir = Sys.getenv("PIP_ROOT_DIR"),
                                out_dir  = root_dir,
                                vintage  = "latest",
                                suffix   = NULL,
-                               clean    = FALSE) {
+                               clean    = FALSE,
+                               verbose  = getOption("pipload.verbose")) {
 
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -39,15 +41,16 @@ pip_create_globals <- function(root_dir = Sys.getenv("PIP_ROOT_DIR"),
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Read from Renviron --------
-
-  if (root_dir == "" || is.null(root_dir)) {
-    cli::cli_alert_warning("{.field root_dir} is not defined. Directory paths
-                           will lack network-drive root directory",
-                           wrap = TRUE)
-  } else if (root_dir != Sys.getenv("PIP_ROOT_DIR")) {
-    cli::cli_alert_info("Alternative root directory for {.field root_dir} is
-                        set to {.url {root_dir}}",
-                           wrap = TRUE)
+  if (verbose) {
+    if (root_dir == "" || is.null(root_dir)) {
+      cli::cli_alert_warning("{.field root_dir} is not defined. Directory paths
+                             will lack network-drive root directory",
+                             wrap = TRUE)
+    } else if (root_dir != Sys.getenv("PIP_ROOT_DIR")) {
+      cli::cli_alert_info("Alternative root directory for {.field root_dir} is
+                          set to {.url {root_dir}}",
+                             wrap = TRUE)
+    }
   }
 
 
@@ -232,12 +235,15 @@ check_and_create <- function(dir, vintage, DATE, clean) {
 
   out_path <- fs::path(dir, out_dir)
   if (fs::dir_exists(out_path)) {
-
-    cli::cli_alert("directory {.url {out_dir}} already exist")
+    if (verbose) {
+      cli::cli_alert("directory {.url {out_dir}} already exist")
+    }
 
   } else {
 
-    cli::cli_alert("directory {.url {out_path}} will be created")
+    if (verbose) {
+      cli::cli_alert("directory {.url {out_path}} will be created")
+    }
     fs::dir_create(out_path, recurse = TRUE)
 
   }
