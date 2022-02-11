@@ -141,8 +141,8 @@ pip_find_data <- function(country         = NULL,
 
       # Load country names when no country is selected
       countries <- fs::dir_ls(maindir)
-      countries <- gsub(maindir, "", countries)
-      countries <- countries[!grepl("^_", countries)]  # remove _aux folder
+      countries <- stringr::str_extract(countries, "[:upper:]{3}$")
+      countries <- countries[!is.na(countries)]  # remove _aux folder
 
       years      <- NULL
 
