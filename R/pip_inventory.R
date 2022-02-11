@@ -32,7 +32,7 @@ pip_inventory <- function(action            = "load",
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   # inventory file to be used everywhere
-  inv_file <- paste0(maindir, "_inventory/inventory.fst")
+  inv_file <- fs::path(maindir, "_inventory/inventory.fst")
 
   # get processing time for all data signatures
   time <- format(Sys.time(), "%Y%m%d%H%M%S")

@@ -32,7 +32,7 @@ pip_load_all_aux <- function(replace           = NULL,
                    wrap = TRUE)
   }
 
-  auxdir <- paste0(maindir, "_aux/")
+  auxdir <- fs::path(maindir, "_aux/")
 
   aux_files <- list.files(auxdir,
                           pattern    = "[a-z]+\\.(rds|fst)",
