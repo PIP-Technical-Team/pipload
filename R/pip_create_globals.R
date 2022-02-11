@@ -101,7 +101,8 @@ pip_create_globals <- function(root_dir = Sys.getenv("PIP_ROOT_DIR"),
   out_path_pc <- check_and_create(dir     = glbs$OUT_DIR_PC,
                                   vintage = vintage,
                                   DATE    = glbs$DATE,
-                                  clean   = clean)
+                                  clean   = clean,
+                                  verbose = verbose)
 
 
   available_paths <- fs::dir_ls(path = glbs$OUT_DIR_PC,
@@ -129,7 +130,8 @@ pip_create_globals <- function(root_dir = Sys.getenv("PIP_ROOT_DIR"),
   out_path_tb <- check_and_create(dir     = glbs$OUT_DIR_TB,
                                   vintage = vintage,
                                   DATE    = glbs$DATE,
-                                  clean   = clean)
+                                  clean   = clean,
+                                  verbose = verbose)
 
 
   #  Estimations output dir of table baker
@@ -200,7 +202,7 @@ create_dir <- function(glbs) {
 #' @param DATE character: date of the form "%Y%m%d"
 #' @inheritParams pip_create_globals
 #'
-check_and_create <- function(dir, vintage, DATE, clean) {
+check_and_create <- function(dir, vintage, DATE, clean, verbose) {
 
   # on.exit ------------
   on.exit({
