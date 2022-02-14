@@ -9,7 +9,8 @@ pip_create_globals(
   out_dir = root_dir,
   vintage = "latest",
   suffix = NULL,
-  clean = FALSE
+  clean = FALSE,
+  verbose = getOption("pipload.verbose")
 )
 }
 \arguments{
@@ -29,6 +30,8 @@ won't be taken into account if the \code{vintage = "latest"}}
 
 \item{clean}{logical: if TRUE it cleans all empty directories that have been
 created by mistake. Default is FALSE.}
+
+\item{verbose}{logical: display messages. Default is \code{getOption("pipload.verbose")}}
 }
 \value{
 

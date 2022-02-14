@@ -4,7 +4,7 @@
 \alias{check_and_create}
 \title{check vintage version and create}
 \usage{
-check_and_create(dir, vintage, DATE, clean)
+check_and_create(dir, vintage, DATE, clean, verbose)
 }
 \arguments{
 \item{dir}{character: output directory}
@@ -19,6 +19,8 @@ created. All the names will be coerced to lower cases}
 
 \item{clean}{logical: if TRUE it cleans all empty directories that have been
 created by mistake. Default is FALSE.}
+
+\item{verbose}{logical: display messages. Default is \code{getOption("pipload.verbose")}}
 }
 \description{
 check vintage version and create
