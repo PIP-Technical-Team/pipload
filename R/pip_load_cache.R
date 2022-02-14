@@ -145,14 +145,14 @@ pip_load_cache <- function(country          = NULL,
     if (verbose) { # if user wants spinner
 
       cli::cli_process_start("Loading data and creating a {.field {type}}")
-      dt <- purrr::map(.x      = fs::path(cache_dir, df, ".fst"),
+      dt <- purrr::map(.x      = fs::path(cache_dir, df, ext =  "fst"),
                        .f      = ps_load_chache,
                        verbose = verbose)
       sp$finish()
       cli::cli_process_done()
 
     } else { # if user does not want spinner... pipeline purposes
-      dt <- purrr::map(.x      = fs::path(cache_dir, df, ".fst"),
+      dt <- purrr::map(.x      = fs::path(cache_dir, df, ext = "fst"),
                        .f      = ps_load_chache,
                        verbose = verbose)
     }
