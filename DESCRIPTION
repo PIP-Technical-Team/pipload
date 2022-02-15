@@ -1,5 +1,5 @@
 Package: pipload
-Version: 0.1.8
+Version: 0.1.8.9010
 Title: Load PIP microdata into memory
 Description: provides a series of tools to load into memory the PIP microdata.
     You can load and update the inventory of PIP microdata, as well as find the
@@ -26,7 +26,8 @@ Imports:
     dplyr,
     cli,
     magrittr,
-    usethis
+    usethis,
+    stringr
 Suggests: 
     testthat
 URL: https://pip-technical-team.github.io/pipload/

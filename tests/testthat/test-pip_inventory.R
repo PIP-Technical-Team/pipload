@@ -4,7 +4,7 @@ test_that("list of countries correct", {
   root_dir  <-  Sys.getenv("PIP_ROOT_DIR")
   maindir   <-  pip_create_globals(root_dir)$PIP_DATA_DIR
 
-  cdf <- fs::dir_ls(path    = paste0(maindir, "COL"),
+  cdf <- fs::dir_ls(path    = fs::path(maindir, "COL"),
                     regexp  = "PIP.*dta$",
                     recurse = TRUE
   )

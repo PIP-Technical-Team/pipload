@@ -80,7 +80,7 @@ pip_find_data <- function(country         = NULL,
                          source           = NULL,
                          root_dir         = Sys.getenv("PIP_ROOT_DIR"),
                          maindir          = pip_create_globals(root_dir)$PIP_DATA_DIR,
-                         inv_file         = paste0(maindir,
+                         inv_file         = fs::path(maindir,
                                            "_inventory/inventory.fst"),
                          filter_to_pc = FALSE,
                          filter_to_tb = FALSE,
@@ -141,8 +141,8 @@ pip_find_data <- function(country         = NULL,
 
       # Load country names when no country is selected
       countries <- fs::dir_ls(maindir)
-      countries <- gsub(maindir, "", countries)
-      countries <- countries[!grepl("^_", countries)]  # remove _aux folder
+      countries <- stringr::str_extract(countries, "[:upper:]{3}$")
+      countries <- countries[!is.na(countries)]  # remove _aux folder
 
       years      <- NULL
 

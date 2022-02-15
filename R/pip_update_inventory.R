@@ -22,7 +22,7 @@ pip_update_inventory <- function(country = NULL,
                                  ) {
 
   # inventory file to be used everywhere
-  inv_file <- paste0(maindir, "_inventory/inventory.fst")
+  inv_file <- fs::path(maindir, "_inventory/inventory.fst")
 
   if (maindir == pip_create_globals(Sys.getenv("PIP_ROOT_DIR"))$PIP_DATA_DIR
       && is.null(country)) {
@@ -82,7 +82,7 @@ pip_update_inventory <- function(country = NULL,
 
   # search all data available for selected countries
   cli::cli_progress_step("reading PIP directory")
-  inventory <- fs::dir_ls(path    = paste0(maindir, country),
+  inventory <- fs::dir_ls(path    = fs::path(maindir, country),
                           regexp  = "PIP.*dta$",
                           recurse = TRUE)
   cli::cli_progress_done()
@@ -110,7 +110,7 @@ pip_update_inventory <- function(country = NULL,
   dsi <- ds_inventory[, c("country_code", "data_signature")]
 
   # check signature of current fst file
-  ds_inventory_path <- paste0(maindir, "_inventory/inventory_datasignature.fst")
+  ds_inventory_path <- fs::path(maindir, "_inventory/inventory_datasignature.fst")
 
   if (file.exists(ds_inventory_path)) {
 
@@ -193,7 +193,7 @@ pip_update_inventory <- function(country = NULL,
     }
 
     # make sure directory exists
-    wholedir <- paste0(maindir, "_inventory/_vintage/")
+    wholedir <- fs::path(maindir, "_inventory/_vintage/")
     if (!(dir.exists(wholedir))) {
       dir.create(wholedir, recursive = TRUE)
     }
@@ -263,7 +263,7 @@ pip_update_inventory <- function(country = NULL,
     )
 
     haven::write_dta(data = dt,
-                     path = paste0(maindir, "_inventory/", "inventory.dta")
+                     path = fs::path(maindir, "_inventory/", "inventory.dta")
     )
 
     # Vintage

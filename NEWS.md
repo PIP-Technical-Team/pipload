@@ -1,3 +1,14 @@
+# pipload (development version)
+* add max years for countries and aggregates in `pip_create_globals()` this 
+option should be moved somewhere else. Maybe the pipeline, but for now it is 
+included here. 
+
+* Allow user to use `version = 0` in `pip_load_aux()` to refer to the current 
+version
+
+* allow users to select output directory in `pip_create_globals()`  and vintage
+name.
+
 # pipload 0.1.8
 * fix issue with several version in pip_find_data
 

@@ -2,18 +2,19 @@
 #'
 #' @param msrdir character: measure (CPI) directory. created on `pip_prices()`.
 #' @param measure character: Measure to be used. e.g., "cpi" or "ppp".
-#' @param version An integer or a quoted directive. "available": displays list of
-#' available versions for `measure`. "select"|"pick"|"choose": allows user to
-#' select the vintage of `measure`. if the integer is a negative number
-#' (e.g., `-1`), `pip_load_aux` will load that number of versions before the
-#' most recent version available. So, if `-1` it will load the version before the
-#' current, `-2` loads two versions before the current one, and so on. If it is
-#' a positive number, it must be quoted and in the form "%Y%m%d%H%M%S".
-#' @param file_to_load character: file path to load. Does not work with any other
-#' argument
+#' @param version An integer or a quoted directive. "available": displays list
+#'   of available versions for `measure`. "select"|"pick"|"choose": allows user
+#'   to select the vintage of `measure`. if the integer is a zero or a negative
+#'   number (e.g., `-1`), `pip_load_aux` will load that number of versions
+#'   before the most recent version available. So, if `0`, it loads the current
+#'   version. If `-1`, it will load the version before the current, `-2` loads two
+#'   versions before the current one, and so on. If it is a positive number, it
+#'   must be quoted (as character) and in the form "%Y%m%d%H%M%S".
+#' @param file_to_load character: file path to load. Does not work with any
+#'   other argument
 #' @param apply_label logical: if TRUE, predefined labels will apply to data
-#' loaded using `file_to_load` argument. Default TRUE. Tip: change to FALSE if
-#' the main structure of data has changed and labels have not been updated
+#'   loaded using `file_to_load` argument. Default TRUE. Tip: change to FALSE if
+#'   the main structure of data has changed and labels have not been updated
 #' @param verbose logical: whether to display message. Default is TRUE
 #' @param preferred_format character: preferred format. default is "fst".
 #' @inheritParams pip_find_cache
@@ -44,9 +45,7 @@
 pip_load_aux <- function(measure           = NULL,
                          root_dir          = Sys.getenv("PIP_ROOT_DIR"),
                          maindir           = pip_create_globals(root_dir)$PIP_DATA_DIR,
-                         msrdir            = paste0(maindir,
-                                              "_aux/",
-                                              measure, "/"),
+                         msrdir            = fs::path(maindir, "_aux", measure),
                          version           = NULL,
                          file_to_load      = NULL,
                          apply_label       = TRUE,
@@ -129,15 +128,16 @@ pip_load_aux <- function(measure           = NULL,
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## seelct version --------
 
-    if (is.null(version)) {
-      path_of_file <- paste0(msrdir, measure)
-      file_to_load <- paste0(path_of_file , ".", preferred_format)
+    # select most recent version
+    if (is.null(version) || as.numeric(version) == 0) {
+      path_of_file <- fs::path(msrdir, measure)
+      file_to_load <- fs::path(path_of_file ,  ext = preferred_format)
       load_msg     <- paste("Most recent version of data loaded")
       apply_label  <- TRUE
 
     } else {
       # Find Vintages options
-      vint_dir <- paste0(msrdir, "_vintage")
+      vint_dir <- fs::path(msrdir, "_vintage")
 
       # Get all version available
       vers <- fs::dir_ls(
@@ -165,16 +165,15 @@ pip_load_aux <- function(measure           = NULL,
         ans <- menu(
           ver_dates,
           title = paste(
-            "There are",
-            length(ver_dates),
-            "versions available.\n",
+            "There are", length(ver_dates), "versions available.\n",
             "Please select the one you want to load."
+            )
           )
 
-        )
+        # If user select x number of versions before the current one
       } else if (as.numeric(version) < 0) {
 
-        ans <- (as.numeric(version) * -1) + 1
+        ans <- (as.numeric(version) * -1) + 1 # position in the vector of available versions
 
         if (ans > length(ver_dates)) {
           msg     <- "Invalid number of version"
@@ -194,7 +193,9 @@ pip_load_aux <- function(measure           = NULL,
                        class = "pipload_error")
         }
 
-      } else if (!(is.na(as.POSIXct(version, "%Y%m%d%H%M%S", tz = Sys.timezone())))) {
+        # If the user select a particular date or version.
+      } else if (!(is.na(as.POSIXct(as.character(version), "%Y%m%d%H%M%S", tz = Sys.timezone())))) {
+
         if (any(grepl(version, vers))) {
           ans <- which(grepl(version, vers))
 
@@ -292,7 +293,7 @@ read_by_format <- function(pformat) {
   force(pformat)
 
   function(x) {
-    file2read <- paste0(x, ".", pformat)
+    file2read <- fs::path(x, ext =  pformat)
 
     if (pformat == "fst") {
       x <- fst::read_fst(file2read, as.data.table = TRUE)

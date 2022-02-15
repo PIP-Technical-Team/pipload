@@ -4,10 +4,34 @@
 \alias{pip_create_globals}
 \title{Create global variables for PIP data management}
 \usage{
-pip_create_globals(root_dir = Sys.getenv("PIP_ROOT_DIR"))
+pip_create_globals(
+  root_dir = Sys.getenv("PIP_ROOT_DIR"),
+  out_dir = root_dir,
+  vintage = "latest",
+  suffix = NULL,
+  clean = FALSE,
+  verbose = getOption("pipload.verbose")
+)
 }
 \arguments{
 \item{root_dir}{character: root directory of the PIP data}
+
+\item{out_dir}{character: Output Directory. Default is \code{root_dir}}
+
+\item{vintage}{character: name of output folder. It could be "latest",
+"new", or any other name. if it is "latest" (default), the most recent
+version available in the vintage directory of the form "\%Y\%m\%d" will be
+used. If it is "new", a new folder with a name of the form "\%Y\%m\%d" will be
+created. All the names will be coerced to lower cases}
+
+\item{suffix}{character: suffix to be added to the name of the vintage
+folder. Useful for testing purposes. Something of the form "\%Y\%m\%d_test"
+won't be taken into account if the \code{vintage = "latest"}}
+
+\item{clean}{logical: if TRUE it cleans all empty directories that have been
+created by mistake. Default is FALSE.}
+
+\item{verbose}{logical: display messages. Default is \code{getOption("pipload.verbose")}}
 }
 \value{
 

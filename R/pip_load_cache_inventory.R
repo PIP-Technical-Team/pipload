@@ -21,9 +21,9 @@ pip_load_cache_inventory <- function(root_dir         = Sys.getenv("PIP_ROOT_DIR
   tool <- match.arg(tool)
 
   if (tool == "PC") {
-    inv_file <- paste0(pipedir, "pc_data/cache/clean_survey_data/_crr_inventory/crr_inventory.fst")
+    inv_file <- fs::path(pipedir, "pc_data/cache/clean_survey_data/_crr_inventory/crr_inventory.fst")
   } else {
-    inv_file <- paste0(pipedir, "tb_data/cache/clean_survey_data/_crr_inventory/crr_inventory.fst")
+    inv_file <- fs::path(pipedir, "tb_data/cache/clean_survey_data/_crr_inventory/crr_inventory.fst")
   }
 
   #--------- Load Data ---------

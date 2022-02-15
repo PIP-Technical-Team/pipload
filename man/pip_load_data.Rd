@@ -18,7 +18,7 @@ pip_load_data(
   type = "dataframe",
   root_dir = Sys.getenv("PIP_ROOT_DIR"),
   maindir = pip_create_globals(root_dir)$PIP_DATA_DIR,
-  inv_file = paste0(maindir, "_inventory/inventory.fst"),
+  inv_file = fs::path(maindir, "_inventory/inventory.fst"),
   filter_to_pc = TRUE,
   filter_to_tb = FALSE,
   verbose = getOption("pipload.verbose")
