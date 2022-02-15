@@ -28,7 +28,13 @@
     <loc>https://pip-technical-team.github.io/pipload/reference/as_pipmd.html</loc>
   </url>
   <url>
+    <loc>https://pip-technical-team.github.io/pipload/reference/check_and_create.html</loc>
+  </url>
+  <url>
     <loc>https://pip-technical-team.github.io/pipload/reference/create_cond.html</loc>
+  </url>
+  <url>
+    <loc>https://pip-technical-team.github.io/pipload/reference/create_dir.html</loc>
   </url>
   <url>
     <loc>https://pip-technical-team.github.io/pipload/reference/data_to_df.html</loc>

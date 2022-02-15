@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">pipload</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.8</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.8.9010</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -59,7 +59,7 @@
   type <span class="op">=</span> <span class="st">"dataframe"</span>,
   root_dir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"PIP_ROOT_DIR"</span><span class="op">)</span>,
   maindir <span class="op">=</span> <span class="fu"><a href="pip_create_globals.html">pip_create_globals</a></span><span class="op">(</span><span class="va">root_dir</span><span class="op">)</span><span class="op">$</span><span class="va">PIP_DATA_DIR</span>,
-  inv_file <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">maindir</span>, <span class="st">"_inventory/inventory.fst"</span><span class="op">)</span>,
+  inv_file <span class="op">=</span> <span class="fu">fs</span><span class="fu">::</span><span class="fu"><a href="https://fs.r-lib.org/reference/path.html" class="external-link">path</a></span><span class="op">(</span><span class="va">maindir</span>, <span class="st">"_inventory/inventory.fst"</span><span class="op">)</span>,
   filter_to_pc <span class="op">=</span> <span class="cn">TRUE</span>,
   filter_to_tb <span class="op">=</span> <span class="cn">FALSE</span>,
   verbose <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"pipload.verbose"</span><span class="op">)</span>
@@ -124,8 +124,7 @@ in the Table Maker. Default if FALSE</p></dd>
 <span class="r-in">              year    <span class="op">=</span> <span class="fl">2017</span><span class="op">)</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> <span style="color: #00BB00;">root_dir</span> is not defined. Directory paths will lack network-drive root</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> directory</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in pip_find_data(country = country, year = year, survey_acronym = survey_acronym,     vermast = vermast, veralt = veralt, module = module, tool = tool,     source = source, condition = condition, maindir = maindir,     inv_file = inv_file, filter_to_pc = filter_to_pc, filter_to_tb = filter_to_tb):</span> main directory `PIP-Data_QA/` not reachable.</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">ℹ</span> Check connection</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> [EACCES] Failed to make directory '/PIP-Data_QA': permission denied</span>
 <span class="r-in"></span>
 <span class="r-in"><span class="co"># specific years for one country</span></span>
 <span class="r-in"><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu">pip_load_data</span><span class="op">(</span></span>
@@ -134,8 +133,7 @@ in the Table Maker. Default if FALSE</p></dd>
 <span class="r-in"><span class="op">)</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> <span style="color: #00BB00;">root_dir</span> is not defined. Directory paths will lack network-drive root</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> directory</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in pip_find_data(country = country, year = year, survey_acronym = survey_acronym,     vermast = vermast, veralt = veralt, module = module, tool = tool,     source = source, condition = condition, maindir = maindir,     inv_file = inv_file, filter_to_pc = filter_to_pc, filter_to_tb = filter_to_tb):</span> main directory `PIP-Data_QA/` not reachable.</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">ℹ</span> Check connection</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> [EACCES] Failed to make directory '/PIP-Data_QA': permission denied</span>
 <span class="r-in"></span>
 <span class="r-in"><span class="co"># country FHF does not exist so it will be part of `fail` output (No error)</span></span>
 <span class="r-in"><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu">pip_load_data</span><span class="op">(</span></span>
@@ -144,8 +142,7 @@ in the Table Maker. Default if FALSE</p></dd>
 <span class="r-in"><span class="op">)</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> <span style="color: #00BB00;">root_dir</span> is not defined. Directory paths will lack network-drive root</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> directory</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in pip_find_data(country = country, year = year, survey_acronym = survey_acronym,     vermast = vermast, veralt = veralt, module = module, tool = tool,     source = source, condition = condition, maindir = maindir,     inv_file = inv_file, filter_to_pc = filter_to_pc, filter_to_tb = filter_to_tb):</span> main directory `PIP-Data_QA/` not reachable.</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">ℹ</span> Check connection</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> [EACCES] Failed to make directory '/PIP-Data_QA': permission denied</span>
 <span class="r-in"></span>
 <span class="r-in"><span class="co"># Load a different module (e.g., GPWG)</span></span>
 <span class="r-in"><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu">pip_load_data</span><span class="op">(</span>country <span class="op">=</span> <span class="st">"PRY"</span>,</span>
@@ -153,16 +150,14 @@ in the Table Maker. Default if FALSE</p></dd>
 <span class="r-in">             module <span class="op">=</span> <span class="st">"PC-GPWG"</span><span class="op">)</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> <span style="color: #00BB00;">root_dir</span> is not defined. Directory paths will lack network-drive root</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> directory</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in pip_find_data(country = country, year = year, survey_acronym = survey_acronym,     vermast = vermast, veralt = veralt, module = module, tool = tool,     source = source, condition = condition, maindir = maindir,     inv_file = inv_file, filter_to_pc = filter_to_pc, filter_to_tb = filter_to_tb):</span> main directory `PIP-Data_QA/` not reachable.</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">ℹ</span> Check connection</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> [EACCES] Failed to make directory '/PIP-Data_QA': permission denied</span>
 <span class="r-in"></span>
 <span class="r-in"><span class="co"># Load different sources</span></span>
 <span class="r-in"><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu">pip_load_data</span><span class="op">(</span>country <span class="op">=</span> <span class="st">"COL"</span>,</span>
 <span class="r-in">             source <span class="op">=</span> <span class="st">"HIST"</span><span class="op">)</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> <span style="color: #00BB00;">root_dir</span> is not defined. Directory paths will lack network-drive root</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> directory</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in pip_find_data(country = country, year = year, survey_acronym = survey_acronym,     vermast = vermast, veralt = veralt, module = module, tool = tool,     source = source, condition = condition, maindir = maindir,     inv_file = inv_file, filter_to_pc = filter_to_pc, filter_to_tb = filter_to_tb):</span> main directory `PIP-Data_QA/` not reachable.</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">ℹ</span> Check connection</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> [EACCES] Failed to make directory '/PIP-Data_QA': permission denied</span>
 <span class="r-in"></span>
 <span class="r-in"><span class="co"># Load using Survey ID</span></span>
 <span class="r-in"><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu">pip_load_data</span><span class="op">(</span>survey_id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"HND_2017_EPHPM_V01_M_V02_A_PIP_PC-GPWG"</span>,</span>
@@ -170,15 +165,13 @@ in the Table Maker. Default if FALSE</p></dd>
 <span class="r-in">                            <span class="op">)</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> <span style="color: #00BB00;">root_dir</span> is not defined. Directory paths will lack network-drive root</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> directory</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in pip_load_inventory(maindir = maindir):</span> file PIP-Data_QA/_inventory/inventory.fst does not exist</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">ℹ</span> Check your connection to the drives</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> [EACCES] Failed to make directory '/PIP-Data_QA': permission denied</span>
 <span class="r-in"><span class="co"># Use condition argument</span></span>
 <span class="r-in"><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="pip_find_data.html">pip_find_data</a></span><span class="op">(</span>condition <span class="op">=</span> <span class="st">"country_code %chin% c('PRY', 'KGZ') &amp;</span>
 <span class="r-in">                    (surveyid_year &gt;= 2012 &amp; surveyid_year &lt; 2014)"</span><span class="op">)</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> <span style="color: #00BB00;">root_dir</span> is not defined. Directory paths will lack network-drive root</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> directory</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in pip_find_data(condition = "country_code %chin% c('PRY', 'KGZ') &amp;\n                    (surveyid_year &gt;= 2012 &amp; surveyid_year &lt; 2014)"):</span> main directory `PIP-Data_QA/` not reachable.</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">ℹ</span> Check connection</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> [EACCES] Failed to make directory '/PIP-Data_QA': permission denied</span>
 <span class="r-in"></span>
 <span class="r-in"><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span>
 <span class="r-in"><span class="co"># more than two years for more than one country (only firt year will be used)</span></span>

@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">pipload</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.8</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.8.9010</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -49,7 +49,7 @@
   measure <span class="op">=</span> <span class="cn">NULL</span>,
   root_dir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"PIP_ROOT_DIR"</span><span class="op">)</span>,
   maindir <span class="op">=</span> <span class="fu"><a href="pip_create_globals.html">pip_create_globals</a></span><span class="op">(</span><span class="va">root_dir</span><span class="op">)</span><span class="op">$</span><span class="va">PIP_DATA_DIR</span>,
-  msrdir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">maindir</span>, <span class="st">"_aux/"</span>, <span class="va">measure</span>, <span class="st">"/"</span><span class="op">)</span>,
+  msrdir <span class="op">=</span> <span class="fu">fs</span><span class="fu">::</span><span class="fu"><a href="https://fs.r-lib.org/reference/path.html" class="external-link">path</a></span><span class="op">(</span><span class="va">maindir</span>, <span class="st">"_aux"</span>, <span class="va">measure</span><span class="op">)</span>,
   version <span class="op">=</span> <span class="cn">NULL</span>,
   file_to_load <span class="op">=</span> <span class="cn">NULL</span>,
   apply_label <span class="op">=</span> <span class="cn">TRUE</span>,
@@ -67,16 +67,17 @@
 <dt>msrdir</dt>
 <dd><p>character: measure (CPI) directory. created on <code>pip_prices()</code>.</p></dd>
 <dt>version</dt>
-<dd><p>An integer or a quoted directive. "available": displays list of
-available versions for <code>measure</code>. "select"|"pick"|"choose": allows user to
-select the vintage of <code>measure</code>. if the integer is a negative number
-(e.g., <code>-1</code>), <code>pip_load_aux</code> will load that number of versions before the
-most recent version available. So, if <code>-1</code> it will load the version before the
-current, <code>-2</code> loads two versions before the current one, and so on. If it is
-a positive number, it must be quoted and in the form "%Y%m%d%H%M%S".</p></dd>
+<dd><p>An integer or a quoted directive. "available": displays list
+of available versions for <code>measure</code>. "select"|"pick"|"choose": allows user
+to select the vintage of <code>measure</code>. if the integer is a zero or a negative
+number (e.g., <code>-1</code>), <code>pip_load_aux</code> will load that number of versions
+before the most recent version available. So, if <code>0</code>, it loads the current
+version. If <code>-1</code>, it will load the version before the current, <code>-2</code> loads two
+versions before the current one, and so on. If it is a positive number, it
+must be quoted (as character) and in the form "%Y%m%d%H%M%S".</p></dd>
 <dt>file_to_load</dt>
-<dd><p>character: file path to load. Does not work with any other
-argument</p></dd>
+<dd><p>character: file path to load. Does not work with any
+other argument</p></dd>
 <dt>apply_label</dt>
 <dd><p>logical: if TRUE, predefined labels will apply to data
 loaded using <code>file_to_load</code> argument. Default TRUE. Tip: change to FALSE if
@@ -97,36 +98,31 @@ the main structure of data has changed and labels have not been updated</p></dd>
 <span class="r-in"><span class="va">cpi</span> <span class="op">&lt;-</span> <span class="fu">pip_load_aux</span><span class="op">(</span><span class="st">"cpi"</span><span class="op">)</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> <span style="color: #00BB00;">root_dir</span> is not defined. Directory paths will lack network-drive root</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> directory</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in pip_load_aux("cpi"):</span> all the format available are not allowed</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span style="color: #BB0000;">✖</span> Only <span style="color: #00BB00;">fst</span>, <span style="color: #00BB00;">rds</span>, and <span style="color: #00BB00;">dta</span> are allowed. Currently directory has formats</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> [EACCES] Failed to make directory '/PIP-Data_QA': permission denied</span>
 <span class="r-in"></span>
 <span class="r-in"><span class="co"># load PPP</span></span>
 <span class="r-in"><span class="va">ppp</span> <span class="op">&lt;-</span> <span class="fu">pip_load_aux</span><span class="op">(</span><span class="st">"ppp"</span><span class="op">)</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> <span style="color: #00BB00;">root_dir</span> is not defined. Directory paths will lack network-drive root</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> directory</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in pip_load_aux("ppp"):</span> all the format available are not allowed</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span style="color: #BB0000;">✖</span> Only <span style="color: #00BB00;">fst</span>, <span style="color: #00BB00;">rds</span>, and <span style="color: #00BB00;">dta</span> are allowed. Currently directory has formats</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> [EACCES] Failed to make directory '/PIP-Data_QA': permission denied</span>
 <span class="r-in"></span>
 <span class="r-in"><span class="co"># Load GDP</span></span>
 <span class="r-in"><span class="va">gdp</span> <span class="op">&lt;-</span> <span class="fu">pip_load_aux</span><span class="op">(</span><span class="st">"gdp"</span><span class="op">)</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> <span style="color: #00BB00;">root_dir</span> is not defined. Directory paths will lack network-drive root</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> directory</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in pip_load_aux("gdp"):</span> all the format available are not allowed</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span style="color: #BB0000;">✖</span> Only <span style="color: #00BB00;">fst</span>, <span style="color: #00BB00;">rds</span>, and <span style="color: #00BB00;">dta</span> are allowed. Currently directory has formats</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> [EACCES] Failed to make directory '/PIP-Data_QA': permission denied</span>
 <span class="r-in"></span>
 <span class="r-in"><span class="va">measure</span> <span class="op">&lt;-</span> <span class="st">"cpi"</span></span>
 <span class="r-in"><span class="va">av</span>      <span class="op">&lt;-</span> <span class="fu">pip_load_aux</span><span class="op">(</span><span class="va">measure</span>, version <span class="op">=</span> <span class="st">"available"</span><span class="op">)</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> <span style="color: #00BB00;">root_dir</span> is not defined. Directory paths will lack network-drive root</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> directory</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in pip_load_aux(measure, version = "available"):</span> all the format available are not allowed</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span style="color: #BB0000;">✖</span> Only <span style="color: #00BB00;">fst</span>, <span style="color: #00BB00;">rds</span>, and <span style="color: #00BB00;">dta</span> are allowed. Currently directory has formats</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> [EACCES] Failed to make directory '/PIP-Data_QA': permission denied</span>
 <span class="r-in"><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">av</span><span class="op">)</span></span>
 <span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in head(av):</span> object 'av' not found</span>
 <span class="r-in"><span class="va">df</span>      <span class="op">&lt;-</span> <span class="fu">pip_load_aux</span><span class="op">(</span><span class="va">measure</span>, version <span class="op">=</span> <span class="va">av</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> <span style="color: #00BB00;">root_dir</span> is not defined. Directory paths will lack network-drive root</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> directory</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in pip_load_aux(measure, version = av[1]):</span> all the format available are not allowed</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span style="color: #BB0000;">✖</span> Only <span style="color: #00BB00;">fst</span>, <span style="color: #00BB00;">rds</span>, and <span style="color: #00BB00;">dta</span> are allowed. Currently directory has formats</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> [EACCES] Failed to make directory '/PIP-Data_QA': permission denied</span>
 <span class="r-in"><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                                               </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1 function (x, df1, df2, ncp, log = FALSE)    </span>
@@ -138,8 +134,7 @@ the main structure of data has changed and labels have not been updated</p></dd>
 <span class="r-in"><span class="va">df</span>      <span class="op">&lt;-</span> <span class="fu">pip_load_aux</span><span class="op">(</span><span class="va">measure</span>, version <span class="op">=</span> <span class="op">-</span><span class="fl">1</span><span class="op">)</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> <span style="color: #00BB00;">root_dir</span> is not defined. Directory paths will lack network-drive root</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> directory</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in pip_load_aux(measure, version = -1):</span> all the format available are not allowed</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span style="color: #BB0000;">✖</span> Only <span style="color: #00BB00;">fst</span>, <span style="color: #00BB00;">rds</span>, and <span style="color: #00BB00;">dta</span> are allowed. Currently directory has formats</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> [EACCES] Failed to make directory '/PIP-Data_QA': permission denied</span>
 <span class="r-in"><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                                               </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1 function (x, df1, df2, ncp, log = FALSE)    </span>

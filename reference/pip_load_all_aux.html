@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">pipload</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.8</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.8.9010</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -76,16 +76,17 @@ be loaded. default is <code>aux</code></p></dd>
 <dt>root_dir</dt>
 <dd><p>character: root directory of the PIP data</p></dd>
 <dt>version</dt>
-<dd><p>An integer or a quoted directive. "available": displays list of
-available versions for <code>measure</code>. "select"|"pick"|"choose": allows user to
-select the vintage of <code>measure</code>. if the integer is a negative number
-(e.g., <code>-1</code>), <code>pip_load_aux</code> will load that number of versions before the
-most recent version available. So, if <code>-1</code> it will load the version before the
-current, <code>-2</code> loads two versions before the current one, and so on. If it is
-a positive number, it must be quoted and in the form "%Y%m%d%H%M%S".</p></dd>
+<dd><p>An integer or a quoted directive. "available": displays list
+of available versions for <code>measure</code>. "select"|"pick"|"choose": allows user
+to select the vintage of <code>measure</code>. if the integer is a zero or a negative
+number (e.g., <code>-1</code>), <code>pip_load_aux</code> will load that number of versions
+before the most recent version available. So, if <code>0</code>, it loads the current
+version. If <code>-1</code>, it will load the version before the current, <code>-2</code> loads two
+versions before the current one, and so on. If it is a positive number, it
+must be quoted (as character) and in the form "%Y%m%d%H%M%S".</p></dd>
 <dt>file_to_load</dt>
-<dd><p>character: file path to load. Does not work with any other
-argument</p></dd>
+<dd><p>character: file path to load. Does not work with any
+other argument</p></dd>
 <dt>apply_label</dt>
 <dd><p>logical: if TRUE, predefined labels will apply to data
 loaded using <code>file_to_load</code> argument. Default TRUE. Tip: change to FALSE if
