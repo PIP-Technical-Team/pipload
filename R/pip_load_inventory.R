@@ -22,6 +22,9 @@ pip_load_inventory <- function(root_dir          = Sys.getenv("PIP_ROOT_DIR"),
   if (file.exists(inv_file)) {
     df       <- fst::read_fst(inv_file,
                               as.data.table = TRUE)
+
+    # add root directory back
+    df[, orig := fs::path((root_dir), orig)]
     return(df)
 
   } else {

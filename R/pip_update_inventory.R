@@ -82,8 +82,15 @@ pip_update_inventory <- function(country = NULL,
 
   # search all data available for selected countries
   cli::cli_progress_step("reading PIP directory")
-  inventory <- fs::dir_ls(path    = fs::path(maindir, country),
-                          regexp  = "PIP.*dta$",
+
+  if (is.null(country)) {
+    cts_path <- fs::path(maindir)
+  } else {
+    cts_path <- fs::path(maindir, country)
+  }
+
+  inventory <- fs::dir_ls(path    = cts_path,
+                          regexp  = "PIP.*[[:upper:]]\\.dta$",
                           recurse = TRUE)
   cli::cli_progress_done()
 
@@ -241,7 +248,11 @@ pip_update_inventory <- function(country = NULL,
     ][
       # Remove unnecessary rows
       !(is.na(filename))
-    ]
+    ][,
+      # remove root from file path
+      orig := gsub((root_dir), "", orig)
+      ]
+
 
     # Remove all data
     if (file.exists(inv_file)) {
