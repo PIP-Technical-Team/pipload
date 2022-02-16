@@ -13,12 +13,12 @@
 #' \dontrun{
 #' pip_update_inventory("COL")
 #' }
-pip_update_inventory <- function(country = NULL,
-                                 root_dir          = Sys.getenv("PIP_ROOT_DIR"),
-                                 maindir           = pip_create_globals(root_dir)$PIP_DATA_DIR,
-                                 force   = FALSE,
-                                 time    = format(Sys.time(), "%Y%m%d%H%M%S"),
-                                 user    = Sys.info()[8]
+pip_update_inventory <- function(country  = NULL,
+                                 root_dir = Sys.getenv("PIP_ROOT_DIR"),
+                                 maindir  = pip_create_globals(root_dir)$PIP_DATA_DIR,
+                                 force    = FALSE,
+                                 time     = format(Sys.time(), "%Y%m%d%H%M%S"),
+                                 user     = Sys.info()[8]
                                  ) {
 
   # inventory file to be used everywhere
@@ -53,8 +53,9 @@ pip_update_inventory <- function(country = NULL,
 
       country_list <- list_of_countries(maindir = maindir)
 
-      country      <- menu(country_list,
+      ans_country  <- menu(country_list,
                            title = "Select the country you want to update")
+      country     <- country_list[ans_country]
 
     } else if (ans == 4) {
 
@@ -149,7 +150,7 @@ pip_update_inventory <- function(country = NULL,
       cli::cli_alert_info("file {.file inventory.fst} did not found")
 
       ds_inventory_production <-
-        data.table::data.table(country_code   = list_of_countries(maindir),
+        data.table::data.table(country_code   = list_of_countries(maindir = maindir),
                                data_signature = "0000",
                                time           = time,
                                user           = user)
@@ -200,9 +201,11 @@ pip_update_inventory <- function(country = NULL,
     }
 
     # make sure directory exists
-    wholedir <- fs::path(maindir, "_inventory/_vintage/")
-    if (!(dir.exists(wholedir))) {
-      dir.create(wholedir, recursive = TRUE)
+    wholedir <- fs::path(maindir, "_inventory", "_vintage")
+    if (!(fs::dir_exists(wholedir))) {
+
+      fs::dir_create(wholedir,recurse =  TRUE)
+
     }
 
     #--------- create nice dataframe ---------
@@ -222,35 +225,36 @@ pip_update_inventory <- function(country = NULL,
     dt <- data.table::data.table(orig = inventory)
 
     #--------- Format data ---------
-    dt[,
-       # Get filenane only
-       filename := gsub("(.*[Dd]ata/)([^/]+)", "\\2", orig)
-    ][,
+    dt <-
+      dt[,
+         # Get filenane only
+         filename := gsub("(.*[Dd]ata/)([^/]+)", "\\2", orig)
+      ][,
 
-      # Name sections of filename into variables
-      (cnames) := tstrsplit(filename, "_", fixed=TRUE)
-    ][,
+        # Name sections of filename into variables
+        (cnames) := tstrsplit(filename, "_", fixed=TRUE)
+      ][,
 
-      # Remove .dta in module
-      module := gsub("\\.dta$", "", module)
-    ][,
+        # Remove .dta in module
+        module := gsub("\\.dta$", "", module)
+      ][,
 
-      # create tool and source
-      c("tool", "source") := tstrsplit(module, "-", fixed = TRUE)
-    ][,
-      # change to lower case
-      c("vermast", "veralt") := lapply(.SD, tolower),
-      .SDcols = c("vermast", "veralt")
-    ][
-      ,
-      # Remove unnecessary variables
-      c("M", "A") := NULL
-    ][
-      # Remove unnecessary rows
-      !(is.na(filename))
-    ][,
-      # remove root from file path
-      orig := gsub((root_dir), "", orig)
+        # create tool and source
+        c("tool", "source") := tstrsplit(module, "-", fixed = TRUE)
+      ][,
+        # change to lower case
+        c("vermast", "veralt") := lapply(.SD, tolower),
+        .SDcols = c("vermast", "veralt")
+      ][
+        ,
+        # Remove unnecessary variables
+        c("M", "A") := NULL
+      ][
+        # Remove unnecessary rows
+        !(is.na(filename))
+      ][,
+        # remove root from file path
+        orig := gsub((root_dir), "", orig)
       ]
 
 
@@ -274,12 +278,12 @@ pip_update_inventory <- function(country = NULL,
     )
 
     haven::write_dta(data = dt,
-                     path = fs::path(maindir, "_inventory/", "inventory.dta")
+                     path = fs::path(maindir, "_inventory", "inventory.dta")
     )
 
     # Vintage
     fst::write_fst(x = dt,
-                   path = paste0(wholedir, "inventory", "_", time,".fst")
+                   path = fs::path(wholedir, paste0("inventory_", time), ext = "fst")
     )
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
