@@ -222,7 +222,8 @@ pip_find_data <- function(country         = NULL,
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-  df <- pip_load_inventory(maindir  = maindir,
+  df <- pip_load_inventory(root_dir = root_dir,
+                           maindir  = maindir,
                            inv_file = inv_file)
   df <- df[ eval(condi)]
 
