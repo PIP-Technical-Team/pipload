@@ -3,7 +3,7 @@ pkgdown: 2.0.2
 pkgdown_sha: ~
 articles:
   global-variables: global-variables.html
-last_built: 2022-02-17T02:16Z
+last_built: 2022-02-17T02:17Z
 urls:
   reference: https://pip-technical-team.github.io/pipload/reference
   article: https://pip-technical-team.github.io/pipload/articles
