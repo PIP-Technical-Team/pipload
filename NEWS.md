@@ -1,4 +1,7 @@
 # pipload (development version)
+* make sure `pipload` work in RS connect server. 
+
+* `pip_create_globals()` vigneete.
 
 # pipload 0.1.9
 * add max years for countries and aggregates in `pip_create_globals()` this 
