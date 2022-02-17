@@ -82,6 +82,9 @@ pip_create_globals <- function(root_dir = Sys.getenv("PIP_ROOT_DIR"),
     glbs$PCN_MASTER       <- fs::path(glbs$POVCALNET, "00.Master/02.vintage/")
   }
 
+  #
+  glbs$DLW_RAW_DIR          <- fs::path(root_dir,"DLW-RAW")
+
 
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
