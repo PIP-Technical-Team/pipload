@@ -1,4 +1,4 @@
-# pipload (development version)
+# pipload 0.1.10
 * make sure `pipload` work in RS connect server. 
 
 * `pip_create_globals()` vigneete.
