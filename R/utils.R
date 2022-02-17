@@ -24,14 +24,15 @@ list_of_countries <- function(root_dir          = Sys.getenv("PIP_ROOT_DIR"),
   cli::cli_progress_step("getting list of countries")
   countries <- fs::dir_ls(path    = maindir,
                           recurse = FALSE,
+                          regexp = "[A-Z]{3}$",
                           type    = "directory"
-  )
+                          )
+
   cli::cli_progress_done()
 
   countries <- as.character(countries)
+  country_list <- stringr::str_extract(countries, "[A-Z]{3}$")
 
-  country_list <- gsub(maindir, "", countries)
-  country_list <- country_list[!grepl("^_", country_list)]
   return(country_list)
 }
 
