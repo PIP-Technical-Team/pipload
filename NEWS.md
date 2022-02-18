@@ -1,4 +1,7 @@
 # pipload 0.1.11
+* add function `pip_load_dlw_inventory()`
+
+* fix bugs with installation. 
 
 # pipload 0.1.10
 * make sure `pipload` work in RS connect server. 

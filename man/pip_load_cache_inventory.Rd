@@ -19,12 +19,6 @@ pip_load_cache_inventory(
 \item{tool}{character: Either "PC" for Poverty calculator or "TB" for table
 maker}
 }
-\value{
-data frame
-\dontrun{
-pip_load_cache_inventory()
-}
-}
 \description{
 Load cache inventory
 }
