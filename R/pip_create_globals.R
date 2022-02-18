@@ -185,10 +185,12 @@ pip_create_globals <- function(root_dir = Sys.getenv("PIP_ROOT_DIR"),
 #' @param glbs list of object. Some of them are fs_paths
 #'
 create_dir <- function(glbs) {
+
   is_fs_path <- which(purrr::map_lgl(glbs, inherits, "fs_path"))
+
   purrr::walk(.x = glbs[is_fs_path],
               .f = ~{
-                if (!fs::dir_exists(.x)) {
+                if (!fs::dir_exists(.x[length(.x)])) {
                   fs::dir_create(path    = .x,
                                  recurse = TRUE)
                 }
