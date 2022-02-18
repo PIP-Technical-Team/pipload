@@ -15,6 +15,8 @@ pip_load_results(
 )
 }
 \arguments{
+\item{output}{character: name of the output file}
+
 \item{country}{character: vector of ISO3 country codes.}
 
 \item{year}{numeric: survey year}
@@ -24,10 +26,12 @@ pip_load_results(
 
 \item{type}{character: Either \code{dataframe} or \code{list}. Defaults is \code{dataframe}.}
 
+\item{root_dir}{character: root directory of the PIP data}
+
 \item{verbose}{logical: If TRUE, display informative messages. Default TRUE}
 }
 \value{
-
+data.table
 }
 \description{
 Load PIP pre-calculated data sets

@@ -28,7 +28,8 @@ Imports:
     magrittr,
     usethis,
     stringr,
-    joyn
+    joyn,
+    lubridate
 Suggests: 
     rmarkdown,
     knitr,

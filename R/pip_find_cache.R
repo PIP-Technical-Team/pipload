@@ -3,7 +3,7 @@
 #' @inheritParams pip_load_cache
 #' @inheritParams pip_create_globals
 #'
-#' @return
+#' @return data.table
 #' @export
 #'
 #' @examples

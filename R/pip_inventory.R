@@ -8,10 +8,10 @@
 #' @param force  logical: If TRUE, forced update implemented
 #' @param inventory_version date: date of inventory version to load
 #' @inheritParams pip_find_cache
+#' @inheritParams pip_create_globals
 #'
-#' @return
+#' @return data.table
 #' @export
-#' @import data.table
 #'
 #' @examples
 #' \dontrun{

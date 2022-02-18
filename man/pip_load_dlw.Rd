@@ -13,5 +13,5 @@ data.table or list
 Loads datalibweb data
 }
 \examples{
-pip_load_dlw(pip_load_dlw)
+pip_load_dlw()
 }

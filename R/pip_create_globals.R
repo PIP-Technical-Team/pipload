@@ -14,7 +14,7 @@
 #'   created by mistake. Default is FALSE.
 #' @param verbose logical: display messages. Default is `getOption("pipload.verbose")`
 #'
-#' @return
+#' @return list
 #' @export
 #'
 #' @examples

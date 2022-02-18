@@ -11,13 +11,15 @@ pip_load_inventory(
 )
 }
 \arguments{
+\item{root_dir}{character: root directory of the PIP data}
+
 \item{maindir}{character: main directory. By default it
 uses \code{pip_create_globals(root_dir)$PIP_DATA_DIR}}
 
 \item{inv_file}{character: file path to be loaded.}
 }
 \value{
-
+data.table
 }
 \description{
 Load inventory of welfare aggregate datasets

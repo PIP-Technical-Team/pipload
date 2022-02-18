@@ -1,3 +1,28 @@
+# add globals
+if (getRversion() >= "2.15.1") {
+  utils::globalVariables(
+    c(
+      "cache_id",
+      "country_code",
+      "data",
+      "filename",
+      "filtered",
+      "maxalt",
+      "maxmast",
+      "menu",
+      "n_source",
+      "orig",
+      "survey_id_real",
+      "veralt",
+      "vermast",
+      ".",
+      "!!",
+      ":="
+    )
+  )
+}
+
+
 #' pip_find_data
 #' Find surveys available for PIP
 #'
@@ -381,9 +406,7 @@ create_cond <- function(x) {
 #'
 #' @param df dataframe from `pip_load_inventory()`
 #'
-#' @return
-#'
-#' @import data.table
+#' @return data.table
 pip_keep_pc_source <- function(df){
 
   source_order <- c("GPWG", "HIST", "BIN", "GROUP", "synth")

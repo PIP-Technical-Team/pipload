@@ -18,8 +18,9 @@
 #' @param verbose logical: whether to display message. Default is TRUE
 #' @param preferred_format character: preferred format. default is "fst".
 #' @inheritParams pip_find_cache
+#' @inheritParams pip_inventory
 #'
-#' @return
+#' @return data.table
 #' @export
 #'
 #' @examples
@@ -129,7 +130,11 @@ pip_load_aux <- function(measure           = NULL,
     ## seelct version --------
 
     # select most recent version
-    if (is.null(version) || as.numeric(version) == 0) {
+    if (is.null(version)) {
+      version <- 0
+    }
+
+    if (version == 0) {
       path_of_file <- fs::path(msrdir, measure)
       file_to_load <- fs::path(path_of_file ,  ext = preferred_format)
       load_msg     <- paste("Most recent version of data loaded")
@@ -286,7 +291,7 @@ pip_load_aux <- function(measure           = NULL,
 #'
 #' @param pformat character: format of the file.
 #'
-#' @return
+#' @return data.table
 #' @export
 read_by_format <- function(pformat) {
 

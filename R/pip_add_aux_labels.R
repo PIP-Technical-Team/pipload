@@ -4,7 +4,7 @@
 #' @param measure type of data frame, e.g., "cpi" or "PPP".
 #' @inheritParams pip_load_aux
 #'
-#' @return
+#' @return data.table
 #' @export
 pip_add_aux_labels <- function(x, measure, verbose) {
 

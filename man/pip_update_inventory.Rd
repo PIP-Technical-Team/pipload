@@ -16,6 +16,8 @@ pip_update_inventory(
 \arguments{
 \item{country}{character: vector with ISO3 country code to update}
 
+\item{root_dir}{character: root directory of the PIP data}
+
 \item{maindir}{character: main directory. By default it
 uses \code{pip_create_globals(root_dir)$PIP_DATA_DIR}}
 
@@ -27,7 +29,7 @@ is \code{format(Sys.time(), "\%Y\%m\%d\%H\%M\%S")}}
 \item{user}{character: Names or UPI of user. Default is \code{Sys.info()[8]}}
 }
 \value{
-
+invisible
 }
 \description{
 Update PIP microdata inventory

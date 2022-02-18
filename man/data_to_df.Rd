@@ -14,7 +14,7 @@ data_to_df(x, y, verbose)
 \item{verbose}{logical: If TRUE, messages will display in console.}
 }
 \value{
-
+data.table
 }
 \description{
 Convert origianl dta files to data frame format suitable for PIP

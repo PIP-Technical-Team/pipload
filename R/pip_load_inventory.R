@@ -2,8 +2,9 @@
 #'
 #' @param inv_file character: file path to be loaded.
 #' @inheritParams pip_inventory
+#' @inheritParams pip_create_globals
 #'
-#' @return
+#' @return data.table
 #' @export
 #' @import data.table
 #'

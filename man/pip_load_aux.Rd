@@ -21,6 +21,9 @@ pip_load_aux(
 
 \item{root_dir}{character: root directory of the PIP data}
 
+\item{maindir}{character: main directory. By default it
+uses \code{pip_create_globals(root_dir)$PIP_DATA_DIR}}
+
 \item{msrdir}{character: measure (CPI) directory. created on \code{pip_prices()}.}
 
 \item{version}{An integer or a quoted directive. "available": displays list
@@ -44,7 +47,7 @@ the main structure of data has changed and labels have not been updated}
 \item{preferred_format}{character: preferred format. default is "fst".}
 }
 \value{
-
+data.table
 }
 \description{
 Load any auxiliary data

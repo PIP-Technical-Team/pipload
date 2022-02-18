@@ -56,6 +56,8 @@ Can't be used with arguments \code{country}, \code{year},
 
 \item{type}{character: Either \code{dataframe} or \code{list}. Defaults is \code{dataframe}.}
 
+\item{root_dir}{character: root directory of the PIP data}
+
 \item{maindir}{character: Main directory}
 
 \item{inv_file}{character: file path to be loaded.}
@@ -69,7 +71,7 @@ in the Table Maker. Default if FALSE}
 \item{verbose}{logical: whether to display message. Default is TRUE}
 }
 \value{
-
+data.table
 }
 \description{
 Load PIP microdata in different way
