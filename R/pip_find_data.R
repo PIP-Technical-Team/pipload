@@ -381,9 +381,7 @@ create_cond <- function(x) {
 #'
 #' @param df dataframe from `pip_load_inventory()`
 #'
-#' @return
-#'
-#' @import data.table
+#' @return data.table
 pip_keep_pc_source <- function(df){
 
   source_order <- c("GPWG", "HIST", "BIN", "GROUP", "synth")

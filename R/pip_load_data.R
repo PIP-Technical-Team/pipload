@@ -6,7 +6,7 @@
 #' @param survey_id character: Vector with survey IDs like
 #' 'HND_2017_EPHPM_V01_M_V01_A_PIP_PC-GPWG'
 #'
-#' @return
+#' @return data.table
 #' @export
 #' @import data.table
 #' @import cli
@@ -238,7 +238,7 @@ pip_load_data <- function(country          = NULL,
 #' @param y chradter: file name including format
 #' @param verbose logical: If TRUE, messages will display in console.
 #'
-#' @return
+#' @return data.table
 data_to_df <- function(x, y, verbose) {
   if (verbose) {
     sp$spin()

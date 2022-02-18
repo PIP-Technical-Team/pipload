@@ -50,6 +50,8 @@ Can't be used with arguments \code{country}, \code{year},
 \item{source}{character: Source of data. It could be \code{GPWG}, \code{HIST}, \code{GROUP},
 \code{synth}, \code{BIN}, and \code{ALL}. The latter is used only in Table Maker.}
 
+\item{root_dir}{character: root directory of the PIP data}
+
 \item{maindir}{character: Main directory}
 
 \item{inv_file}{character: file path to be loaded.}

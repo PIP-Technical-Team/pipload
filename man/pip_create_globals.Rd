@@ -34,7 +34,7 @@ created by mistake. Default is FALSE.}
 \item{verbose}{logical: display messages. Default is \code{getOption("pipload.verbose")}}
 }
 \value{
-
+list
 }
 \description{
 Create global variables for PIP data management

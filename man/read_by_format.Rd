@@ -10,7 +10,7 @@ read_by_format(pformat)
 \item{pformat}{character: format of the file.}
 }
 \value{
-
+data.table
 }
 \description{
 read file dependin on format and convert to data.table

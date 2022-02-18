@@ -50,6 +50,8 @@ Can't be used with arguments \code{country}, \code{year},
 
 \item{type}{character: Either \code{dataframe} or \code{list}. Defaults is \code{dataframe}.}
 
+\item{root_dir}{character: root directory of the PIP data}
+
 \item{pipedir}{charater: directory of pipeline. Default is
 \code{pip_create_globals(root_dir)$PIP_PIPE_DIR}}
 

@@ -41,7 +41,7 @@ income}
 \code{pip_create_globals(root_dir)$PIP_PIPE_DIR}}
 }
 \value{
-
+data.table
 }
 \description{
 Find cache data based on patterns

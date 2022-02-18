@@ -10,7 +10,7 @@ pip_keep_pc_source(df)
 \item{df}{dataframe from \code{pip_load_inventory()}}
 }
 \value{
-
+data.table
 }
 \description{
 Make sure we keep only one module per survey ID when loading.

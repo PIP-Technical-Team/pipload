@@ -1,11 +1,12 @@
 #' Update PIP microdata inventory
 #'
-#' @inheritParams pip_inventory
 #' @param  time time: time of execution to be saved in data signature. Default
 #' is `format(Sys.time(), "%Y%m%d%H%M%S")`
 #' @param  user character: Names or UPI of user. Default is `Sys.info()[8]`
+#' @inheritParams pip_inventory
+#' @inheritParams pip_create_globals
 #'
-#' @return
+#' @return invisible
 #' @export
 #' @import data.table
 #'

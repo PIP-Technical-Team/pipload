@@ -14,7 +14,7 @@ pip_add_aux_labels(x, measure, verbose)
 \item{verbose}{logical: whether to display message. Default is TRUE}
 }
 \value{
-
+data.table
 }
 \description{
 Title

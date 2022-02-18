@@ -1,8 +1,10 @@
 #' Load PIP pre-calculated data sets
 #'
+#' @param output character: name of the output file
 #' @inheritParams pip_load_cache
+#' @inheritParams pip_create_globals
 #'
-#' @return
+#' @return data.table
 #' @export
 #'
 #' @examples
@@ -42,7 +44,7 @@ pip_load_results <- function(output   = NULL,
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## load file --------
 
-  full_path <- paste0(resdir, output, ".fst")
+  full_path <- fs::path(resdir, output, ext = "fst")
 
   dt <- fst::read_fst(full_path, as.data.table = TRUE)
 
