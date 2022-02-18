@@ -22,7 +22,8 @@ pip_load_all_aux(
 \item{replace}{logical or NULL. Whether to replace objects in \code{envir}}
 
 \item{aux}{character: auxiliary files to load. Default is c("cpi", "ppp",
-"pfw", "pop", "gdm", "gdp", "pce")}
+"pfw", "pop", "gdm", "gdp", "pce"). If "all", all auxiliary frame will be
+loaded in memory}
 
 \item{aux_names}{character of the same length of \code{aux}. Names of objects to
 be loaded. default is \code{aux}}

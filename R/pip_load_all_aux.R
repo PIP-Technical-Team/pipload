@@ -35,21 +35,41 @@ pip_load_all_aux <- function(replace           = NULL,
 
   auxdir <- fs::path(maindir, "_aux/")
 
-  aux_files <- fs::dir_ls(auxdir,
+  aux_dirs <- fs::dir_ls(auxdir,
                           recurse = FALSE,
                           type = "directory")
 
-  aux_indicators <- stringr::str_extract(aux_files, "[^/]+$")
+  aux_indicators <- stringr::str_extract(aux_dirs, "[^/]+$")
   aux_indicators   <-  tolower(unique(aux_indicators))
 
-  if (tolower(aux) == "all") {
-    aux <- aux_indicators
-  }
-  not_av <- !(aux  %in% aux_indicators)
+  # keep only those that exist
+  dd <-
+    purrr::map2(.x = aux_dirs,
+                .y = aux_indicators,
+                .f = ~{
+                  ffst <- fs::path(.x, .y, ext = "fst")
+                  frds <- fs::path(.x, .y, ext = "rds")
 
-  if (tolower(aux_names) == "all") {
-    aux_names <- aux_indicators
+                  f_exists <- purrr::map_lgl(c(ffst, frds), fs::file_exists)
+                  any(f_exists)
+
+                })
+  names(dd) <- aux_indicators
+  dd <- purrr::keep(.x = dd,
+                    .p = ~isTRUE(.x))
+
+  aux_indicators <- names(dd)
+
+  if (length(aux) == 1) {
+    if (tolower(aux) == "all") {
+      aux <- aux_indicators
+    }
+    if (tolower(aux_names) == "all") {
+      aux_names <- aux_indicators
+    }
   }
+
+  not_av <- !(aux  %in% aux_indicators)
 
   if (any(not_av)) {
     cli::cli_abort("auxiliary file {.field {aux[not_av]}} is not available")
