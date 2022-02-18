@@ -1,4 +1,7 @@
 # pipload (development version)
+* read most recent dir in each object of list `create_dir()` inside `pip_create_globals()`
+
+
 
 # pipload 0.1.12
 * Allow "all" in `pip_load_all_aux()`
@@ -13,7 +16,7 @@
 # pipload 0.1.10
 * make sure `pipload` work in RS connect server. 
 
-* `pip_create_globals()` vignnete.
+* `pip_create_globals()` vignette.
 
 # pipload 0.1.9
 * add max years for countries and aggregates in `pip_create_globals()` this 
