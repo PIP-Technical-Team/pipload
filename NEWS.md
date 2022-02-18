@@ -1,4 +1,7 @@
 # pipload 0.1.12
+* Allow "all" in `pip_load_all_aux()`
+
+* messages for failure running into errors
 
 # pipload 0.1.11
 * add function `pip_load_dlw_inventory()`
