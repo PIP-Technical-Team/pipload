@@ -29,7 +29,7 @@ uses \code{pip_create_globals(root_dir)$PIP_DATA_DIR}}
 \item{inventory_version}{date: date of inventory version to load}
 }
 \value{
-
+data.table
 }
 \description{
 Load or Update PIP microdata inventory. Wrapper of function pip_load_inventory and

@@ -1,10 +1,3 @@
-# add globals
-if (getRversion() >= "2.15.1") {
-  utils::globalVariables(
-    c("menu")
-  )
-}
-
 #' Load PIP pre-calculated data sets
 #'
 #' @param output character: name of the output file

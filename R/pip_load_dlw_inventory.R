@@ -1,20 +1,3 @@
-# Add global variables to avoid NSE notes in R CMD check
-  if (getRversion() >= "2.15.1") {
-    utils::globalVariables(
-      c(
-        "creationtime",
-        "fullname",
-        "lastwritetime",
-        "module",
-        "survey_id",
-        "surveyid_year",
-        ".",
-        "!!",
-        ":="
-      )
-    )
-  }
-
 #' @title Prepare DatalibWeb inventory
 #'
 #' @description takes dlw inventory in csv form in the official folder structure and format

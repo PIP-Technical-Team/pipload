@@ -1,27 +1,3 @@
-# add globals
-if (getRversion() >= "2.15.1") {
-  utils::globalVariables(
-    c(
-      "cache_id",
-      "country_code",
-      "data",
-      "filename",
-      "filtered",
-      "maxalt",
-      "maxmast",
-      "menu",
-      "n_source",
-      "orig",
-      "survey_id_real",
-      "veralt",
-      "vermast",
-      ".",
-      "!!",
-      ":="
-    )
-  )
-}
-
 #' Update PIP microdata inventory
 #'
 #' @param  time time: time of execution to be saved in data signature. Default

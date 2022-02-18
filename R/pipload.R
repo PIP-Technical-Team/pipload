@@ -16,9 +16,41 @@ magrittr::`%>%`
 
 # Prevent R CMD check from complaining about the use of pipe expressions
 # standard data.table variables
-if (getRversion() >= "2.15.1")
-  utils::globalVariables(c(".", ".I", ".N", ".SD"), utils::packageName())
+if (getRversion() >= "2.15.1") {
+  utils::globalVariables(
+    names = c(
+      ".",
+      ".I",
+      ".N",
+      ".SD",
+      "cache_id",
+      "country_code",
+      "data",
+      "filename",
+      "filtered",
+      "maxalt",
+      "maxmast",
+      "menu",
+      "n_source",
+      "orig",
+      "survey_id_real",
+      "veralt",
+      "vermast",
+      "menu",
+      "creationtime",
+      "fullname",
+      "lastwritetime",
+      "module",
+      "survey_id",
+      "surveyid_year",
+      ".",
+      "!!",
+      ":="
+    ),
+    package = utils::packageName()
+  )
+}
+
 
 NULL
-
 
