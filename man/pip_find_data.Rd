@@ -2,8 +2,7 @@
 % Please edit documentation in R/pip_find_data.R
 \name{pip_find_data}
 \alias{pip_find_data}
-\title{pip_find_data
-Find surveys available for PIP}
+\title{Find surveys available in PIP drive}
 \usage{
 pip_find_data(
   country = NULL,
@@ -68,8 +67,7 @@ in the Table Maker. Default if FALSE}
 data.frame: list of filenames to be loaded with pcn_load()
 }
 \description{
-pip_find_data
-Find surveys available for PIP
+Find surveys available in PIP drive
 }
 \examples{
 # all years for one country

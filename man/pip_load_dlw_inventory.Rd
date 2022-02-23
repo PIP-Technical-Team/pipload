@@ -4,10 +4,13 @@
 \alias{pip_load_dlw_inventory}
 \title{Prepare DatalibWeb inventory}
 \usage{
-pip_load_dlw_inventory(dlw_dir = pip_create_globals()$DLW_RAW_DIR)
+pip_load_dlw_inventory(
+  root_dir = Sys.getenv("PIP_ROOT_DIR"),
+  dlw_dir = pip_create_globals(root_dir)$DLW_RAW_DIR
+)
 }
 \arguments{
-\item{dlw_dir}{character: path of dlw raw data}
+\item{dlw_dir}{character: path of datalibweb raw data}
 }
 \value{
 data.table

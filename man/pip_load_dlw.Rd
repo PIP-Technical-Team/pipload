@@ -4,14 +4,115 @@
 \alias{pip_load_dlw}
 \title{Loads datalibweb data}
 \usage{
-pip_load_dlw()
+pip_load_dlw(
+  country = NULL,
+  year = NULL,
+  survey_acronym = NULL,
+  vermast = NULL,
+  veralt = NULL,
+  module = NULL,
+  tool = c("PC", "TB"),
+  source = NULL,
+  survey_id = NULL,
+  condition = NULL,
+  type = "dataframe",
+  root_dir = Sys.getenv("PIP_ROOT_DIR"),
+  dlw_dir = pip_create_globals(root_dir)$DLW_RAW_DIR,
+  filter_to_pc = TRUE,
+  filter_to_tb = FALSE,
+  verbose = getOption("pipload.verbose")
+)
+}
+\arguments{
+\item{country}{character: vector of ISO3 country codes.}
+
+\item{year}{numeric: survey year}
+
+\item{survey_acronym}{character: Survey acronym}
+
+\item{vermast}{character: Master version in the form v## or ##}
+
+\item{veralt}{character: Alternative version in the form v## or ##}
+
+\item{module}{character: combination of \code{tool} and \code{source} separated by
+a hyphen (e.g., PC-GPWG)}
+
+\item{tool}{character: PIP tool in which data will be used. It could be
+\code{PC} for Poverty Calculator or \code{TB} for Table Maker. Others will be added}
+
+\item{source}{character: Source of data. It could be \code{GPWG}, \code{HIST}, \code{GROUP},
+\code{synth}, \code{BIN}, and \code{ALL}. The latter is used only in Table Maker.}
+
+\item{survey_id}{character: Vector with survey IDs like
+'HND_2017_EPHPM_V01_M_V01_A_PIP_PC-GPWG'}
+
+\item{condition}{character: logical condition that applies to all surveys.
+For example, "year > 2012". Make sure the condition uses the names of the
+variables in \code{pip_load_inventory()}: orig, filename, country_code, year,
+survey_acronym, vermast, veralt, collection, module, tool, and source.
+Can't be used with arguments \code{country}, \code{year},
+\code{survey_acronym} , \code{vermast}, \code{veralt}, \code{module} or \code{tool}.}
+
+\item{type}{character: Either \code{dataframe} or \code{list}. Defaults is \code{dataframe}.}
+
+\item{root_dir}{character: root directory of the PIP data}
+
+\item{filter_to_pc}{logical: If TRUE filter most recent data to be included
+in the Poverty Calculator. Default if FALSE}
+
+\item{filter_to_tb}{logical: If TRUE filter most recent data to be included
+in the Table Maker. Default if FALSE}
+
+\item{verbose}{logical: whether to display message. Default is TRUE}
 }
 \value{
-data.table or list
+data.table
 }
 \description{
 Loads datalibweb data
 }
 \examples{
+# ONe year and one country
+df <- pip_load_dlw(country = "PRY",
+              year    = 2017)
+
+# specific years for one country
+df <- pip_load_dlw(
+            country = "PRY",
+            year = c(2010, 2012)
+)
+
+# country FHF does not exist so it will be part of `fail` output (No error)
+df <- pip_load_dlw(
+       country = c("ARG", "FHF"),
+       year = 2010
+)
+
+# Load a different module (e.g., GPWG)
+df <- pip_load_dlw(country = "PRY",
+             year = 2010,
+             module = "PC-GPWG")
+
+# Load different sources
+df <- pip_load_dlw(country = "COL",
+             source = "HIST")
+
+# Load using Survey ID
+df <- pip_load_dlw(survey_id = c("HND_2017_EPHPM_V01_M_V02_A_PIP_PC-GPWG",
+                            "HND_2018_EPHPM_V01_M_V02_A_PIP_PC-GPWG")
+                            )
+# Use condition argument
+df <- pip_find_data(condition = "country_code \%chin\% c('PRY', 'KGZ') &
+                    (surveyid_year >= 2012 & surveyid_year < 2014)")
+
+\dontrun{
+# more than two years for more than one country (only firt year will be used)
+pip_load_dlw(
+       country = c("PRY", "ARG"),
+       year = c(2010, 2012)
+)
+
+# all countries and years
 pip_load_dlw()
+}
 }

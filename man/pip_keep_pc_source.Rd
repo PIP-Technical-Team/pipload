@@ -9,7 +9,7 @@ pip_keep_pc_source(df)
 pip_keep_pc_source(df)
 }
 \arguments{
-\item{df}{dataframe from \code{pip_load_inventory()}}
+\item{df}{dataframe from \code{pip_load_dlw_inventory()}}
 }
 \value{
 data.table

@@ -1,5 +1,4 @@
-#' pip_find_data
-#' Find surveys available for PIP
+#' Find surveys available in PIP drive
 #'
 #' @param country character: vector of ISO3 country codes.
 #' @param year    numeric: survey year

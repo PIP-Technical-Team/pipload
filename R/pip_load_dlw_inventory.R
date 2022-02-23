@@ -4,7 +4,7 @@
 #' it to be included in the pipeline. The original csv file is updated each time
 #' the dlw inventory is updated
 #'
-#' @param dlw_dir character: path of dlw raw data
+#' @param dlw_dir character: path of datalibweb raw data
 #'
 #' @return data.table
 #' @export
@@ -12,7 +12,8 @@
 #' @examples
 #' pip_load_dlw_inventory()
 pip_load_dlw_inventory  <- function(
-  dlw_dir = pip_create_globals()$DLW_RAW_DIR
+  root_dir = Sys.getenv("PIP_ROOT_DIR"),
+  dlw_dir  = pip_create_globals(root_dir)$DLW_RAW_DIR
   ){
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -41,6 +42,9 @@ pip_load_dlw_inventory  <- function(
 
   dlw_inv <-fst::read_fst(dlw_inv_file,
                           as.data.table = TRUE)
+
+  dlw_inv[,
+          fullname := fs::path(root_dir, fullname)]
 
   return(dlw_inv)
 }
