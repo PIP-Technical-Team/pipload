@@ -1,6 +1,8 @@
 # pipload (development version)
 * read most recent dir in each object of list `create_dir()` inside `pip_create_globals()`
 
+* Create `pip_load_dlw_inventory()`, `pip_find_dlw()`, and `pip_load_dlw()`
+
 
 
 # pipload 0.1.12
