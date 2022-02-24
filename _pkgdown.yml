@@ -8,5 +8,4 @@ home:
     this package loads auxiliary data, welfare data, and internal PIP data
     such as inventories.
 
-development:
-  mode: auto
+
