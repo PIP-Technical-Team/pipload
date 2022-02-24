@@ -53,6 +53,8 @@ Can't be used with arguments \code{country}, \code{year},
 
 \item{root_dir}{character: root directory of the PIP data}
 
+\item{dlw_dir}{character: path of datalibweb raw data}
+
 \item{filter_to_pc}{logical: If TRUE filter most recent data to be included
 in the Poverty Calculator. Default if FALSE}
 
@@ -90,8 +92,8 @@ df <- pip_load_dlw(country = "PRY",
              module = "GPWG")
 
 # Load using Survey ID
-df <- pip_load_dlw(survey_id = c("HND_2017_EPHPM_V01_M_V02_A_GPWG",
-                            "HND_2018_EPHPM_V01_M_V02_A_GPWG")
+df <- pip_load_dlw(survey_id = c("HND_2017_EPHPM_V01_M_V02_A_GMD_GPWG",
+                            "HND_2018_EPHPM_V01_M_V02_A_GMD_GPWG")
                             )
 # Use condition argument
 df <- pip_load_dlw(condition = "country_code \%chin\% c('PRY', 'KGZ') &

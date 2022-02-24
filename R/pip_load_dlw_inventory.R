@@ -5,6 +5,7 @@
 #' the dlw inventory is updated
 #'
 #' @param dlw_dir character: path of datalibweb raw data
+#' @inheritParams pip_create_globals
 #'
 #' @return data.table
 #' @export
@@ -28,11 +29,11 @@ pip_load_dlw_inventory  <- function(
 
     msg     <- c(
       "File does not exists",
-      "x" = "{dlw_inv_file} not found.",
+      "x" = "{.file {dlw_inv_file}} not found.",
       "i" = "check connection or {.field pipload} globals"
     )
     cli::cli_abort(msg,
-                   class = "pipdata_error"
+                   class = "pipload_error"
     )
   }
 

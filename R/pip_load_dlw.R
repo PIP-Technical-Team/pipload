@@ -2,6 +2,7 @@
 #'
 #' @inheritParams pip_find_data
 #' @inheritParams pip_load_aux
+#' @inheritParams pip_load_dlw_inventory
 #' @param type character: Either `dataframe` or `list`. Defaults is `dataframe`.
 #' @param survey_id character: Vector with survey IDs like
 #' 'HND_2017_EPHPM_V01_M_V01_A_PIP_PC-GPWG'
@@ -33,8 +34,8 @@
 #'              module = "GPWG")
 #'
 #' # Load using Survey ID
-#' df <- pip_load_dlw(survey_id = c("HND_2017_EPHPM_V01_M_V02_A_GPWG",
-#'                             "HND_2018_EPHPM_V01_M_V02_A_GPWG")
+#' df <- pip_load_dlw(survey_id = c("HND_2017_EPHPM_V01_M_V02_A_GMD_GPWG",
+#'                             "HND_2018_EPHPM_V01_M_V02_A_GMD_GPWG")
 #'                             )
 #' # Use condition argument
 #' df <- pip_load_dlw(condition = "country_code %chin% c('PRY', 'KGZ') &

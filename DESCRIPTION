@@ -29,7 +29,8 @@ Imports:
     usethis,
     stringr,
     joyn,
-    lubridate
+    lubridate,
+    lifecycle
 Suggests: 
     rmarkdown,
     knitr,

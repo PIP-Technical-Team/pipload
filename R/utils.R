@@ -51,7 +51,7 @@ list_of_countries <- function(root_dir          = Sys.getenv("PIP_ROOT_DIR"),
 #'
 #' @param dt dataframe with variable `survey_id` available.
 #'
-#' @return
+#' @return data.table
 #' @export
 survey_id_to_vars <- function(dt) {
 

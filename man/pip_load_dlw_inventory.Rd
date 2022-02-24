@@ -10,6 +10,8 @@ pip_load_dlw_inventory(
 )
 }
 \arguments{
+\item{root_dir}{character: root directory of the PIP data}
+
 \item{dlw_dir}{character: path of datalibweb raw data}
 }
 \value{
