@@ -2,3 +2,10 @@ url: https://pip-technical-team.github.io/pipload/
 template:
   bootstrap: 5
 
+home:
+  title: An R package for loading PIP data
+  description: >
+    this package loads auxiliary data, welfare data, and internal PIP data
+    such as inventories.
+
+
