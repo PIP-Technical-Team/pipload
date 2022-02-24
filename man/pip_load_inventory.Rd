@@ -22,7 +22,12 @@ uses \code{pip_create_globals(root_dir)$PIP_DATA_DIR}}
 data.table
 }
 \description{
-Load inventory of welfare aggregate datasets
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
+
+This function was deprecated because DLW data will loaded directly from a
+flat folder structure which allows bypassing the use of \code{datalibweb} in
+Stata, making the \code{pipdp} Stata package useless.From now on, use the \code{dlw}
+functions: \code{pip_load_dlw_inventory}, \code{pip_find_dlw}, and \code{pip_load_dlw}.
 }
 \examples{
 \dontrun{

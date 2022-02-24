@@ -67,7 +67,12 @@ in the Table Maker. Default if FALSE}
 data.frame: list of filenames to be loaded with pcn_load()
 }
 \description{
-Find surveys available in PIP drive
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
+
+This function was deprecated because DLW data will loaded directly from a
+flat folder structure which allows bypassing the use of \code{datalibweb} in
+Stata, making the \code{pipdp} Stata package useless.From now on, use the \code{dlw}
+functions: \code{pip_load_dlw_inventory}, \code{pip_find_dlw}, and \code{pip_load_dlw}.
 }
 \examples{
 # all years for one country

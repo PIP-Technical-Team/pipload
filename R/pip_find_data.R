@@ -1,5 +1,13 @@
 #' Find surveys available in PIP drive
 #'
+#' @description `r lifecycle::badge("deprecated")`
+#'
+#' This function was deprecated because DLW data will loaded directly from a
+#' flat folder structure which allows bypassing the use of `datalibweb` in
+#' Stata, making the `pipdp` Stata package useless.From now on, use the `dlw`
+#' functions: `pip_load_dlw_inventory`, `pip_find_dlw`, and `pip_load_dlw`.
+#'
+#'
 #' @param country character: vector of ISO3 country codes.
 #' @param year    numeric: survey year
 #' @param survey_acronym  character: Survey acronym
@@ -85,6 +93,12 @@ pip_find_data <- function(country         = NULL,
                          filter_to_tb = FALSE,
                          verbose      = getOption("pipload.verbose")
                          ) {
+
+  lifecycle::deprecate_soft("0.1.13",
+                            "pip_find_data()",
+                            "pip_find_dlw")
+
+
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   #---------   Initial conditions   ---------
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
