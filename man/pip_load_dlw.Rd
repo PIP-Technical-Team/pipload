@@ -12,7 +12,6 @@ pip_load_dlw(
   veralt = NULL,
   module = NULL,
   tool = c("PC", "TB"),
-  source = NULL,
   survey_id = NULL,
   condition = NULL,
   type = "dataframe",
@@ -39,9 +38,6 @@ a hyphen (e.g., PC-GPWG)}
 
 \item{tool}{character: PIP tool in which data will be used. It could be
 \code{PC} for Poverty Calculator or \code{TB} for Table Maker. Others will be added}
-
-\item{source}{character: Source of data. It could be \code{GPWG}, \code{HIST}, \code{GROUP},
-\code{synth}, \code{BIN}, and \code{ALL}. The latter is used only in Table Maker.}
 
 \item{survey_id}{character: Vector with survey IDs like
 'HND_2017_EPHPM_V01_M_V01_A_PIP_PC-GPWG'}
@@ -91,18 +87,14 @@ df <- pip_load_dlw(
 # Load a different module (e.g., GPWG)
 df <- pip_load_dlw(country = "PRY",
              year = 2010,
-             module = "PC-GPWG")
-
-# Load different sources
-df <- pip_load_dlw(country = "COL",
-             source = "HIST")
+             module = "GPWG")
 
 # Load using Survey ID
-df <- pip_load_dlw(survey_id = c("HND_2017_EPHPM_V01_M_V02_A_PIP_PC-GPWG",
-                            "HND_2018_EPHPM_V01_M_V02_A_PIP_PC-GPWG")
+df <- pip_load_dlw(survey_id = c("HND_2017_EPHPM_V01_M_V02_A_GPWG",
+                            "HND_2018_EPHPM_V01_M_V02_A_GPWG")
                             )
 # Use condition argument
-df <- pip_find_data(condition = "country_code \%chin\% c('PRY', 'KGZ') &
+df <- pip_load_dlw(condition = "country_code \%chin\% c('PRY', 'KGZ') &
                     (surveyid_year >= 2012 & surveyid_year < 2014)")
 
 \dontrun{

@@ -13,7 +13,6 @@ pip_find_dlw(
   module = NULL,
   tool = NULL,
   condition = NULL,
-  source = NULL,
   root_dir = Sys.getenv("PIP_ROOT_DIR"),
   dlw_dir = pip_create_globals(root_dir)$DLW_RAW_DIR,
   filter_to_pc = FALSE,
@@ -32,8 +31,8 @@ pip_find_dlw(
 
 \item{veralt}{character: Alternative version in the form v## or ##}
 
-\item{module}{character: combination of \code{tool} and \code{source} separated by
-a hyphen (e.g., PC-GPWG)}
+\item{module}{character: Source of data. It could be \code{GPWG}, \code{HIST}, \code{GROUP},
+\code{synth}, \code{BIN}, and \code{ALL}. The latter is used only in Table Maker.}
 
 \item{tool}{character: PIP tool in which data will be used. It could be
 \code{PC} for Poverty Calculator or \code{TB} for Table Maker. Others will be added}
@@ -44,9 +43,6 @@ variables in \code{pip_load_dlw_inventory()}: orig, filename, country_code, year
 survey_acronym, vermast, veralt, collection, module, tool, and source.
 Can't be used with arguments \code{country}, \code{year},
 \code{survey_acronym} , \code{vermast}, \code{veralt}, \code{module} or \code{tool}.}
-
-\item{source}{character: Source of data. It could be \code{GPWG}, \code{HIST}, \code{GROUP},
-\code{synth}, \code{BIN}, and \code{ALL}. The latter is used only in Table Maker.}
 
 \item{root_dir}{character: root directory of the PIP data}
 
@@ -88,11 +84,12 @@ pip_find_dlw(
 # Load a different module (e.g., GPWG)
 pip_find_dlw(country = "PRY",
              year = 2010,
-             module = "PC-GPWG")
+             module = "GPWG",
+             tool = "PC")
 
-# Load different sources
+# Load different modules
 pip_find_dlw(country = "COL",
-             source = "HIST")
+             module = "HIST")
 \dontrun{
 # more than two years for more than one country (only firt year will be used)
 pip_find_dlw(

@@ -30,18 +30,14 @@
 #' # Load a different module (e.g., GPWG)
 #' df <- pip_load_dlw(country = "PRY",
 #'              year = 2010,
-#'              module = "PC-GPWG")
-#'
-#' # Load different sources
-#' df <- pip_load_dlw(country = "COL",
-#'              source = "HIST")
+#'              module = "GPWG")
 #'
 #' # Load using Survey ID
-#' df <- pip_load_dlw(survey_id = c("HND_2017_EPHPM_V01_M_V02_A_PIP_PC-GPWG",
-#'                             "HND_2018_EPHPM_V01_M_V02_A_PIP_PC-GPWG")
+#' df <- pip_load_dlw(survey_id = c("HND_2017_EPHPM_V01_M_V02_A_GPWG",
+#'                             "HND_2018_EPHPM_V01_M_V02_A_GPWG")
 #'                             )
 #' # Use condition argument
-#' df <- pip_find_data(condition = "country_code %chin% c('PRY', 'KGZ') &
+#' df <- pip_load_dlw(condition = "country_code %chin% c('PRY', 'KGZ') &
 #'                     (surveyid_year >= 2012 & surveyid_year < 2014)")
 #'
 #' \dontrun{
@@ -61,7 +57,6 @@ pip_load_dlw <- function(country          = NULL,
                           veralt          = NULL,
                           module          = NULL,
                           tool            = c("PC", "TB"),
-                          source          = NULL,
                           survey_id       = NULL,
                           condition       = NULL,
                           type            = "dataframe",
@@ -84,9 +79,6 @@ pip_load_dlw <- function(country          = NULL,
     ri <- pip_load_dlw_inventory(root_dir = root_dir,
                                  dlw_dir  = dlw_dir)
 
-    ri[,
-       survey_id := gsub("\\.dta", "", filename)]
-
     si <- data.table::data.table(survey_id = survey_id)
 
     df <- ri[si,
@@ -103,7 +95,6 @@ pip_load_dlw <- function(country          = NULL,
                        veralt           = veralt        ,
                        module           = module        ,
                        tool             = tool          ,
-                       source           = source        ,
                        condition        = condition     ,
                        root_dir         = root_dir      ,
                        dlw_dir          = dlw_dir       ,
@@ -259,40 +250,7 @@ data_to_dt <- function(x, y, verbose) {
   #--------- Survey ID and its components ---------
 
   df$survey_id <- y
-  df <- data.table::as.data.table(df)
-
-  # create variables for merging
-  cnames <-
-    c(
-      "country_code",
-      "surveyid_year",
-      "survey_acronym",
-      "vermast",
-      "M",
-      "veralt",
-      "A",
-      "collection",
-      "module"
-    )
-
-  df[,
-     # Name sections of surveyID into variables
-     (cnames) := tstrsplit(survey_id, "_", fixed=TRUE)
-  ][,
-
-    # create tool and source
-    c("tool", "source") := tstrsplit(module, "-", fixed = TRUE)
-  ][,
-    # change to lower case
-    c("vermast", "veralt") := lapply(.SD, tolower),
-    .SDcols = c("vermast", "veralt")
-  ][,
-    surveyid_year := as.numeric(surveyid_year)
-  ][
-    ,
-    # Remove unnecessary variables
-    c("M", "A") := NULL
-  ]
+  df <- survey_id_to_vars(df)
 
   return(df)
 }
