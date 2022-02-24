@@ -30,7 +30,8 @@ Imports:
     stringr,
     joyn,
     lubridate,
-    lifecycle
+    lifecycle,
+    withr
 Suggests: 
     rmarkdown,
     knitr,

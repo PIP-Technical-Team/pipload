@@ -96,7 +96,7 @@ pip_find_data <- function(country         = NULL,
 
   lifecycle::deprecate_soft("0.1.13",
                             "pip_find_data()",
-                            "pip_find_dlw")
+                            "pip_find_dlw()")
 
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
