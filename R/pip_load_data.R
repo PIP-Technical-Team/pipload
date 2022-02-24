@@ -1,5 +1,12 @@
 #' Load PIP microdata in different way
 #'
+#' @description `r lifecycle::badge("deprecated")`
+#'
+#' This function was deprecated because DLW data will loaded directly from a
+#' flat folder structure which allows bypassing the use of `datalibweb` in
+#' Stata, making the `pipdp` Stata package useless.From now on, use the `dlw`
+#' functions: `pip_load_dlw_inventory`, `pip_find_dlw`, and `pip_load_dlw`.
+#'
 #' @inheritParams pip_find_data
 #' @inheritParams pip_load_aux
 #' @param type character: Either `dataframe` or `list`. Defaults is `dataframe`.
@@ -76,6 +83,9 @@ pip_load_data <- function(country          = NULL,
                           verbose      = getOption("pipload.verbose")
                           ) {
 
+  lifecycle::deprecate_soft("0.1.13",
+                            "pip_load_data()",
+                            "pip_load_dlw()")
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   #---------   Find Data   ---------

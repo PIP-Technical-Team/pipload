@@ -1,15 +1,13 @@
-#' A package for loading PIP data
-#'
-#'
-#' @section pipload functions:
-#' The pipaux functions ...
-#'
+#' @keywords internal
 #' @docType package
-#' @name pipload
+#' @name pipload-package
 #' @import data.table
+#' @importFrom lifecycle deprecated
 #' @importFrom magrittr "%>%" "%<>%"
 #' @export
 magrittr::`%>%`
+"_PACKAGE"
+
 
 # Make sure data.table knows we know we're using it
 .datatable.aware = TRUE
@@ -43,6 +41,9 @@ if (getRversion() >= "2.15.1") {
       "module",
       "survey_id",
       "surveyid_year",
+      "n_module",
+      "tool",
+      "vintage_id",
       ".",
       "!!",
       ":="

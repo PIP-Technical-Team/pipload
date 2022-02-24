@@ -1,37 +1,27 @@
-#' Find surveys available in PIP drive
-#'
-#' @description `r lifecycle::badge("deprecated")`
-#'
-#' This function was deprecated because DLW data will loaded directly from a
-#' flat folder structure which allows bypassing the use of `datalibweb` in
-#' Stata, making the `pipdp` Stata package useless.From now on, use the `dlw`
-#' functions: `pip_load_dlw_inventory`, `pip_find_dlw`, and `pip_load_dlw`.
-#'
+#' Find surveys available for DatalibWeb
 #'
 #' @param country character: vector of ISO3 country codes.
 #' @param year    numeric: survey year
 #' @param survey_acronym  character: Survey acronym
 #' @param vermast character: Master version in the form v## or ##
 #' @param veralt  character: Alternative version in the form v## or ##
-#' @param module  character: combination of `tool` and `source` separated by
-#' a hyphen (e.g., PC-GPWG)
+#' @param module  character: Source of data. It could be `GPWG`, `HIST`, `GROUP`,
+#' `synth`, `BIN`, and `ALL`. The latter is used only in Table Maker.
 #' @param tool    character: PIP tool in which data will be used. It could be
 #' `PC` for Poverty Calculator or `TB` for Table Maker. Others will be added
-#' @param source  character: Source of data. It could be `GPWG`, `HIST`, `GROUP`,
-#' `synth`, `BIN`, and `ALL`. The latter is used only in Table Maker.
 #' @param condition character: logical condition that applies to all surveys.
 #' For example, "year > 2012". Make sure the condition uses the names of the
-#' variables in `pip_load_inventory()`: orig, filename, country_code, year,
+#' variables in `pip_load_dlw_inventory()`: orig, filename, country_code, year,
 #' survey_acronym, vermast, veralt, collection, module, tool, and source.
 #' Can't be used with arguments `country`, `year`,
 #' `survey_acronym` , `vermast`, `veralt`, `module` or `tool`.
-#' @param maindir character: Main directory
+#' @param dlw_dir character: Main directory
 #' @param filter_to_pc logical: If TRUE filter most recent data to be included
 #' in the Poverty Calculator. Default if FALSE
 #' @param filter_to_tb logical: If TRUE filter most recent data to be included
 #' in the Table Maker. Default if FALSE
-#' @inheritParams pip_load_inventory
-#' @inheritParams pip_find_cache
+#' @inheritParams pip_load_dlw_inventory
+#' @inheritParams pip_find_dlw
 #' @inheritParams pip_load_aux
 #'
 #' @return data.frame: list of filenames to be loaded with pcn_load()
@@ -40,79 +30,70 @@
 #'
 #' @examples
 #' # all years for one country
-#' pip_find_data(country = "ARG")
+#' pip_find_dlw(country = "ARG")
 #'
 #' #' # all years for more than one country
-#' pip_find_data(country = c("COL", "ARG"))
+#' pip_find_dlw(country = c("COL", "ARG"))
 #'
 #' # specific years for one country
-#' pip_find_data(
+#' pip_find_dlw(
 #'             country = "COL",
 #'             year = c(2010, 2012)
 #' )
 #'
 #' # country FHF does not exist so it will be part of `fail` output (No error)
-#' pip_find_data(
+#' pip_find_dlw(
 #'        country = c("ARG", "FHF"),
 #'        year = 2010
 #' )
 #'
 #' # Load a different module (e.g., GPWG)
-#' pip_find_data(country = "PRY",
+#' pip_find_dlw(country = "PRY",
 #'              year = 2010,
-#'              module = "PC-GPWG")
+#'              module = "GPWG",
+#'              tool = "PC")
 #'
-#' # Load different sources
-#' pip_find_data(country = "COL",
-#'              source = "HIST")
+#' # Load different modules
+#' pip_find_dlw(country = "COL",
+#'              module = "HIST")
 #
 #' \dontrun{
 #' # more than two years for more than one country (only firt year will be used)
-#' pip_find_data(
+#' pip_find_dlw(
 #'        country = c("COL", "ARG"),
 #'        year = c(2010, 2012)
 #' )
 #'
 #' # all countries and years
-#' pip_find_data()
+#' pip_find_dlw()
 #' }
-pip_find_data <- function(country         = NULL,
-                         year             = NULL,
-                         survey_acronym   = NULL,
-                         vermast          = NULL,
-                         veralt           = NULL,
-                         module           = NULL,
-                         tool             = NULL,
-                         condition        = NULL,
-                         source           = NULL,
-                         root_dir         = Sys.getenv("PIP_ROOT_DIR"),
-                         maindir          = pip_create_globals(root_dir)$PIP_DATA_DIR,
-                         inv_file         = fs::path(maindir,
-                                           "_inventory/inventory.fst"),
-                         filter_to_pc = FALSE,
-                         filter_to_tb = FALSE,
-                         verbose      = getOption("pipload.verbose")
-                         ) {
-
-  lifecycle::deprecate_soft("0.1.13",
-                            "pip_find_data()",
-                            "pip_find_dlw()")
-
-
+pip_find_dlw <- function(country         = NULL,
+                          year           = NULL,
+                          survey_acronym = NULL,
+                          vermast        = NULL,
+                          veralt         = NULL,
+                          module         = NULL,
+                          tool           = NULL,
+                          condition      = NULL,
+                          root_dir       = Sys.getenv("PIP_ROOT_DIR"),
+                          dlw_dir        = pip_create_globals(root_dir)$DLW_RAW_DIR,
+                          filter_to_pc   = FALSE,
+                          filter_to_tb   = FALSE,
+                          verbose        = getOption("pipload.verbose")
+) {
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   #---------   Initial conditions   ---------
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   # drive and main dir
 
-  if (!dir.exists(maindir)) {
-    st_msg <- paste0("main directory `",
-                     maindir,
-                     "` not reachable.")
-    rlang::abort(c(
-                  st_msg,
-                  i = "Check connection"
-                  ),
+  if (!fs::dir_exists(dlw_dir)) {
+
+    msg     <- c(
+      "DLW directory {.file {dlw_dir}} could not be reached",
+      "i" = "check connection."
+      )
+    cli::cli_abort(msg,
                   class = "pipload_error"
                   )
   }
@@ -132,6 +113,11 @@ pip_find_data <- function(country         = NULL,
   #   Create conditions
   #----------------------------------------------------------
 
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Load DLW inventory --------
+  df <- pip_load_dlw_inventory(dlw_dir = dlw_dir)
+
+
   if (!is.null(condition)) { # if condition is used
     condit <- condition
     condi  <- parse(text = condition)
@@ -139,6 +125,7 @@ pip_find_data <- function(country         = NULL,
   } else { # if condition is not used
 
     if (is.null(country)) {
+
       argum <- c(year, survey_acronym, vermast, veralt)
       if (length(argum)) {
 
@@ -153,10 +140,7 @@ pip_find_data <- function(country         = NULL,
       }
 
       # Load country names when no country is selected
-      countries <- fs::dir_ls(maindir)
-      countries <- stringr::str_extract(countries, "[:upper:]{3}$")
-      countries <- countries[!is.na(countries)]  # remove _aux folder
-
+      countries <- df[, unique(country_code)]
       years      <- NULL
 
     } else { # country is defined
@@ -209,8 +193,7 @@ pip_find_data <- function(country         = NULL,
         "vermast",
         "veralt",
         "module",
-        "tool",
-        "source")
+        "tool")
 
     for (i in seq_along(argus)) {
 
@@ -234,10 +217,6 @@ pip_find_data <- function(country         = NULL,
   #---------   Load Inventory   ---------
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-
-  df <- pip_load_inventory(root_dir = root_dir,
-                           maindir  = maindir,
-                           inv_file = inv_file)
   df <- df[ eval(condi)]
 
   if (nrow(df) == 0) {
@@ -273,38 +252,37 @@ pip_find_data <- function(country         = NULL,
       ][,
         # Select right module (source) if more than one available
         # Create grouping variable
-        survey_id := paste(country_code, surveyid_year, survey_acronym, vermast, veralt,
+        vintage_id := paste(country_code, surveyid_year, survey_acronym, vermast, veralt,
                            sep = "_")
-      ][,
-        survey_id_real := gsub("(.*)(\\.dta$)", "\\1", filename)]
+      ]
 
     du <- df[, # get unique source by ID
-             .(source = unique(source)),
-             by = survey_id
+             .(module = unique(module)),
+             by = vintage_id
     ][, # count sources by ID
-      n_source := .N,
-      by = survey_id
+      n_module := .N,
+      by = vintage_id
     ]
 
     #--------- Only if there are more than one source in at least one ID ---------
 
     # those with only one source
     du1 <-
-      du[n_source == 1
+      du[n_module == 1
       ][,
-        n_source := NULL
+        n_module := NULL
       ]
 
     # treatment for those with more than one source
     du2 <-
-      du[n_source > 1
+      du[n_module > 1
       ][, # nest data by Survey ID. one dataframe for each ID with
         # several sources.
-        .(data = .nest(source)),
-        by = survey_id
+        .(data = .nest(module)),
+        by = vintage_id
 
       ][, # Keep one source per data using rule in `keep_source()`
-        filtered := purrr::map(data, ~sf_keep_pc_source(df = .x))
+        filtered := purrr::map(data, ~sf_keep_pc_module(df = .x))
       ]
 
     if (nrow(du2) >= 1) {
@@ -312,12 +290,12 @@ pip_find_data <- function(country         = NULL,
       if (inherits(du2$filtered, "list")) {
 
         du2 <- du2[, # Unnest data again so we get one source per ID
-                   .(source = .unnest(filtered)),
-                   by = survey_id
+                   .(module = .unnest(filtered)),
+                   by = vintage_id
         ]
       } else {
         du2[,
-            source := filtered
+            module := filtered
         ][,
           c("data", "filtered") := NULL
         ]
@@ -333,17 +311,13 @@ pip_find_data <- function(country         = NULL,
 
     # Filter df with only the value in dun
     df <- joyn::merge(df, dun,
-                      by      = c("survey_id", "source"),
+                      by      = c("vintage_id", "module"),
                       verbose = FALSE,
                       keep    = "inner")
 
-    # df <- df[dun,
-    #          on = .(survey_id,source)]
-
     df[,
-       survey_id := NULL]
+       vintage_id := NULL]
 
-  data.table::setnames(df, "survey_id_real", "survey_id")
   }
 
 
@@ -369,7 +343,7 @@ pip_find_data <- function(country         = NULL,
         c("maxalt",  "maxmast") := NULL
       ][,
         # Create grouping variable
-         survey_id := gsub("(.*)(\\.dta$)", "\\1", filename)
+        survey_id := gsub("(.*)(\\.dta$)", "\\1", filename)
       ]
   }
 
@@ -381,7 +355,7 @@ pip_find_data <- function(country         = NULL,
 
 #' CReate conditions for filtering
 #'
-#' @param x argument parsed through `pip_find_data`
+#' @param x argument parsed through `pip_find_dlw`
 #'
 #' @return character
 create_cond <- function(x) {
@@ -392,30 +366,30 @@ create_cond <- function(x) {
 
 #' Make sure we keep only one module per survey ID when loading.
 #'
-#' @param df dataframe from `pip_load_inventory()`
+#' @param df dataframe from `pip_load_dlw_inventory()`
 #'
 #' @return data.table
-pip_keep_pc_source <- function(df){
+pip_keep_pc_module <- function(df){
 
-  source_order <- c("GPWG", "HIST", "BIN", "GROUP", "synth")
-  source_avail <- df[, unique(source)]
+  module_order <- c("GPWG", "HIST", "BIN", "GROUP", "synth")
+  module_avail <- df[, unique(module)]
 
   out         <- FALSE
   i           <- 0
-  maxi        <- length(source_order)
-  source_keep <- NULL
+  maxi        <- length(module_order)
+  module_keep <- NULL
   while(out == FALSE && i <= maxi) {
 
     i <- i + 1
-    if (source_order[i] %in% source_avail) {
-      source_keep <- source_order[i]
+    if (module_order[i] %in% module_avail) {
+      module_keep <- module_order[i]
       out         <- TRUE
     }
 
   }
 
-  if (!is.null(source_keep)) {
-    df <- df[source == (source_keep)]
+  if (!is.null(module_keep)) {
+    df <- df[module == (module_keep)]
   }
   return(df)
 }
@@ -423,6 +397,6 @@ pip_keep_pc_source <- function(df){
 
 
 # make sure function runs fine
-sf_keep_pc_source <- purrr::possibly(pip_keep_pc_source,
+sf_keep_pc_module <- purrr::possibly(pip_keep_pc_module,
                                      otherwise = NULL)
 
