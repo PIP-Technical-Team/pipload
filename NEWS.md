@@ -3,6 +3,7 @@
 
 * Create `pip_load_dlw_inventory()`, `pip_find_dlw()`, and `pip_load_dlw()`
 
+* add `lifecycle` badges
 
 
 # pipload 0.1.12
