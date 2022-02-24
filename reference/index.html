@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">pipload</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.10</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.13</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -81,7 +81,7 @@
         <dd>check vintage version and create</dd>
       </dl><dl><dt>
           
-          <code><a href="create_cond.html">create_cond()</a></code> 
+          <code><a href="create_cond.html">create_cond()</a></code> <code><a href="create_cond.html">create_cond()</a></code> 
         </dt>
         <dd>CReate conditions for filtering</dd>
       </dl><dl><dt>
@@ -92,6 +92,11 @@
       </dl><dl><dt>
           
           <code><a href="data_to_df.html">data_to_df()</a></code> 
+        </dt>
+        <dd>Convert origianl dta files to data frame format suitable for PIP</dd>
+      </dl><dl><dt>
+          
+          <code><a href="data_to_dt.html">data_to_dt()</a></code> 
         </dt>
         <dd>Convert origianl dta files to data frame format suitable for PIP</dd>
       </dl><dl><dt>
@@ -113,14 +118,23 @@
           
           <code><a href="pip_find_data.html">pip_find_data()</a></code> 
         </dt>
-        <dd>pip_find_data
-Find surveys available for PIP</dd>
+        <dd>Find surveys available in PIP drive</dd>
+      </dl><dl><dt>
+          
+          <code><a href="pip_find_dlw.html">pip_find_dlw()</a></code> 
+        </dt>
+        <dd>Find surveys available for DatalibWeb</dd>
       </dl><dl><dt>
           
           <code><a href="pip_inventory.html">pip_inventory()</a></code> 
         </dt>
         <dd>Load or Update PIP microdata inventory. Wrapper of function pip_load_inventory and
 pip_update_inventory</dd>
+      </dl><dl><dt>
+          
+          <code><a href="pip_keep_pc_module.html">pip_keep_pc_module()</a></code> 
+        </dt>
+        <dd>Make sure we keep only one module per survey ID when loading.</dd>
       </dl><dl><dt>
           
           <code><a href="pip_keep_pc_source.html">pip_keep_pc_source()</a></code> 
@@ -153,6 +167,16 @@ pip_update_inventory</dd>
         <dd>Load PIP microdata in different way</dd>
       </dl><dl><dt>
           
+          <code><a href="pip_load_dlw.html">pip_load_dlw()</a></code> 
+        </dt>
+        <dd>Loads datalibweb data</dd>
+      </dl><dl><dt>
+          
+          <code><a href="pip_load_dlw_inventory.html">pip_load_dlw_inventory()</a></code> 
+        </dt>
+        <dd>Prepare DatalibWeb inventory</dd>
+      </dl><dl><dt>
+          
           <code><a href="pip_load_inventory.html">pip_load_inventory()</a></code> 
         </dt>
         <dd>Load inventory of welfare aggregate datasets</dd>
@@ -171,6 +195,11 @@ pip_update_inventory</dd>
           <code><a href="read_by_format.html">read_by_format()</a></code> 
         </dt>
         <dd>read file dependin on format and convert to data.table</dd>
+      </dl><dl><dt>
+          
+          <code><a href="survey_id_to_vars.html">survey_id_to_vars()</a></code> 
+        </dt>
+        <dd>take variable <code>survey_id</code> and split it into different vars</dd>
       </dl></div>
   </main></div>
 

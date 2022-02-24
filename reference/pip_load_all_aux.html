@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">pipload</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.10</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.13</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -72,7 +72,8 @@
 <dd><p>logical or NULL. Whether to replace objects in <code>envir</code></p></dd>
 <dt>aux</dt>
 <dd><p>character: auxiliary files to load. Default is c("cpi", "ppp",
-"pfw", "pop", "gdm", "gdp", "pce")</p></dd>
+"pfw", "pop", "gdm", "gdp", "pce"). If "all", all auxiliary frame will be
+loaded in memory</p></dd>
 <dt>aux_names</dt>
 <dd><p>character of the same length of <code>aux</code>. Names of objects to
 be loaded. default is <code>aux</code></p></dd>
@@ -81,6 +82,9 @@ be loaded. default is <code>aux</code></p></dd>
 <code><a href="https://rdrr.io/r/base/environment.html" class="external-link">globalenv()</a></code></p></dd>
 <dt>root_dir</dt>
 <dd><p>character: root directory of the PIP data</p></dd>
+<dt>maindir</dt>
+<dd><p>character: main directory. By default it
+uses <code>pip_create_globals(root_dir)$PIP_DATA_DIR</code></p></dd>
 <dt>version</dt>
 <dd><p>An integer or a quoted directive. "available": displays list
 of available versions for <code>measure</code>. "select"|"pick"|"choose": allows user

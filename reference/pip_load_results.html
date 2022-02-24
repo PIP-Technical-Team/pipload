@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">pipload</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.10</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.13</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -64,7 +64,9 @@
 
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
-    <dl><dt>country</dt>
+    <dl><dt>output</dt>
+<dd><p>character: name of the output file</p></dd>
+<dt>country</dt>
 <dd><p>character: vector of ISO3 country codes.</p></dd>
 <dt>year</dt>
 <dd><p>numeric: survey year</p></dd>
@@ -73,12 +75,14 @@
 <code>PC</code> for Poverty Calculator or <code>TB</code> for Table Maker. Others will be added</p></dd>
 <dt>type</dt>
 <dd><p>character: Either <code>dataframe</code> or <code>list</code>. Defaults is <code>dataframe</code>.</p></dd>
+<dt>root_dir</dt>
+<dd><p>character: root directory of the PIP data</p></dd>
 <dt>verbose</dt>
 <dd><p>logical: If TRUE, display informative messages. Default TRUE</p></dd>
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    
+    <p>data.table</p>
     </div>
 
     <div class="section level2">

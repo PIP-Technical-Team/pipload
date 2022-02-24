@@ -46,6 +46,9 @@
     <loc>https://pip-technical-team.github.io/pipload/reference/data_to_df.html</loc>
   </url>
   <url>
+    <loc>https://pip-technical-team.github.io/pipload/reference/data_to_dt.html</loc>
+  </url>
+  <url>
     <loc>https://pip-technical-team.github.io/pipload/reference/index.html</loc>
   </url>
   <url>
@@ -61,7 +64,13 @@
     <loc>https://pip-technical-team.github.io/pipload/reference/pip_find_data.html</loc>
   </url>
   <url>
+    <loc>https://pip-technical-team.github.io/pipload/reference/pip_find_dlw.html</loc>
+  </url>
+  <url>
     <loc>https://pip-technical-team.github.io/pipload/reference/pip_inventory.html</loc>
+  </url>
+  <url>
+    <loc>https://pip-technical-team.github.io/pipload/reference/pip_keep_pc_module.html</loc>
   </url>
   <url>
     <loc>https://pip-technical-team.github.io/pipload/reference/pip_keep_pc_source.html</loc>
@@ -82,6 +91,12 @@
     <loc>https://pip-technical-team.github.io/pipload/reference/pip_load_data.html</loc>
   </url>
   <url>
+    <loc>https://pip-technical-team.github.io/pipload/reference/pip_load_dlw.html</loc>
+  </url>
+  <url>
+    <loc>https://pip-technical-team.github.io/pipload/reference/pip_load_dlw_inventory.html</loc>
+  </url>
+  <url>
     <loc>https://pip-technical-team.github.io/pipload/reference/pip_load_inventory.html</loc>
   </url>
   <url>
@@ -91,6 +106,12 @@
     <loc>https://pip-technical-team.github.io/pipload/reference/pip_update_inventory.html</loc>
   </url>
   <url>
+    <loc>https://pip-technical-team.github.io/pipload/reference/pipload-package.html</loc>
+  </url>
+  <url>
     <loc>https://pip-technical-team.github.io/pipload/reference/read_by_format.html</loc>
+  </url>
+  <url>
+    <loc>https://pip-technical-team.github.io/pipload/reference/survey_id_to_vars.html</loc>
   </url>
 </urlset>

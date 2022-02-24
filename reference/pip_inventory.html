@@ -14,7 +14,7 @@ pip_update_inventory"><!-- mathjax --><script src="https://cdnjs.cloudflare.com/
     
     <a class="navbar-brand me-2" href="../index.html">pipload</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.10</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.13</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -73,6 +73,8 @@ pip_update_inventory</p>
 <dd><p>character: Either <code>load</code> or <code>update</code></p></dd>
 <dt>country</dt>
 <dd><p>character: vector with ISO3 country code to update</p></dd>
+<dt>root_dir</dt>
+<dd><p>character: root directory of the PIP data</p></dd>
 <dt>maindir</dt>
 <dd><p>character: main directory. By default it
 uses <code>pip_create_globals(root_dir)$PIP_DATA_DIR</code></p></dd>
@@ -83,7 +85,7 @@ uses <code>pip_create_globals(root_dir)$PIP_DATA_DIR</code></p></dd>
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    
+    <p>data.table</p>
     </div>
 
     <div class="section level2">
