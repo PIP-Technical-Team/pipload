@@ -181,6 +181,10 @@ pip_load_dlw <- function(country          = NULL,
         dt <- rbindlist(dt,
                         fill      = TRUE,
                         use.names	= TRUE)
+        # add class
+        dt <- assign_pipclass(dt)
+
+
       }, # end of expr section
 
       error = function(e) {
@@ -253,6 +257,11 @@ data_to_dt <- function(x, y, verbose) {
   df$survey_id <- y
   df <- survey_id_to_vars(df)
 
+  ### Add class ---------
+  df <- assign_pipclass(df)
+
+
+
   return(df)
 }
 
@@ -260,3 +269,10 @@ data_to_dt <- function(x, y, verbose) {
 
 sp <- cli::make_spinner("dots", template = "Loading data {spin}")
 
+
+pip_modules <-
+  c("GPWG",
+    "ALL",
+    "BIN",
+    "GROUP",
+    "HIST")

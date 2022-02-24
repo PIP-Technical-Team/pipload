@@ -1,5 +1,7 @@
 # pipload (development version)
 
+* make functions consistent with output from `suyrvey_id_to_vars()`
+
 # pipload 0.1.13
 * read most recent dir in each object of list `create_dir()` inside `pip_create_globals()`
 

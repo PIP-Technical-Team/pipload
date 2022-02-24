@@ -129,3 +129,41 @@ survey_id_to_vars <- function(dt) {
 
 
 }
+
+
+assign_pipclass <- function(df) {
+
+  # on.exit ------------
+  on.exit({
+
+  })
+
+  # Defenses -----------
+  stopifnot(exprs = {
+    is.data.frame(df)
+    "module" %in% names(df)
+  }
+  )
+
+
+  # Early returns ------
+  module <- unique(df$module)
+
+  if (length(module) > 1) {
+    cli::cli_alert_info("More than one module in dataframe ({.field {module}}).
+                        {cli::col_blue('return the same dataframe')}")
+    return(df)
+  }
+
+
+  if ("sim" %in% names(df)) {
+    df <- as_pipid(df)
+  } else if (module == "GROUP") {
+    df <- as_pipgd(df)
+  } else {
+    df <- as_pipmd(df)
+  }
+
+  return(df)
+
+}
