@@ -243,16 +243,9 @@ check_and_create <- function(dir, vintage, DATE, clean, verbose) {
   }
 
   out_path <- fs::path(dir, out_dir)
-  if (fs::dir_exists(out_path)) {
-    if (verbose) {
-      cli::cli_alert("directory {.url {out_dir}} already exist")
-    }
 
-  } else {
+  if (!(fs::dir_exists(out_path))) {
 
-    if (verbose) {
-      cli::cli_alert("directory {.url {out_path}} will be created")
-    }
     fs::dir_create(out_path, recurse = TRUE)
 
   }
