@@ -77,7 +77,7 @@ pip_create_globals <- function(root_dir = Sys.getenv("PIP_ROOT_DIR"),
 
   # Old POVCalnet
   si <- Sys.info()
-  if (!(si[["user"]] == "rstudio-connect")) {
+  if (grepl("^wb", tolower(si[["user"]]))) {
     glbs$POVCALNET        <-  "//wbntpcifs/povcalnet/01.PovcalNet/"
     # Povcalnet master
     glbs$PCN_MASTER       <- fs::path(glbs$POVCALNET, "00.Master/02.vintage/")

@@ -20,20 +20,31 @@ library(pipload)
 
 ## Introduction
 
-the PIP project makes use of many directory paths and ad-hoc information that cannot be gathered endogenously from the PIP project. Since `pipload` is the package in charge of accessing and loading all the data in PIP, it is also in charge of loading into memery the ad-hoc variables that are used across PIP. 
+the PIP project makes use of many directory paths and ad-hoc information that
+cannot be gathered endogenously from the PIP project. Since `pipload` is the
+package in charge of accessing and loading all the data in PIP, it is also in
+charge of loading into memery the ad-hoc variables that are used across PIP.
 
 ## Functions
-the two main functions are `pip_create_globals()` and `add_gls_to_env()`. The former is the main function that creates all the variables and returns them in a list. The latter is a convenient function to standardize the use of the global variables across all PIP processes. 
+
+the two main functions are `pip_create_globals()` and `add_gls_to_env()`. The
+former is the main function that creates all the variables and returns them in a
+list. The latter is a convenient function to standardize the use of the global
+variables across all PIP processes.
 
 ## Create globals
 
 ### Basics
 
-`pip_create_globals()` makes use of three arguments that work together: `root_dir`, `out_dir`, and `vintage`. `root_dir` refers to the directory path where the PIP data resides. Since the directory path of the PIP data cannot be made publicly available, it is stored in the environment variable `PIP_ROOT_DIR`, which hosted privately by the PIP Technical Team. 
+`pip_create_globals()` makes use of three arguments that work together:
+`root_dir`, `out_dir`, and `vintage`. `root_dir` refers to the directory path
+where the PIP data resides. Since the directory path of the PIP data cannot be
+made publicly available, it is stored in the environment variable
+`PIP_ROOT_DIR`, which hosted privately by the PIP Technical Team.
 
-For the sake of sake of demostrations, let's use a temporal directory as it it where the root directory. The default  behavior of `pip_create_globals()` is to create the the whole directory structure in case it does not exist:
-
-
+For the sake of sake of demostrations, let's use a temporal directory as it it
+where the root directory. The default behavior of `pip_create_globals()` is to
+create the the whole directory structure in case it does not exist:
 
 ```{r fake-root-1}
 fake_dir1 <- paste0(tempdir(), "/1")
@@ -42,9 +53,18 @@ gls <- pip_create_globals()
 fs::dir_tree(fake_dir1, type = "directory")
 ```
 
-In addition to create the global vartiables, `pip_create_globals()` creates two main folders in case they don't exist, `PIP-Data_QA` and `pip_ingestion_pipeline`. This is useful if the user does not want to work in the main PIP data folder structure.  Let's focus for now on the `pc_data` sub-directory inside `pip_ingestion_pipeline`. This folder has two other folders, `cache` and `output`. Within the latter you see a vintage folder ``r format(Sys.Date(), "%Y%m%d")`` with the form `"%Y%m%d"`.
+In addition to create the global vartiables, `pip_create_globals()` creates two
+main folders in case they don't exist, `PIP-Data_QA` and
+`pip_ingestion_pipeline`. This is useful if the user does not want to work in
+the main PIP data folder structure. Let's focus for now on the `pc_data`
+sub-directory inside `pip_ingestion_pipeline`. This folder has two other
+folders, `cache` and `output`. Within the latter you see a vintage folder
+`r format(Sys.Date(), "%Y%m%d")` with the form `"%Y%m%d"`.
 
-Since by default both input and output data are stored within the structure of `root_dir` directory, the value of `out_dir` is the same as `root_dir`. Yet, the user can specify a different directory path to store the output from the PIP pipeline. 
+Since by default both input and output data are stored within the structure of
+`root_dir` directory, the value of `out_dir` is the same as `root_dir`. Yet, the
+user can specify a different directory path to store the output from the PIP
+pipeline.
 
 ```{r fake-root-2}
 fake_dir2 <- paste0(tempdir(), "/2")
@@ -55,13 +75,30 @@ fs::dir_tree(fake_dir2, type = "directory")
 fs::dir_tree(fake_dir3, type = "directory")
 ```
 
-In the case above, folder `fake_dir2` represents `root_dir` and `fake_dir3` is the output directory, `out_dir`. You can see that folder `pip_ingestion_pipeline` is available in both `fake_dir2` and `fake_dir3`, but `output` was created only on `fake_dir3` and not in `fake_dir2`. It does not mean that in reality `fake_dir2` does not contain an `output` folder, but that given that we are working with temporal directories, the `output` folder does not exist in either of them. 
+In the case above, folder `fake_dir2` represents `root_dir` and `fake_dir3` is
+the output directory, `out_dir`. You can see that folder
+`pip_ingestion_pipeline` is available in both `fake_dir2` and `fake_dir3`, but
+`output` was created only on `fake_dir3` and not in `fake_dir2`. It does not
+mean that in reality `fake_dir2` does not contain an `output` folder, but that
+given that we are working with temporal directories, the `output` folder does
+not exist in either of them.
 
 ### Vintages
 
-This where the option `vintage` comes into play. This argument refers to the name of the sub-directories inside the `output` folder. It can take two special values, "latest" or "new", or any other character. If it is "latest" (default), the most recent version available in the vintage directory of the form "%Y%m%d" will be used. If no folder exists with this form, a new folder with the date of the execution will be created. If it is "new", a new folder with a name of the form "%Y%m%d" will be created. All the names will be coerced to lower cases. 
+This is where the option `vintage` comes into play. This argument refers to the
+name of the sub-directories inside the `output` folder. It can take two special
+values, "latest" or "new", or any other character. If it is "latest" (default),
+the most recent version available in the vintage directory of the form "%Y%m%d"
+will be used. If no folder exists with this form, a new folder with the date of
+the execution will be created. If it is "new", a new folder with a name of the
+form "%Y%m%d" will be created. All the names will be coerced to lower cases.
 
-So, let's pretend that, inside the official directory, `fake_dir1`, the most recent vintage of the `output` sub-directories is ``r format(Sys.Date(), "%Y%m%d")`` .Yet, you don't want to mess up with it, so you want to create a new vintage, "temp_out", and you also want to do it in a directory different to the official one, `fake_dir2`. In this, can do something like this. 
+So, let's pretend that, inside the official directory, `fake_dir1`, the most
+recent vintage of the `output` sub-directories is
+`r format(Sys.Date(), "%Y%m%d")` .Yet, you don't want to mess up with it, so you
+want to create a new vintage, "temp_out", and you also want to do it in a
+directory different to the official one, `fake_dir2`. In this, can do something
+like this.
 
 ```{r vintage}
 Sys.setenv(PIP_ROOT_DIR = fake_dir2)
@@ -72,8 +109,5 @@ fs::dir_tree(fake_dir1, type = "directory")
 fs::dir_tree(fake_dir2, type = "directory")
 ```
 
-As you can see, directory `temp_out` was created inside `output` of the `fake_dir2` directory. 
-
-
-
-
+As you can see, directory `temp_out` was created inside `output` of the
+`fake_dir2` directory.
