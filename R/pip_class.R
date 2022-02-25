@@ -39,3 +39,46 @@ pipmd_class <- c("pipmd", "data.table", "data.frame")
 pipgd_class <- c("pipgd", "data.table", "data.frame")
 pipid_class <- c("pipid", "pipmd", "data.table", "data.frame")
 
+
+#' assign correct class to DLW data
+#'
+#' @param df dataframe loaded from DLW flat structure
+#'
+#' @return data.table
+#' @export
+assign_pipclass <- function(df) {
+
+  # on.exit ------------
+  on.exit({
+
+  })
+
+  # Defenses -----------
+  stopifnot(exprs = {
+    is.data.frame(df)
+    "module" %in% names(df)
+  }
+  )
+
+
+  # Early returns ------
+  module <- unique(df$module)
+
+  if (length(module) > 1) {
+    cli::cli_alert_info("More than one module in dataframe ({.field {module}}).
+                        {cli::col_blue('return the same dataframe')}")
+    return(df)
+  }
+
+
+  if ("sim" %in% names(df)) {
+    df <- as_pipid(df)
+  } else if (module == "GROUP") {
+    df <- as_pipgd(df)
+  } else {
+    df <- as_pipmd(df)
+  }
+
+  return(df)
+
+}

@@ -2,7 +2,7 @@
 % Please edit documentation in R/pip_class.R
 \name{as_pipmd}
 \alias{as_pipmd}
-\title{Add pipmd class}
+\title{Add pipmd class for microdata}
 \usage{
 as_pipmd(x)
 }
@@ -13,5 +13,5 @@ as_pipmd(x)
 data frame with new class pipmd
 }
 \description{
-Add pipmd class
+Add pipmd class for microdata
 }
