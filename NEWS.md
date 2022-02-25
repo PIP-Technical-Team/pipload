@@ -1,3 +1,11 @@
+# pipload (development version)
+
+* make functions consistent with output from `suyrvey_id_to_vars()`
+
+* modify `pip_class()` functions to make sure they always return data.tables
+
+* create `assign_pipclass()` function to make it work easily with pip classes
+
 # pipload 0.1.13
 * read most recent dir in each object of list `create_dir()` inside `pip_create_globals()`
 

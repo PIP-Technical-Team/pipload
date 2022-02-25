@@ -184,7 +184,7 @@ pip_find_dlw <- function(country         = NULL,
     condi <- "country_code %chin% (countries)"
 
     if (!(is.null(years))) {
-      condi <- paste(condi, "& surveyid_year %chin% as.character(years)")
+      condi <- paste(condi, "& as.numeric(surveyid_year) %in% as.numeric(years)")
     }
 
     # The other arguments work fine. Just add "alt_" prefix

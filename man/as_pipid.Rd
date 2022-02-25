@@ -2,7 +2,7 @@
 % Please edit documentation in R/pip_class.R
 \name{as_pipid}
 \alias{as_pipid}
-\title{Add pipid class}
+\title{Add pipid class for imputed data}
 \usage{
 as_pipid(x)
 }
@@ -13,5 +13,5 @@ as_pipid(x)
 data frame with new class pipid
 }
 \description{
-Add pipid class
+Add pipid class for imputed data
 }
