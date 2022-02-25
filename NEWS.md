@@ -6,6 +6,8 @@
 
 * create `assign_pipclass()` function to make it work easily with pip classes
 
+* create classes with structures for future development
+
 # pipload 0.1.13
 * read most recent dir in each object of list `create_dir()` inside `pip_create_globals()`
 
