@@ -5,9 +5,16 @@
 #' @return data frame with new class pipmd
 #' @export
 as_pipmd <- function(x) {
-  x <- as.data.table(x)
-  class(x) <- pipmd_class
-  x
+  stopifnot(is.data.frame(x))
+
+  if (!(inherits(x, "data.table"))) {
+    x <- as.data.table(x)
+  }
+
+  structure(x,
+            class = c("pipmd", class(x))
+  )
+
 }
 
 #' Add pipgd class for group data
@@ -17,9 +24,16 @@ as_pipmd <- function(x) {
 #' @return data frame with new class pipgd
 #' @export
 as_pipgd <- function(x) {
-  x <- as.data.table(x)
-  class(x) <- pipgd_class
-  x
+  stopifnot(is.data.frame(x))
+
+  if (!(inherits(x, "data.table"))) {
+    x <- as.data.table(x)
+  }
+
+  structure(x,
+            class = c("pipgd", class(x))
+            )
+
 }
 
 #' Add pipid class for imputed data
@@ -29,9 +43,16 @@ as_pipgd <- function(x) {
 #' @return data frame with new class pipid
 #' @export
 as_pipid <- function(x) {
-  x <- as.data.table(x)
-  class(x) <- pipid_class
-  x
+  stopifnot(is.data.frame(x))
+
+  if (!(inherits(x, "data.table"))) {
+    x <- as.data.table(x)
+  }
+
+  structure(x,
+            class = c("pipid","pipmd", class(x))
+  )
+
 }
 
 

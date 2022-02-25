@@ -184,7 +184,6 @@ pip_load_dlw <- function(country          = NULL,
         # add class
         dt <- assign_pipclass(dt)
 
-
       }, # end of expr section
 
       error = function(e) {
@@ -259,8 +258,6 @@ data_to_dt <- function(x, y, verbose) {
 
   ### Add class ---------
   df <- assign_pipclass(df)
-
-
 
   return(df)
 }
