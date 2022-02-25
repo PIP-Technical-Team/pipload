@@ -1,4 +1,3 @@
-
 #' Assign PIP class to object
 #'
 #' @param x dataframe or list. If dataframe, the number of unique elements in the variable `module` should be 1
