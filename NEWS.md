@@ -1,4 +1,4 @@
-# pipload (development version)
+# pipload 0.1.15
 
 * Change creation of pip clases in S3 mode. now, the main function is `as_pip`
 
