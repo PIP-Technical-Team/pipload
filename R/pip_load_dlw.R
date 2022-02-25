@@ -60,7 +60,7 @@ pip_load_dlw <- function(country          = NULL,
                           tool            = c("PC", "TB"),
                           survey_id       = NULL,
                           condition       = NULL,
-                          type            = "dataframe",
+                          type            = c("dataframe", "list"),
                           root_dir        = Sys.getenv("PIP_ROOT_DIR"),
                           dlw_dir         = pip_create_globals(root_dir)$DLW_RAW_DIR,
                           filter_to_pc    = TRUE,
@@ -73,6 +73,8 @@ pip_load_dlw <- function(country          = NULL,
   #---------   Find Data   ---------
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   tool <- match.arg(tool)
+  type <- match.arg(type)
+
   if (!is.null(survey_id)) {
 
     #--------- Get full path ---------
@@ -182,7 +184,7 @@ pip_load_dlw <- function(country          = NULL,
                         fill      = TRUE,
                         use.names	= TRUE)
         # add class
-        dt <- assign_pipclass(dt)
+        # dt <- assign_pipclass(dt)
 
       }, # end of expr section
 
@@ -190,31 +192,18 @@ pip_load_dlw <- function(country          = NULL,
         cli::cli_alert_danger("Could not create data frame")
         cli::cli_alert_danger("{e$message}")
         cli::cli_alert_info("returning a list instead")
-        y  <- gsub("\\.dta", "", unique(df$filename))
-        names(dt) <- y
       } # end of finally section
 
     ) # End of trycatch
 
-  } else if (type == "list") { # if output type if list
-
-    y  <- gsub("\\.dta", "", unique(df$filename))
-    names(dt) <- y
-
-  } else {
-    rlang::abort(c(
-      "The `type` selected is not a valid name",
-      i = "you can use `dataframe` or `list`", # update this message automatically
-      x = paste("you specified", type)
-    ),
-    class = "pipload_error"
-    )
+    # return NULL instead of an empty dataset.
+    if (nrow(dt) == 0) {
+      dt <- NULL
+    }
   }
 
-  # return NULL instead of an empty dataset.
-  if (nrow(dt) == 0) {
-    dt <- NULL
-  }
+  # add class
+  dt <- as_pip(dt)
 
   return(dt)
 
@@ -257,7 +246,7 @@ data_to_dt <- function(x, y, verbose) {
   df <- survey_id_to_vars(df)
 
   ### Add class ---------
-  df <- assign_pipclass(df)
+  # df <- assign_pipclass(df)
 
   return(df)
 }
