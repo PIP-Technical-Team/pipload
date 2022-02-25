@@ -1,3 +1,7 @@
+# pipload (development version)
+
+* Change creation of pip clases in S3 mode. now, the main function is `as_pip`
+
 # pipload 0.1.14
 
 * make functions consistent with output from `suyrvey_id_to_vars()`
