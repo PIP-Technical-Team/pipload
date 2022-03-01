@@ -1,4 +1,4 @@
-# pipload (development version)
+# pipload 0.1.16
 
 * fix issue with self reference in data.table when creating classed
 
