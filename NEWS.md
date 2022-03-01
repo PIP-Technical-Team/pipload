@@ -1,5 +1,9 @@
 # pipload (development version)
 
+* fix issue with self reference in data.table when creating classed
+
+* add pip_class tests
+
 # pipload 0.1.15
 
 * Change creation of pip clases in S3 mode. now, the main function is `as_pip`

@@ -109,3 +109,19 @@ test_that("as_pip work with lists", {
 
 
 })
+
+
+test_that("self refernce not happening", {
+
+  md  <- copy(md_ex)
+  md2 <- copy(md)
+  md2[, foo := "jfk"]
+
+  md <-as_pip(md)
+  md <-as_pip(md2)
+
+  md[, foo := "jfk"]
+
+  expect_equal(md, md2)
+
+})
