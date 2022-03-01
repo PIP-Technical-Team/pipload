@@ -1,17 +1,35 @@
 pipmd_classes <- c("pipmd", "data.table", "data.frame")
 pipgd_classes <- c("pipgd", "data.table", "data.frame")
 
+# md_ex <- get0("md_ex", envir = asNamespace("pipload"))
+# gd_ex <- get0("gd_ex", envir = asNamespace("pipload"))
+
+md_ex <- readRDS("../testdata/md_ex.rds")
+gd_ex <- readRDS("../testdata/gd_ex.rds")
+
+# if (!interactive()) {
+#
+#   md_ex <- readRDS("md_ex.rds")
+#   gd_ex <- readRDS("gd_ex.rds")
+#
+# } else {
+#
+#   md_ex <- readRDS("../testdata/md_ex.rds")
+#   gd_ex <- readRDS("../testdata/gd_ex.rds")
+# }
+#
+
 test_that("as_pipmd work", {
 
   # As data.table
-  md <- copy(md_ex)
+  md <- data.table::copy(md_ex)
   as_pipmd(md)
   expect_equal(class(md), pipmd_classes)
 
   # data.frame
   md <- as.data.frame(md_ex)
   as_pipmd(md)
-  expect_equal(class(md), c("data.frame"))
+  expect_equal(class(md), "data.frame")
 
 
   md <- as_pipmd(md)
@@ -24,14 +42,14 @@ test_that("as_pipmd work", {
 test_that("as_pipgd work", {
 
   # As data.table
-  gd <- copy(gd_ex)
+  gd <- data.table::copy(gd_ex)
   as_pipgd(gd)
   expect_equal(class(gd), pipgd_classes)
 
   # data.frame
   gd <- as.data.frame(gd_ex)
   as_pipgd(gd)
-  expect_equal(class(gd), c("data.frame"))
+  expect_equal(class(gd), "data.frame")
 
 
   gd <- as_pipgd(gd)
@@ -43,7 +61,7 @@ test_that("as_pipgd work", {
 test_that("as_pip works with data.frame", {
 
   # As data.table
-  md <- copy(md_ex)
+  md <- data.table::copy(md_ex)
 
   df <- as_pip(md)
   expect_equal(class(df), class(md))
@@ -52,11 +70,11 @@ test_that("as_pip works with data.frame", {
   md <- as.data.frame(md_ex)
 
   df <- as_pip(md)
-  expect_equal(class(md), c("data.frame"))
+  expect_equal(class(md), "data.frame")
   expect_equal(class(df), pipmd_classes)
 
   # As data.table
-  gd <- copy(gd_ex)
+  gd <- data.table::copy(gd_ex)
 
   df <- as_pip(gd)
   expect_equal(class(df), class(gd))
@@ -65,16 +83,16 @@ test_that("as_pip works with data.frame", {
   gd <- as.data.frame(gd_ex)
 
   df <- as_pip(gd)
-  expect_equal(class(gd), c("data.frame"))
+  expect_equal(class(gd), "data.frame")
   expect_equal(class(df), pipgd_classes)
 
 })
 
-test_that("as_pip work with lists", {
+test_that("as_pip works with lists", {
 
   # As data.table
-  md <- copy(md_ex)
-  gd <- copy(gd_ex)
+  md <- data.table::copy(md_ex)
+  gd <- data.table::copy(gd_ex)
 
   ol <- list(md = md, gd = gd)
 
@@ -113,12 +131,12 @@ test_that("as_pip work with lists", {
 
 test_that("self refernce not happening", {
 
-  md  <- copy(md_ex)
-  md2 <- copy(md)
+  md  <- data.table::copy(md_ex)
+  md2 <- data.table::copy(md)
   md2[, foo := "jfk"]
 
   md <-as_pip(md)
-  md <-as_pip(md2)
+  md2 <-as_pip(md2)
 
   md[, foo := "jfk"]
 
