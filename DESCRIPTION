@@ -38,3 +38,5 @@ Suggests:
     testthat
 URL: https://pip-technical-team.github.io/pipload/
 VignetteBuilder: knitr
+Depends: 
+    R (>= 2.10)

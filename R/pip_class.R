@@ -12,13 +12,13 @@ as_pip <- function(x) {
 #' @export
 #' @rdname as_pip
 as_pip.data.frame <- function(x) {
-  df <- assign_pipclass(x)
+  assign_pipclass(x)
 }
 
 #' @export
 #' @rdname as_pip
 as_pip.list <- function(x) {
-  df <- lapply(x, assign_pipclass)
+  lapply(x, assign_pipclass)
 }
 
 
@@ -55,7 +55,7 @@ assign_pipclass <- function(df) {
 
   if ("sim" %in% names(df)) {
     df <- as_pipid(df)
-  } else if (module == "GROUP") {
+  } else if (grepl("GROUP", module)) {
     df <- as_pipgd(df)
   } else {
     df <- as_pipmd(df)
@@ -79,9 +79,8 @@ as_pipmd <- function(x) {
     x <- as.data.table(x)
   }
 
-  structure(x,
-            class = c("pipmd", class(x))
-  )
+  data.table::setattr(x, "class", c("pipmd", class(x)))
+  return(invisible(data.table::copy(x)))
 
 }
 
@@ -98,9 +97,8 @@ as_pipgd <- function(x) {
     x <- as.data.table(x)
   }
 
-  structure(x,
-            class = c("pipgd", class(x))
-            )
+  data.table::setattr(x, "class", c("pipgd", class(x)))
+  return(invisible(data.table::copy(x)))
 
 }
 
@@ -117,9 +115,8 @@ as_pipid <- function(x) {
     x <- as.data.table(x)
   }
 
-  structure(x,
-            class = c("pipid","pipmd", class(x))
-  )
+  data.table::setattr(x, "class", c("pipid","pipmd", class(x)))
+  return(invisible(data.table::copy(x)))
 
 }
 
