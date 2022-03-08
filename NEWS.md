@@ -1,4 +1,5 @@
 # pipload 0.1.17
+* remove deprecated messages. They will be used in the future. 
 
 # pipload 0.1.16
 
