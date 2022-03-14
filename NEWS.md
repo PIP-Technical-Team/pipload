@@ -1,4 +1,8 @@
 # pipload (development version)
+* Add code coverage `covr`
+
+* Add new way to create vintage folders in `pip_create_globals()`
+
 
 # pipload 0.1.17
 * remove deprecated messages. They will be used in the future. 
