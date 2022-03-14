@@ -28,7 +28,7 @@
     
     <a class="navbar-brand me-2" href="index.html">pipload</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.13</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.18</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -65,7 +65,7 @@
 <div class="page-header"><h1 id="pipload">pipload<a class="anchor" aria-label="anchor" href="#pipload"></a>
 </h1></div>
 <!-- badges: start -->
-<!-- badges: end -->
+
 <p>The goal of <code>pipload</code> is to provide a series of tools to load into memory the PIP microdata. You can load and update the inventory of PIP microdata, as well as find the data most recent version of each country-year-survey data point.</p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
@@ -92,10 +92,15 @@
              year    <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2017</span>, <span class="fl">2018</span><span class="op">)</span>,
              tool    <span class="op">=</span> <span class="st">"PC"</span>
 <span class="op">)</span>
+<span class="co">#&gt; Warning: `pip_find_data()` was deprecated in pipload 0.1.13.</span>
+<span class="co">#&gt; Please use `pip_find_dlw()` instead.</span>
 
 <span class="va">df</span><span class="op">$</span><span class="va">filename</span>
-<span class="co">#&gt; [1] "PRY_2017_EPH_V01_M_V01_A_PIP_PC-GPWG.dta"</span>
-<span class="co">#&gt; [2] "PRY_2018_EPH_V01_M_V02_A_PIP_PC-GPWG.dta"</span>
+<span class="co">#&gt; [1] "PRY_2017_EPH_V01_M_V02_A_PIP_PC-GPWG.dta"</span>
+<span class="co">#&gt; [2] "PRY_2017_EPH_V01_M_V03_A_PIP_PC-GPWG.dta"</span>
+<span class="co">#&gt; [3] "PRY_2018_EPH_V01_M_V03_A_PIP_PC-GPWG.dta"</span>
+<span class="co">#&gt; [4] "PRY_2018_EPH_V01_M_V04_A_PIP_PC-GPWG.dta"</span>
+<span class="co">#&gt; [5] "PRY_2018_EPH_V01_M_V05_A_PIP_PC-GPWG.dta"</span>
 
 <span class="co"># load the data</span>
 <span class="va">df2</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/pip_find_data.html">pip_find_data</a></span><span class="op">(</span>
@@ -103,9 +108,11 @@
              year    <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2017</span>, <span class="fl">2018</span><span class="op">)</span>,
              tool    <span class="op">=</span> <span class="st">"PC"</span>
 <span class="op">)</span>
+<span class="co">#&gt; Warning: `pip_find_data()` was deprecated in pipload 0.1.13.</span>
+<span class="co">#&gt; Please use `pip_find_dlw()` instead.</span>
 
 <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">df2</span><span class="op">)</span>
-<span class="co">#&gt;  [1] "orig"           "filename"       "country_code"   "year"          </span>
+<span class="co">#&gt;  [1] "orig"           "filename"       "country_code"   "surveyid_year" </span>
 <span class="co">#&gt;  [5] "survey_acronym" "vermast"        "veralt"         "collection"    </span>
 <span class="co">#&gt;  [9] "module"         "tool"           "source"</span></code></pre></div>
 </div>
@@ -116,103 +123,158 @@
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Load CPI</span>
 <span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/pip_load_aux.html">pip_load_aux</a></span><span class="op">(</span><span class="st">"cpi"</span><span class="op">)</span>
-<span class="co">#&gt; Most recent version of data loaded</span>
+<span class="co">#&gt; v Most recent version of data loaded:</span>
+<span class="co">#&gt; ''//w1wbgencifs01/pip/PIP-Data_QA/_aux/cpi/cpi'.'fst''</span>
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span>
-<span class="co">#&gt;   country_code surveyid_year reference_year        cpi ccf cpi_domain</span>
-<span class="co">#&gt; 1          AGO          2000        2000.21 0.03384806   1          1</span>
-<span class="co">#&gt; 2          AGO          2008        2008.50 0.72333720   1          1</span>
-<span class="co">#&gt; 3          AGO          2018        2018.17 3.06059498   1          1</span>
-<span class="co">#&gt; 4          ALB          1996        1996.00 0.44443273   1          1</span>
-<span class="co">#&gt; 5          ALB          2002        2002.00 0.78028772   1          1</span>
-<span class="co">#&gt; 6          ALB          2005        2005.00 0.83847346   1          1</span>
-<span class="co">#&gt;   cpi_data_level survey_acronym</span>
-<span class="co">#&gt; 1       national            HBS</span>
-<span class="co">#&gt; 2       national      IBEP-MICS</span>
-<span class="co">#&gt; 3       national          IDREA</span>
-<span class="co">#&gt; 4       national            EWS</span>
-<span class="co">#&gt; 5       national           LSMS</span>
-<span class="co">#&gt; 6       national           LSMS</span>
+<span class="co">#&gt;    country_code cpi_year survey_year         cpi ccf survey_acronym</span>
+<span class="co">#&gt; 1:          AGO     2000     2000.21 0.033848061   1            HBS</span>
+<span class="co">#&gt; 2:          AGO     2008     2008.50 0.723337197   1      IBEP-MICS</span>
+<span class="co">#&gt; 3:          AGO     2018     2018.17 2.934414036   1          IDREA</span>
+<span class="co">#&gt; 4:          ALB     1996     1996.00 0.444572480   1            EWS</span>
+<span class="co">#&gt; 5:          ALB     2002     2002.00 0.780533048   1           LSMS</span>
+<span class="co">#&gt; 6:          ALB     2005     2005.00 0.838737128   1           LSMS</span>
+<span class="co">#&gt;    change_cpi2011     cpi2011 cpi_domain cpi_domain_value cpi2011_unadj</span>
+<span class="co">#&gt; 1:              0 0.033848061          1                1   0.033848061</span>
+<span class="co">#&gt; 2:              1 0.723337197          1                1   0.723337197</span>
+<span class="co">#&gt; 3:              1 2.934414036          1                1   2.934414036</span>
+<span class="co">#&gt; 4:              1 0.444572480          1                1   0.444572480</span>
+<span class="co">#&gt; 5:              1 0.780533048          1                1   0.780533048</span>
+<span class="co">#&gt; 6:              1 0.838737128          1                1   0.838737128</span>
+<span class="co">#&gt;    cpi_final_2019 cpi_data_level cpi2011_SM21 cpi2011_unadj_SM21 cpi2005_SM21</span>
+<span class="co">#&gt; 1:             NA       national   0.03385145         0.03385145  0.071889997</span>
+<span class="co">#&gt; 2:             NA       national   0.72328920         0.72328920  1.528669953</span>
+<span class="co">#&gt; 3:             NA       national   2.93543023         2.93543023           NA</span>
+<span class="co">#&gt; 4:             NA       national   0.44446184         0.44446184  0.530049980</span>
+<span class="co">#&gt; 5:             NA       national   0.78033877         0.78033877  0.950504005</span>
+<span class="co">#&gt; 6:             NA       national   0.83852839         0.83852839  1.000000000</span>
+<span class="co">#&gt;        cpi2017          cpi_id</span>
+<span class="co">#&gt; 1: 0.014199691 CPI_v06_M_v01_A</span>
+<span class="co">#&gt; 2: 0.303449123 CPI_v06_M_v01_A</span>
+<span class="co">#&gt; 3: 1.231023884 CPI_v06_M_v01_A</span>
+<span class="co">#&gt; 4: 0.399635267 CPI_v06_M_v01_A</span>
+<span class="co">#&gt; 5: 0.701637071 CPI_v06_M_v01_A</span>
+<span class="co">#&gt; 6: 0.753957905 CPI_v06_M_v01_A</span>
 
 <span class="co"># load PPP</span>
 <span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/pip_load_aux.html">pip_load_aux</a></span><span class="op">(</span><span class="st">"ppp"</span><span class="op">)</span>
-<span class="co">#&gt; Most recent version of data loaded</span>
+<span class="co">#&gt; v Most recent version of data loaded:</span>
+<span class="co">#&gt; ''//w1wbgencifs01/pip/PIP-Data_QA/_aux/ppp/ppp'.'fst''</span>
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span>
-<span class="co">#&gt;   country_code ppp_year release_version adaptation_version      ppp ppp_default</span>
-<span class="co">#&gt; 1          ABW     2005              v1                 v1       NA       FALSE</span>
-<span class="co">#&gt; 2          ABW     2011              v1                 v1 1.652751       FALSE</span>
-<span class="co">#&gt; 3          ABW     2011              v1                 v2 1.652751       FALSE</span>
-<span class="co">#&gt; 4          ABW     2011              v2                 v1 1.637763       FALSE</span>
-<span class="co">#&gt; 5          ABW     2011              v2                 v2 1.637763        TRUE</span>
-<span class="co">#&gt; 6          ABW     2017              v1                 v1 1.480481       FALSE</span>
-<span class="co">#&gt;   ppp_default_by_year ppp_domain ppp_data_level</span>
-<span class="co">#&gt; 1                TRUE          1       national</span>
-<span class="co">#&gt; 2               FALSE          1       national</span>
-<span class="co">#&gt; 3               FALSE          1       national</span>
-<span class="co">#&gt; 4               FALSE          1       national</span>
-<span class="co">#&gt; 5                TRUE          1       national</span>
-<span class="co">#&gt; 6                TRUE          1       national</span>
+<span class="co">#&gt;    country_code ppp_year release_version adaptation_version       ppp</span>
+<span class="co">#&gt; 1:          ABW     2005              v1                 v1        NA</span>
+<span class="co">#&gt; 2:          ABW     2011              v1                 v1 1.6527510</span>
+<span class="co">#&gt; 3:          ABW     2011              v1                 v2 1.6527513</span>
+<span class="co">#&gt; 4:          ABW     2011              v2                 v1 1.6377631</span>
+<span class="co">#&gt; 5:          ABW     2011              v2                 v2 1.6377631</span>
+<span class="co">#&gt; 6:          ABW     2017              v1                 v1 1.4804807</span>
+<span class="co">#&gt;    ppp_default ppp_default_by_year ppp_domain ppp_data_level</span>
+<span class="co">#&gt; 1:       FALSE                TRUE          1       national</span>
+<span class="co">#&gt; 2:       FALSE               FALSE          1       national</span>
+<span class="co">#&gt; 3:       FALSE               FALSE          1       national</span>
+<span class="co">#&gt; 4:       FALSE               FALSE          1       national</span>
+<span class="co">#&gt; 5:        TRUE                TRUE          1       national</span>
+<span class="co">#&gt; 6:       FALSE                TRUE          1       national</span>
 
 <span class="co"># Load GDP</span>
 <span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/pip_load_aux.html">pip_load_aux</a></span><span class="op">(</span><span class="st">"gdp"</span><span class="op">)</span>
-<span class="co">#&gt; Most recent version of data loaded</span>
+<span class="co">#&gt; v Most recent version of data loaded:</span>
+<span class="co">#&gt; ''//w1wbgencifs01/pip/PIP-Data_QA/_aux/gdp/gdp'.'fst''</span>
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span>
-<span class="co">#&gt;   country_code year gdp_data_level      gdp gdp_domain</span>
-<span class="co">#&gt; 1          ABW 1986              2 15669.62          1</span>
-<span class="co">#&gt; 2          ABW 1987              2 18427.61          1</span>
-<span class="co">#&gt; 3          ABW 1988              2 22134.02          1</span>
-<span class="co">#&gt; 4          ABW 1989              2 24837.95          1</span>
-<span class="co">#&gt; 5          ABW 1990              2 25357.79          1</span>
-<span class="co">#&gt; 6          ABW 1991              2 26329.31          1</span>
+<span class="co">#&gt;    country_code year       gdp gdp_data_level gdp_domain</span>
+<span class="co">#&gt; 1:          ABW 1986 17231.380       national   national</span>
+<span class="co">#&gt; 2:          ABW 1987 20262.945       national   national</span>
+<span class="co">#&gt; 3:          ABW 1988 24343.255       national   national</span>
+<span class="co">#&gt; 4:          ABW 1989 27313.495       national   national</span>
+<span class="co">#&gt; 5:          ABW 1990 27884.253       national   national</span>
+<span class="co">#&gt; 6:          ABW 1991 28953.525       national   national</span>
 
 <span class="va">measure</span> <span class="op">&lt;-</span> <span class="st">"cpi"</span>
 
 <span class="co"># see versions available</span>
 <span class="va">df</span>      <span class="op">&lt;-</span> <span class="fu"><a href="reference/pip_load_aux.html">pip_load_aux</a></span><span class="op">(</span><span class="va">measure</span>, version <span class="op">=</span> <span class="st">"available"</span><span class="op">)</span>
 <span class="co">#&gt; Versions available for cpi</span>
-<span class="co">#&gt;  [1] "2020-09-25 23:30:28 EDT" "2020-09-23 07:37:31 EDT"</span>
-<span class="co">#&gt;  [3] "2020-09-22 21:30:54 EDT" "2020-09-22 21:14:13 EDT"</span>
-<span class="co">#&gt;  [5] "2020-09-08 11:44:31 EDT" "2020-09-08 11:42:41 EDT"</span>
-<span class="co">#&gt;  [7] "2020-09-08 11:41:11 EDT" "2020-08-24 14:25:08 EDT"</span>
-<span class="co">#&gt;  [9] "2020-08-24 14:22:42 EDT" "2020-08-24 10:14:32 EDT"</span>
-<span class="co">#&gt; [11] "2020-08-11 10:24:42 EDT" "2020-08-11 10:17:47 EDT"</span>
-<span class="co">#&gt; [13] "2020-08-11 10:09:44 EDT" "2020-08-07 10:15:48 EDT"</span>
-<span class="co">#&gt; [15] "2020-08-06 14:22:36 EDT"</span>
+<span class="co">#&gt;  [1] "2022-02-25 14:44:35 EST" "2022-02-23 15:44:16 EST"</span>
+<span class="co">#&gt;  [3] "2022-01-25 18:08:08 EST" "2022-01-07 14:38:08 EST"</span>
+<span class="co">#&gt;  [5] "2021-04-16 13:04:48 EDT" "2021-03-29 16:34:08 EDT"</span>
+<span class="co">#&gt;  [7] "2021-03-03 07:26:44 EST" "2021-02-24 09:44:48 EST"</span>
+<span class="co">#&gt;  [9] "2021-02-02 06:46:39 EST" "2021-02-01 13:09:02 EST"</span>
+<span class="co">#&gt; [11] "2021-01-29 09:23:20 EST" "2021-01-22 06:47:38 EST"</span>
+<span class="co">#&gt; [13] "2020-12-23 13:00:06 EST"</span>
 <span class="va">df</span>
-<span class="co">#&gt;  [1] "20200925233028" "20200923073731" "20200922213054" "20200922211413"</span>
-<span class="co">#&gt;  [5] "20200908114431" "20200908114241" "20200908114111" "20200824142508"</span>
-<span class="co">#&gt;  [9] "20200824142242" "20200824101432" "20200811102442" "20200811101747"</span>
-<span class="co">#&gt; [13] "20200811100944" "20200807101548" "20200806142236"</span>
+<span class="co">#&gt;  [1] "20220225144435" "20220223154416" "20220125180808" "20220107143808"</span>
+<span class="co">#&gt;  [5] "20210416130448" "20210329163408" "20210303072644" "20210224094448"</span>
+<span class="co">#&gt;  [9] "20210202064639" "20210201130902" "20210129092320" "20210122064738"</span>
+<span class="co">#&gt; [13] "20201223130006"</span>
 
 <span class="co"># Load version of "2020-08-07 10:15:48 EDT"</span>
-<span class="va">df</span>      <span class="op">&lt;-</span> <span class="fu"><a href="reference/pip_load_aux.html">pip_load_aux</a></span><span class="op">(</span><span class="va">measure</span>, version <span class="op">=</span> <span class="st">"20200807101548"</span><span class="op">)</span>
-<span class="co">#&gt; Version of data loaded: 2020-08-07 10:15:48</span>
+<span class="va">df</span>      <span class="op">&lt;-</span> <span class="fu"><a href="reference/pip_load_aux.html">pip_load_aux</a></span><span class="op">(</span><span class="va">measure</span>, version <span class="op">=</span> <span class="st">"20220223154416"</span><span class="op">)</span>
+<span class="co">#&gt; v Version of data loaded: 2022-02-23 15:44:16:</span>
+<span class="co">#&gt; '//w1wbgencifs01/pip/PIP-Data_QA/_aux/cpi/_vintage/cpi_20220223154416.fst'</span>
+<span class="co">#&gt; i Labels not applied to versioning data</span>
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span>
-<span class="co">#&gt;   country_code surveyid_year reference_year    cpi2011 ccf datalevel</span>
-<span class="co">#&gt; 1          AGO          2000        2000.21 0.03384806   1         2</span>
-<span class="co">#&gt; 2          AGO          2008        2008.50 0.72333720   1         2</span>
-<span class="co">#&gt; 3          AGO          2018        2018.17 3.06059498   1         2</span>
-<span class="co">#&gt; 4          ALB          1996        1996.00 0.44443273   1         2</span>
-<span class="co">#&gt; 5          ALB          2002        2002.00 0.78028772   1         2</span>
-<span class="co">#&gt; 6          ALB          2005        2005.00 0.83847346   1         2</span>
+<span class="co">#&gt;    country_code cpi_year survey_year         cpi ccf survey_acronym</span>
+<span class="co">#&gt; 1:          AGO     2000     2000.21 0.033848061   1            HBS</span>
+<span class="co">#&gt; 2:          AGO     2008     2008.50 0.723337197   1      IBEP-MICS</span>
+<span class="co">#&gt; 3:          AGO     2018     2018.17 2.934414036   1          IDREA</span>
+<span class="co">#&gt; 4:          ALB     1996     1996.00 0.444572480   1            EWS</span>
+<span class="co">#&gt; 5:          ALB     2002     2002.00 0.780533048   1           LSMS</span>
+<span class="co">#&gt; 6:          ALB     2005     2005.00 0.838737128   1           LSMS</span>
+<span class="co">#&gt;    change_cpi2011     cpi2011 cpi_domain cpi_domain_value cpi2011_unadj</span>
+<span class="co">#&gt; 1:              0 0.033848061          1                1   0.033848061</span>
+<span class="co">#&gt; 2:              1 0.723337197          1                1   0.723337197</span>
+<span class="co">#&gt; 3:              1 2.934414036          1                1   2.934414036</span>
+<span class="co">#&gt; 4:              1 0.444572480          1                1   0.444572480</span>
+<span class="co">#&gt; 5:              1 0.780533048          1                1   0.780533048</span>
+<span class="co">#&gt; 6:              1 0.838737128          1                1   0.838737128</span>
+<span class="co">#&gt;    cpi_final_2019 cpi_data_level cpi2011_SM21 cpi2011_unadj_SM21 cpi2005_SM21</span>
+<span class="co">#&gt; 1:             NA       national   0.03385145         0.03385145  0.071889997</span>
+<span class="co">#&gt; 2:             NA       national   0.72328920         0.72328920  1.528669953</span>
+<span class="co">#&gt; 3:             NA       national   2.93543023         2.93543023           NA</span>
+<span class="co">#&gt; 4:             NA       national   0.44446184         0.44446184  0.530049980</span>
+<span class="co">#&gt; 5:             NA       national   0.78033877         0.78033877  0.950504005</span>
+<span class="co">#&gt; 6:             NA       national   0.83852839         0.83852839  1.000000000</span>
+<span class="co">#&gt;        cpi2017          cpi_id</span>
+<span class="co">#&gt; 1: 0.014199691 CPI_v06_M_v01_A</span>
+<span class="co">#&gt; 2: 0.303449123 CPI_v06_M_v01_A</span>
+<span class="co">#&gt; 3: 1.231023884 CPI_v06_M_v01_A</span>
+<span class="co">#&gt; 4: 0.399635267 CPI_v06_M_v01_A</span>
+<span class="co">#&gt; 5: 0.701637071 CPI_v06_M_v01_A</span>
+<span class="co">#&gt; 6: 0.753957905 CPI_v06_M_v01_A</span>
 
 <span class="co"># Load one version before current one (i.e., load previous version)</span>
 <span class="va">df</span>      <span class="op">&lt;-</span> <span class="fu"><a href="reference/pip_load_aux.html">pip_load_aux</a></span><span class="op">(</span><span class="va">measure</span>, version <span class="op">=</span> <span class="op">-</span><span class="fl">1</span><span class="op">)</span>
-<span class="co">#&gt; Version of data loaded: 2020-09-23 07:37:31</span>
+<span class="co">#&gt; v Version of data loaded: 2022-02-23 15:44:16:</span>
+<span class="co">#&gt; '//w1wbgencifs01/pip/PIP-Data_QA/_aux/cpi/_vintage/cpi_20220223154416.fst'</span>
+<span class="co">#&gt; i Labels not applied to versioning data</span>
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span>
-<span class="co">#&gt;   country_code surveyid_year reference_year        cpi ccf cpi_domain</span>
-<span class="co">#&gt; 1          AGO          2000        2000.21 0.03384806   1          1</span>
-<span class="co">#&gt; 2          AGO          2008        2008.50 0.72333720   1          1</span>
-<span class="co">#&gt; 3          AGO          2018        2018.17 3.06059498   1          1</span>
-<span class="co">#&gt; 4          ALB          1996        1996.00 0.44443273   1          1</span>
-<span class="co">#&gt; 5          ALB          2002        2002.00 0.78028772   1          1</span>
-<span class="co">#&gt; 6          ALB          2005        2005.00 0.83847346   1          1</span>
-<span class="co">#&gt;   cpi_data_level survey_acronym</span>
-<span class="co">#&gt; 1       national            HBS</span>
-<span class="co">#&gt; 2       national      IBEP-MICS</span>
-<span class="co">#&gt; 3       national          IDREA</span>
-<span class="co">#&gt; 4       national            EWS</span>
-<span class="co">#&gt; 5       national           LSMS</span>
-<span class="co">#&gt; 6       national           LSMS</span></code></pre></div>
+<span class="co">#&gt;    country_code cpi_year survey_year         cpi ccf survey_acronym</span>
+<span class="co">#&gt; 1:          AGO     2000     2000.21 0.033848061   1            HBS</span>
+<span class="co">#&gt; 2:          AGO     2008     2008.50 0.723337197   1      IBEP-MICS</span>
+<span class="co">#&gt; 3:          AGO     2018     2018.17 2.934414036   1          IDREA</span>
+<span class="co">#&gt; 4:          ALB     1996     1996.00 0.444572480   1            EWS</span>
+<span class="co">#&gt; 5:          ALB     2002     2002.00 0.780533048   1           LSMS</span>
+<span class="co">#&gt; 6:          ALB     2005     2005.00 0.838737128   1           LSMS</span>
+<span class="co">#&gt;    change_cpi2011     cpi2011 cpi_domain cpi_domain_value cpi2011_unadj</span>
+<span class="co">#&gt; 1:              0 0.033848061          1                1   0.033848061</span>
+<span class="co">#&gt; 2:              1 0.723337197          1                1   0.723337197</span>
+<span class="co">#&gt; 3:              1 2.934414036          1                1   2.934414036</span>
+<span class="co">#&gt; 4:              1 0.444572480          1                1   0.444572480</span>
+<span class="co">#&gt; 5:              1 0.780533048          1                1   0.780533048</span>
+<span class="co">#&gt; 6:              1 0.838737128          1                1   0.838737128</span>
+<span class="co">#&gt;    cpi_final_2019 cpi_data_level cpi2011_SM21 cpi2011_unadj_SM21 cpi2005_SM21</span>
+<span class="co">#&gt; 1:             NA       national   0.03385145         0.03385145  0.071889997</span>
+<span class="co">#&gt; 2:             NA       national   0.72328920         0.72328920  1.528669953</span>
+<span class="co">#&gt; 3:             NA       national   2.93543023         2.93543023           NA</span>
+<span class="co">#&gt; 4:             NA       national   0.44446184         0.44446184  0.530049980</span>
+<span class="co">#&gt; 5:             NA       national   0.78033877         0.78033877  0.950504005</span>
+<span class="co">#&gt; 6:             NA       national   0.83852839         0.83852839  1.000000000</span>
+<span class="co">#&gt;        cpi2017          cpi_id</span>
+<span class="co">#&gt; 1: 0.014199691 CPI_v06_M_v01_A</span>
+<span class="co">#&gt; 2: 0.303449123 CPI_v06_M_v01_A</span>
+<span class="co">#&gt; 3: 1.231023884 CPI_v06_M_v01_A</span>
+<span class="co">#&gt; 4: 0.399635267 CPI_v06_M_v01_A</span>
+<span class="co">#&gt; 5: 0.701637071 CPI_v06_M_v01_A</span>
+<span class="co">#&gt; 6: 0.753957905 CPI_v06_M_v01_A</span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="inventory-of-microdata">Inventory of microdata<a class="anchor" aria-label="anchor" href="#inventory-of-microdata"></a>
@@ -221,18 +283,20 @@
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Update inventory of PRY</span>
 <span class="fu"><a href="reference/pip_inventory.html">pip_inventory</a></span><span class="op">(</span><span class="st">"update"</span>, country <span class="op">=</span> <span class="st">"PRY"</span><span class="op">)</span>
-<span class="co">#&gt; data inventory changed for PRY.</span>
-<span class="co">#&gt; Data signature has changed, it was not found, or update was forced.</span>
-<span class="co">#&gt;  `inventory.fst` has been updated</span>
+<span class="co">#&gt; i reading PIP directory</span>
+<span class="co">#&gt; v reading PIP directory [3.2s]</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; i file 'inventory.fst' is up to date.</span>
+<span class="co">#&gt; No update performed</span>
 
 <span class="co"># Load inventory</span>
 <span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/pip_inventory.html">pip_inventory</a></span><span class="op">(</span><span class="op">)</span>
 <span class="va">df</span><span class="op">$</span><span class="va">filename</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span>
-<span class="co">#&gt; [1] "AFG_2007_NRVA_V01_M_V05_A_PIP_PC-GPWG.dta"</span>
-<span class="co">#&gt; [2] "AFG_2007_NRVA_V01_M_V05_A_PIP_TB-ALL.dta" </span>
-<span class="co">#&gt; [3] "AFG_2011_NRVA_V01_M_V05_A_PIP_PC-GPWG.dta"</span>
-<span class="co">#&gt; [4] "AFG_2011_NRVA_V01_M_V05_A_PIP_TB-ALL.dta" </span>
-<span class="co">#&gt; [5] "AGO_2000_HBS_V01_M_V01_A_PIP_PC-GPWG.dta"</span></code></pre></div>
+<span class="co">#&gt; [1] "AGO_2000_HBS_V01_M_V01_A_PIP_PC-GPWG.dta"      </span>
+<span class="co">#&gt; [2] "AGO_2008_IBEP-MICS_V02_M_V02_A_PIP_PC-GPWG.dta"</span>
+<span class="co">#&gt; [3] "AGO_2008_IBEP-MICS_V02_M_V02_A_PIP_TB-ALL.dta" </span>
+<span class="co">#&gt; [4] "AGO_2018_IDREA_V01_M_V01_A_PIP_PC-GPWG.dta"    </span>
+<span class="co">#&gt; [5] "AGO_2018_IDREA_V01_M_V01_A_PIP_TB-ALL.dta"</span></code></pre></div>
 </div>
 </div>
 </div>
@@ -260,7 +324,12 @@
 </ul>
 </div>
 
-
+<div class="dev-status">
+<h2 data-toc-skip>Dev status</h2>
+<ul class="list-unstyled">
+<li><a href="https://app.codecov.io/gh/PIP-Technical-Team/pipload?branch=master" class="external-link"><img src="https://codecov.io/gh/PIP-Technical-Team/pipload/branch/master/graph/badge.svg" alt="Codecov test coverage"></a></li>
+</ul>
+</div>
 
   </aside>
 </div>

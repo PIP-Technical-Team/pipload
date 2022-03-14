@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">pipload</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.13</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.18</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -97,7 +97,7 @@
 <span class="fu"><a href="https://rdrr.io/r/base/Sys.setenv.html" class="external-link">Sys.setenv</a></span><span class="op">(</span>PIP_ROOT_DIR <span class="op">=</span> <span class="va">fake_dir1</span><span class="op">)</span>
 <span class="va">gls</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pip_create_globals.html">pip_create_globals</a></span><span class="op">(</span><span class="op">)</span>
 <span class="fu">fs</span><span class="fu">::</span><span class="fu"><a href="https://fs.r-lib.org/reference/dir_tree.html" class="external-link">dir_tree</a></span><span class="op">(</span><span class="va">fake_dir1</span>, type <span class="op">=</span> <span class="st">"directory"</span><span class="op">)</span>
-<span class="co">#&gt; <span style="color: #0000BB; font-weight: bold;">/tmp/Rtmp5LmnwH/1</span></span>
+<span class="co">#&gt; <span style="color: #0000BB; font-weight: bold;">/tmp/RtmpzynBs8/1</span></span>
 <span class="co">#&gt; ├── <span style="color: #0000BB; font-weight: bold;">DLW-RAW</span></span>
 <span class="co">#&gt; ├── <span style="color: #0000BB; font-weight: bold;">PIP-Data_QA</span></span>
 <span class="co">#&gt; └── <span style="color: #0000BB; font-weight: bold;">pip_ingestion_pipeline</span></span>
@@ -105,7 +105,7 @@
 <span class="co">#&gt;     │   ├── <span style="color: #0000BB; font-weight: bold;">cache</span></span>
 <span class="co">#&gt;     │   │   └── <span style="color: #0000BB; font-weight: bold;">clean_survey_data</span></span>
 <span class="co">#&gt;     │   └── <span style="color: #0000BB; font-weight: bold;">output</span></span>
-<span class="co">#&gt;     │       └── <span style="color: #0000BB; font-weight: bold;">20220224</span></span>
+<span class="co">#&gt;     │       └── <span style="color: #0000BB; font-weight: bold;">20220314</span></span>
 <span class="co">#&gt;     │           ├── <span style="color: #0000BB; font-weight: bold;">_aux</span></span>
 <span class="co">#&gt;     │           ├── <span style="color: #0000BB; font-weight: bold;">estimations</span></span>
 <span class="co">#&gt;     │           └── <span style="color: #0000BB; font-weight: bold;">survey_data</span></span>
@@ -114,9 +114,9 @@
 <span class="co">#&gt;         ├── <span style="color: #0000BB; font-weight: bold;">cache</span></span>
 <span class="co">#&gt;         │   └── <span style="color: #0000BB; font-weight: bold;">clean_survey_data</span></span>
 <span class="co">#&gt;         └── <span style="color: #0000BB; font-weight: bold;">output</span></span>
-<span class="co">#&gt;             └── <span style="color: #0000BB; font-weight: bold;">20220224</span></span>
+<span class="co">#&gt;             └── <span style="color: #0000BB; font-weight: bold;">20220314</span></span>
 <span class="co">#&gt;                 └── <span style="color: #0000BB; font-weight: bold;">estimations</span></span></code></pre></div>
-<p>In addition to create the global vartiables, <code><a href="../reference/pip_create_globals.html">pip_create_globals()</a></code> creates two main folders in case they don’t exist, <code>PIP-Data_QA</code> and <code>pip_ingestion_pipeline</code>. This is useful if the user does not want to work in the main PIP data folder structure. Let’s focus for now on the <code>pc_data</code> sub-directory inside <code>pip_ingestion_pipeline</code>. This folder has two other folders, <code>cache</code> and <code>output</code>. Within the latter you see a vintage folder 20220224 with the form <code>"%Y%m%d"</code>.</p>
+<p>In addition to create the global vartiables, <code><a href="../reference/pip_create_globals.html">pip_create_globals()</a></code> creates two main folders in case they don’t exist, <code>PIP-Data_QA</code> and <code>pip_ingestion_pipeline</code>. This is useful if the user does not want to work in the main PIP data folder structure. Let’s focus for now on the <code>pc_data</code> sub-directory inside <code>pip_ingestion_pipeline</code>. This folder has two other folders, <code>cache</code> and <code>output</code>. Within the latter you see a vintage folder 20220314 with the form <code>"%Y%m%d"</code>.</p>
 <p>Since by default both input and output data are stored within the structure of <code>root_dir</code> directory, the value of <code>out_dir</code> is the same as <code>root_dir</code>. Yet, the user can specify a different directory path to store the output from the PIP pipeline.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">fake_dir2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"/2"</span><span class="op">)</span>
@@ -124,7 +124,7 @@
 <span class="fu"><a href="https://rdrr.io/r/base/Sys.setenv.html" class="external-link">Sys.setenv</a></span><span class="op">(</span>PIP_ROOT_DIR <span class="op">=</span> <span class="va">fake_dir2</span><span class="op">)</span>
 <span class="va">gls</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pip_create_globals.html">pip_create_globals</a></span><span class="op">(</span>out_dir <span class="op">=</span> <span class="va">fake_dir3</span><span class="op">)</span>
 <span class="fu">fs</span><span class="fu">::</span><span class="fu"><a href="https://fs.r-lib.org/reference/dir_tree.html" class="external-link">dir_tree</a></span><span class="op">(</span><span class="va">fake_dir2</span>, type <span class="op">=</span> <span class="st">"directory"</span><span class="op">)</span>
-<span class="co">#&gt; <span style="color: #0000BB; font-weight: bold;">/tmp/Rtmp5LmnwH/2</span></span>
+<span class="co">#&gt; <span style="color: #0000BB; font-weight: bold;">/tmp/RtmpzynBs8/2</span></span>
 <span class="co">#&gt; ├── <span style="color: #0000BB; font-weight: bold;">DLW-RAW</span></span>
 <span class="co">#&gt; ├── <span style="color: #0000BB; font-weight: bold;">PIP-Data_QA</span></span>
 <span class="co">#&gt; └── <span style="color: #0000BB; font-weight: bold;">pip_ingestion_pipeline</span></span>
@@ -136,17 +136,17 @@
 <span class="co">#&gt;         └── <span style="color: #0000BB; font-weight: bold;">cache</span></span>
 <span class="co">#&gt;             └── <span style="color: #0000BB; font-weight: bold;">clean_survey_data</span></span>
 <span class="fu">fs</span><span class="fu">::</span><span class="fu"><a href="https://fs.r-lib.org/reference/dir_tree.html" class="external-link">dir_tree</a></span><span class="op">(</span><span class="va">fake_dir3</span>, type <span class="op">=</span> <span class="st">"directory"</span><span class="op">)</span>
-<span class="co">#&gt; <span style="color: #0000BB; font-weight: bold;">/tmp/Rtmp5LmnwH/3</span></span>
+<span class="co">#&gt; <span style="color: #0000BB; font-weight: bold;">/tmp/RtmpzynBs8/3</span></span>
 <span class="co">#&gt; └── <span style="color: #0000BB; font-weight: bold;">pip_ingestion_pipeline</span></span>
 <span class="co">#&gt;     ├── <span style="color: #0000BB; font-weight: bold;">pc_data</span></span>
 <span class="co">#&gt;     │   └── <span style="color: #0000BB; font-weight: bold;">output</span></span>
-<span class="co">#&gt;     │       └── <span style="color: #0000BB; font-weight: bold;">20220224</span></span>
+<span class="co">#&gt;     │       └── <span style="color: #0000BB; font-weight: bold;">20220314</span></span>
 <span class="co">#&gt;     │           ├── <span style="color: #0000BB; font-weight: bold;">_aux</span></span>
 <span class="co">#&gt;     │           ├── <span style="color: #0000BB; font-weight: bold;">estimations</span></span>
 <span class="co">#&gt;     │           └── <span style="color: #0000BB; font-weight: bold;">survey_data</span></span>
 <span class="co">#&gt;     └── <span style="color: #0000BB; font-weight: bold;">tb_data</span></span>
 <span class="co">#&gt;         └── <span style="color: #0000BB; font-weight: bold;">output</span></span>
-<span class="co">#&gt;             └── <span style="color: #0000BB; font-weight: bold;">20220224</span></span>
+<span class="co">#&gt;             └── <span style="color: #0000BB; font-weight: bold;">20220314</span></span>
 <span class="co">#&gt;                 └── <span style="color: #0000BB; font-weight: bold;">estimations</span></span></code></pre></div>
 <p>In the case above, folder <code>fake_dir2</code> represents <code>root_dir</code> and <code>fake_dir3</code> is the output directory, <code>out_dir</code>. You can see that folder <code>pip_ingestion_pipeline</code> is available in both <code>fake_dir2</code> and <code>fake_dir3</code>, but <code>output</code> was created only on <code>fake_dir3</code> and not in <code>fake_dir2</code>. It does not mean that in reality <code>fake_dir2</code> does not contain an <code>output</code> folder, but that given that we are working with temporal directories, the <code>output</code> folder does not exist in either of them.</p>
 </div>
@@ -154,15 +154,15 @@
 <h3 id="vintages">Vintages<a class="anchor" aria-label="anchor" href="#vintages"></a>
 </h3>
 <p>This is where the option <code>vintage</code> comes into play. This argument refers to the name of the sub-directories inside the <code>output</code> folder. It can take two special values, “latest” or “new”, or any other character. If it is “latest” (default), the most recent version available in the vintage directory of the form “%Y%m%d” will be used. If no folder exists with this form, a new folder with the date of the execution will be created. If it is “new”, a new folder with a name of the form “%Y%m%d” will be created. All the names will be coerced to lower cases.</p>
-<p>So, let’s pretend that, inside the official directory, <code>fake_dir1</code>, the most recent vintage of the <code>output</code> sub-directories is 20220224 .Yet, you don’t want to mess up with it, so you want to create a new vintage, “temp_out”, and you also want to do it in a directory different to the official one, <code>fake_dir2</code>. In this, can do something like this.</p>
+<p>So, let’s pretend that, inside the official directory, <code>fake_dir1</code>, the most recent vintage of the <code>output</code> sub-directories is 20220314 .Yet, you don’t want to mess up with it, so you want to create a new vintage, “temp_out”, and you also want to do it in a directory different to the official one, <code>fake_dir2</code>. In this, can do something like this.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/Sys.setenv.html" class="external-link">Sys.setenv</a></span><span class="op">(</span>PIP_ROOT_DIR <span class="op">=</span> <span class="va">fake_dir2</span><span class="op">)</span>
 <span class="va">gls</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pip_create_globals.html">pip_create_globals</a></span><span class="op">(</span>root_dir <span class="op">=</span> <span class="va">fake_dir1</span>, 
                           out_dir  <span class="op">=</span> <span class="va">fake_dir2</span>, 
                           vintage  <span class="op">=</span> <span class="st">"temp_out"</span><span class="op">)</span>
-<span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Alternative root directory for <span style="color: #00BB00;">root_dir</span> is set to <span style="color: #0000BB; font-style: italic;">&lt;/tmp/Rtmp5LmnwH/1&gt;</span></span>
+<span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Alternative root directory for <span style="color: #00BB00;">root_dir</span> is set to <span style="color: #0000BB; font-style: italic;">&lt;/tmp/RtmpzynBs8/1&gt;</span></span>
 <span class="fu">fs</span><span class="fu">::</span><span class="fu"><a href="https://fs.r-lib.org/reference/dir_tree.html" class="external-link">dir_tree</a></span><span class="op">(</span><span class="va">fake_dir1</span>, type <span class="op">=</span> <span class="st">"directory"</span><span class="op">)</span>
-<span class="co">#&gt; <span style="color: #0000BB; font-weight: bold;">/tmp/Rtmp5LmnwH/1</span></span>
+<span class="co">#&gt; <span style="color: #0000BB; font-weight: bold;">/tmp/RtmpzynBs8/1</span></span>
 <span class="co">#&gt; ├── <span style="color: #0000BB; font-weight: bold;">DLW-RAW</span></span>
 <span class="co">#&gt; ├── <span style="color: #0000BB; font-weight: bold;">PIP-Data_QA</span></span>
 <span class="co">#&gt; └── <span style="color: #0000BB; font-weight: bold;">pip_ingestion_pipeline</span></span>
@@ -170,7 +170,7 @@
 <span class="co">#&gt;     │   ├── <span style="color: #0000BB; font-weight: bold;">cache</span></span>
 <span class="co">#&gt;     │   │   └── <span style="color: #0000BB; font-weight: bold;">clean_survey_data</span></span>
 <span class="co">#&gt;     │   └── <span style="color: #0000BB; font-weight: bold;">output</span></span>
-<span class="co">#&gt;     │       └── <span style="color: #0000BB; font-weight: bold;">20220224</span></span>
+<span class="co">#&gt;     │       └── <span style="color: #0000BB; font-weight: bold;">20220314</span></span>
 <span class="co">#&gt;     │           ├── <span style="color: #0000BB; font-weight: bold;">_aux</span></span>
 <span class="co">#&gt;     │           ├── <span style="color: #0000BB; font-weight: bold;">estimations</span></span>
 <span class="co">#&gt;     │           └── <span style="color: #0000BB; font-weight: bold;">survey_data</span></span>
@@ -179,10 +179,10 @@
 <span class="co">#&gt;         ├── <span style="color: #0000BB; font-weight: bold;">cache</span></span>
 <span class="co">#&gt;         │   └── <span style="color: #0000BB; font-weight: bold;">clean_survey_data</span></span>
 <span class="co">#&gt;         └── <span style="color: #0000BB; font-weight: bold;">output</span></span>
-<span class="co">#&gt;             └── <span style="color: #0000BB; font-weight: bold;">20220224</span></span>
+<span class="co">#&gt;             └── <span style="color: #0000BB; font-weight: bold;">20220314</span></span>
 <span class="co">#&gt;                 └── <span style="color: #0000BB; font-weight: bold;">estimations</span></span>
 <span class="fu">fs</span><span class="fu">::</span><span class="fu"><a href="https://fs.r-lib.org/reference/dir_tree.html" class="external-link">dir_tree</a></span><span class="op">(</span><span class="va">fake_dir2</span>, type <span class="op">=</span> <span class="st">"directory"</span><span class="op">)</span>
-<span class="co">#&gt; <span style="color: #0000BB; font-weight: bold;">/tmp/Rtmp5LmnwH/2</span></span>
+<span class="co">#&gt; <span style="color: #0000BB; font-weight: bold;">/tmp/RtmpzynBs8/2</span></span>
 <span class="co">#&gt; ├── <span style="color: #0000BB; font-weight: bold;">DLW-RAW</span></span>
 <span class="co">#&gt; ├── <span style="color: #0000BB; font-weight: bold;">PIP-Data_QA</span></span>
 <span class="co">#&gt; └── <span style="color: #0000BB; font-weight: bold;">pip_ingestion_pipeline</span></span>

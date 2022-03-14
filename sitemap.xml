@@ -25,6 +25,9 @@
     <loc>https://pip-technical-team.github.io/pipload/reference/add_gls_to_env.html</loc>
   </url>
   <url>
+    <loc>https://pip-technical-team.github.io/pipload/reference/as_pip.html</loc>
+  </url>
+  <url>
     <loc>https://pip-technical-team.github.io/pipload/reference/as_pipgd.html</loc>
   </url>
   <url>
@@ -34,6 +37,9 @@
     <loc>https://pip-technical-team.github.io/pipload/reference/as_pipmd.html</loc>
   </url>
   <url>
+    <loc>https://pip-technical-team.github.io/pipload/reference/assign_pipclass.html</loc>
+  </url>
+  <url>
     <loc>https://pip-technical-team.github.io/pipload/reference/check_and_create.html</loc>
   </url>
   <url>
@@ -41,6 +47,9 @@
   </url>
   <url>
     <loc>https://pip-technical-team.github.io/pipload/reference/create_dir.html</loc>
+  </url>
+  <url>
+    <loc>https://pip-technical-team.github.io/pipload/reference/create_vintage.html</loc>
   </url>
   <url>
     <loc>https://pip-technical-team.github.io/pipload/reference/data_to_df.html</loc>
