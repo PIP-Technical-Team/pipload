@@ -11,7 +11,7 @@ test_that("return warning when surveys are not available", {
 })
 
 test_that("return NULL when only one wrong survey id is provided", {
-  expect_null(pip_load_data(survey_id = "x"))
+  expect_null( suppressWarnings(pip_load_data(survey_id = "x")) )
 })
 
 

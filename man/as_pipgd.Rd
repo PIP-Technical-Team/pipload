@@ -2,7 +2,7 @@
 % Please edit documentation in R/pip_class.R
 \name{as_pipgd}
 \alias{as_pipgd}
-\title{Add pipgd class}
+\title{Add pipgd class for group data}
 \usage{
 as_pipgd(x)
 }
@@ -13,5 +13,5 @@ as_pipgd(x)
 data frame with new class pipgd
 }
 \description{
-Add pipgd class
+Add pipgd class for group data
 }

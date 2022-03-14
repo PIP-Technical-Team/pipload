@@ -77,7 +77,9 @@ pip_create_globals <- function(root_dir = Sys.getenv("PIP_ROOT_DIR"),
 
   # Old POVCalnet
   si <- Sys.info()
-  if (grepl("^wb", tolower(si[["user"]]))) {
+  authorized <- c("wb384996", "wb499754", "wb561460") # temporal solution
+  # if (grepl("^wb", tolower(si[["user"]]))) {
+  if (tolower(si[["user"]]) %in% authorized) {
     glbs$POVCALNET        <-  "//wbntpcifs/povcalnet/01.PovcalNet/"
     # Povcalnet master
     glbs$PCN_MASTER       <- fs::path(glbs$POVCALNET, "00.Master/02.vintage/")
@@ -267,3 +269,128 @@ check_and_create <- function(dir, vintage, DATE, clean, verbose) {
 
 
 }
+
+
+
+
+#' Create output directory name
+#'
+#' This function creates the name of the directory that used as vintage control
+#' of the PIP project.
+#'
+#' @param vintage list or character: If list, all objects should be named and
+#'   only the following names are accepted: `c("release", "ppp_year", "ppp_rv",
+#'   "ppp_av", "identity")`. Alternatively, it could a single-object list called
+#'   "names" like `vintage = list(name = "some_name")`.  If character, it should
+#'   be of length equal to 1.
+#'
+#' @return
+#' @export
+create_vintage <- function(vintage = list(name = "latest")) {
+
+
+  # Defenses -----------
+  stopifnot( exprs = {
+
+    is.list(vintage) || is.character(vintage)
+    is.character(vintage) && (length(vintage) == 1)
+
+  }
+  )
+
+  TIME <- format(Sys.time(), "%Y%m%d%H%M%S")
+  DATE <- format(Sys.Date(), "%Y%m%d")
+
+
+
+  # Check that correct names are used -------
+  if (is.list(vintage)) {
+    # user sections
+    user_sect <- names(vintage)
+    # requires sections
+    rqr_sect  <- c("release", "ppp_year", "ppp_rv", "ppp_av", "identity")
+    # section no available
+    no_sect  <- user_sect[!(user_sect %in% c("name", rqr_sect))]
+
+    # error handling
+    if (length(no_sect) > 0) {
+      msg     <- c(
+        "names provided in {.field vintage} are not allowed",
+        "*" = "names must be {.emph {rqr_sect}}",
+        "x" = "name{?s} {.emph {no_sect}} not allowed"
+      )
+      cli::cli_abort(msg,
+                     class = "pipload_error"
+      )
+    }
+
+    if ("name"  %in% user_sect && length(user_sect) > 1) {
+      msg     <- c(
+        "you must select either {.field name} or {.field {rqr_sect}}",
+        "x" = "You selected {.emph {user_sect}}"
+      )
+      cli::cli_abort(msg,
+                     class = "pipload_error"
+      )
+
+    }
+
+    if (user_sect == "name") {
+      out_dir <- vintage$name
+    } else {
+
+      #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      ## Release --------
+
+      if (is.null(vintage$release)) {
+        vintage$release <- DATE
+
+      } else {
+
+        # match only numbers
+        if (grepl("\\D+", vintage$release)) {
+          msg     <- c(
+            "Object {.field release} in parameter {.field vintage} must contain
+             digits only",
+            "x" = "you provided {.emph {vintage$release}}"
+          )
+          cli::cli_abort(msg,
+                         class = "pipload_error"
+          )
+        }
+
+        if (length(vintage$release) != 8) {
+          msg     <- c(
+            "{.field release} number must be 8-digit long",
+            "x" = "you provided {length(vintage$release)},
+            which is {length(vintage$release)}"
+            )
+          cli::cli_abort(msg,
+                        class = "pipload_error"
+                        )
+
+        }
+
+      }
+
+      #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      ## PPP year --------
+
+
+
+
+    }
+
+  }
+
+
+
+
+
+  # Return -------------
+  return(out_dir)
+
+}
+
+
+

@@ -1,6 +1,7 @@
+# @description `r lifecycle::badge("deprecated")`
+
 #' Load inventory of welfare aggregate datasets
 #'
-#' @description `r lifecycle::badge("deprecated")`
 #'
 #' This function was deprecated because DLW data will loaded directly from a
 #' flat folder structure which allows bypassing the use of `datalibweb` in
@@ -25,9 +26,9 @@ pip_load_inventory <- function(root_dir = Sys.getenv("PIP_ROOT_DIR"),
                                                  "_inventory/inventory.fst")
                                ) {
 
-  lifecycle::deprecate_soft("0.1.13",
-                            "pip_load_inventory()",
-                            "pip_load_dlw_inventory()")
+  # lifecycle::deprecate_soft("0.1.13",
+  #                           "pip_load_inventory()",
+  #                           "pip_load_dlw_inventory()")
 
   #--------- Load Data ---------
 

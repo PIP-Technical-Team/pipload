@@ -1,6 +1,4 @@
-context("PIP inventory")
-
-test_that("list of countries correct", {
+test_that("list of countries correct in inventory", {
   root_dir  <-  Sys.getenv("PIP_ROOT_DIR")
   maindir   <-  pip_create_globals(root_dir)$PIP_DATA_DIR
 

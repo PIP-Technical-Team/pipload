@@ -1,6 +1,7 @@
+# @description `r lifecycle::badge("deprecated")`
+
 #' Load PIP microdata in different way
 #'
-#' @description `r lifecycle::badge("deprecated")`
 #'
 #' This function was deprecated because DLW data will loaded directly from a
 #' flat folder structure which allows bypassing the use of `datalibweb` in
@@ -83,9 +84,9 @@ pip_load_data <- function(country          = NULL,
                           verbose      = getOption("pipload.verbose")
                           ) {
 
-  lifecycle::deprecate_soft("0.1.13",
-                            "pip_load_data()",
-                            "pip_load_dlw()")
+  # lifecycle::deprecate_soft("0.1.13",
+  #                           "pip_load_data()",
+  #                           "pip_load_dlw()")
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   #---------   Find Data   ---------

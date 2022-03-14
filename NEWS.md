@@ -1,3 +1,32 @@
+# pipload (development version)
+* Add code coverage `covr`
+
+* Add new way to create vintage folders in `pip_create_globals()`
+
+
+# pipload 0.1.17
+* remove deprecated messages. They will be used in the future. 
+
+# pipload 0.1.16
+
+* fix issue with self reference in data.table when creating classed
+
+* add pip_class tests
+
+# pipload 0.1.15
+
+* Change creation of pip classes in S3 mode. now, the main function is `as_pip`
+
+# pipload 0.1.14
+
+* make functions consistent with output from `suyrvey_id_to_vars()`
+
+* modify `pip_class()` functions to make sure they always return data.tables
+
+* create `assign_pipclass()` function to make it work easily with pip classes
+
+* create classes with structures for future development
+
 # pipload 0.1.13
 * read most recent dir in each object of list `create_dir()` inside `pip_create_globals()`
 

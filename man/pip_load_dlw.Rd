@@ -14,7 +14,7 @@ pip_load_dlw(
   tool = c("PC", "TB"),
   survey_id = NULL,
   condition = NULL,
-  type = "dataframe",
+  type = c("dataframe", "list"),
   root_dir = Sys.getenv("PIP_ROOT_DIR"),
   dlw_dir = pip_create_globals(root_dir)$DLW_RAW_DIR,
   filter_to_pc = TRUE,
