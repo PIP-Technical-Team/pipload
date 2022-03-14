@@ -7,9 +7,9 @@
 #'   to select the vintage of `measure`. if the integer is a zero or a negative
 #'   number (e.g., `-1`), `pip_load_aux` will load that number of versions
 #'   before the most recent version available. So, if `0`, it loads the current
-#'   version. If `-1`, it will load the version before the current, `-2` loads two
-#'   versions before the current one, and so on. If it is a positive number, it
-#'   must be quoted (as character) and in the form "%Y%m%d%H%M%S".
+#'   version. If `-1`, it will load the version before the current, `-2` loads
+#'   two versions before the current one, and so on. If it is a positive number,
+#'   it must be quoted (as character) and in the form "%Y%m%d%H%M%S".
 #' @param file_to_load character: file path to load. Does not work with any
 #'   other argument
 #' @param apply_label logical: if TRUE, predefined labels will apply to data
@@ -17,6 +17,12 @@
 #'   the main structure of data has changed and labels have not been updated
 #' @param verbose logical: whether to display message. Default is TRUE
 #' @param preferred_format character: preferred format. default is "fst".
+#' @param suffix character: suffix to be added to main measure name. Some
+#'   measures have complementary data that depend directly from the main measure
+#'   file. They are intended to be used for metadata purposes and efficiency.
+#'   These complementary data is not used for development of new tools. for
+#'   instance, `pip_load_aux(measure = "ppp", suffix = "vintage")` loads the
+#'   vintage available for the PPP database
 #' @inheritParams pip_find_cache
 #' @inheritParams pip_inventory
 #'
@@ -51,7 +57,8 @@ pip_load_aux <- function(measure           = NULL,
                          file_to_load      = NULL,
                          apply_label       = TRUE,
                          verbose           = getOption("pipload.verbose"),
-                         preferred_format  = NULL
+                         preferred_format  = NULL,
+                         suffix            = NULL
                          ) {
 
 
@@ -98,6 +105,17 @@ pip_load_aux <- function(measure           = NULL,
                     ),
                     class = "pipload_error"
                     )
+    }
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## complementary measure if requested --------
+    stopifnot(
+      fs::dir_exists(msrdir)
+    )
+
+
+    if (!is.null(suffix)) {
+      measure <- paste0(measure, "_", suffix)
     }
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
