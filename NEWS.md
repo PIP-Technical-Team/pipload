@@ -1,4 +1,4 @@
-# pipload (development version)
+# pipload 0.1.18
 * Add code coverage `covr`
 
 * Add new way to create vintage folders in `pip_create_globals()`
