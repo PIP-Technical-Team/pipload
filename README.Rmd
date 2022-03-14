@@ -16,6 +16,7 @@ knitr::opts_chunk$set(
 # pipload
 
 <!-- badges: start -->
+[![Codecov test coverage](https://codecov.io/gh/PIP-Technical-Team/pipload/branch/master/graph/badge.svg)](https://app.codecov.io/gh/PIP-Technical-Team/pipload?branch=master)
 <!-- badges: end -->
 
 The goal of `pipload` is to provide a series of tools to load into memory the PIP microdata. You can load and update the inventory of PIP microdata, as well as find the data most recent version of each country-year-survey data point.
@@ -85,7 +86,7 @@ df      <- pip_load_aux(measure, version = "available")
 df
 
 # Load version of "2020-08-07 10:15:48 EDT"
-df      <- pip_load_aux(measure, version = "20200807101548")
+df      <- pip_load_aux(measure, version = "20220223154416")
 head(df)
 
 # Load one version before current one (i.e., load previous version)
@@ -100,7 +101,8 @@ Check if inventory is up to data and udpate
 
 ```{r inventory}
 # Update inventory of PRY
-pip_inventory("update", country = "PRY")
+
+# pip_inventory("update", country = "PRY")
 
 # Load inventory
 df <- pip_inventory()

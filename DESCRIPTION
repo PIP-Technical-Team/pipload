@@ -35,7 +35,8 @@ Imports:
 Suggests: 
     rmarkdown,
     knitr,
-    testthat
+    testthat,
+    covr
 URL: https://pip-technical-team.github.io/pipload/
 VignetteBuilder: knitr
 Depends: 
