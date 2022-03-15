@@ -4,11 +4,7 @@
 \alias{pip_create_vintage}
 \title{Create output directory name}
 \usage{
-pip_create_vintage(
-  vintage = list(name = "latest"),
-  TIME = format(Sys.time(), "\%Y\%m\%d\%H\%M\%S"),
-  DATE = format(Sys.Date(), "\%Y\%m\%d")
-)
+pip_create_vintage(vintage = list(), DATE = format(Sys.Date(), "\%Y\%m\%d"))
 }
 \arguments{
 \item{vintage}{list or character: If list, all objects should be named and

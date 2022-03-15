@@ -10,7 +10,8 @@ pip_create_globals(
   vintage = "latest",
   suffix = NULL,
   clean = FALSE,
-  verbose = getOption("pipload.verbose")
+  verbose = getOption("pipload.verbose"),
+  create_dir = FALSE
 )
 }
 \arguments{
