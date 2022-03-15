@@ -241,3 +241,16 @@ test_that("Adaptation version of PPP works fine", {
 })
 
 
+test_that("default is working", {
+
+  m_py <- ppp_v[, max(ppp_year)]
+  m_rv <- ppp_v[ppp_year == m_py, max(ppp_rv)]
+  m_av <- ppp_v[ppp_year == m_py & ppp_rv == m_rv,
+                max(ppp_av)]
+
+  expect_equal(pip_create_vintage(), paste(format(Sys.Date(), "%Y%m%d"),
+                                           m_py, m_rv, m_av, "PROD",
+                                           sep = "_")
+               )
+
+})

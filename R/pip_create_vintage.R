@@ -11,7 +11,7 @@
 #'
 #' @return
 #' @export
-pip_create_vintage <- function(vintage = list(name = "latest"),
+pip_create_vintage <- function(vintage = list(),
                            TIME = format(Sys.time(), "%Y%m%d%H%M%S"),
                            DATE = format(Sys.Date(), "%Y%m%d")) {
 
