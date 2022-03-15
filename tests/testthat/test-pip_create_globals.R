@@ -1,5 +1,5 @@
 test_that("wrong names in vintage", {
-
+  skip_on_ci()
   expect_error(pip_create_globals(vintage = list(test = "hola", test2 = "chao")))
 
 })
