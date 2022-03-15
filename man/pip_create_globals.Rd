@@ -19,11 +19,11 @@ pip_create_globals(
 
 \item{out_dir}{character: Output Directory. Default is \code{root_dir}}
 
-\item{vintage}{character: name of output folder. It could be "latest",
-"new", or any other name. if it is "latest" (default), the most recent
-version available in the vintage directory of the form "\%Y\%m\%d" will be
-used. If it is "new", a new folder with a name of the form "\%Y\%m\%d" will be
-created. All the names will be coerced to lower cases}
+\item{vintage}{character: name of output folder. It could be "latest", "new",
+or any other name. if it is "latest" (default), the most recent version
+available in the vintage directory of the form "\%Y\%m\%d" will be used. If it
+is "new", a new folder with a name of the form "\%Y\%m\%d" will be created.
+All the names will be coerced to lower cases}
 
 \item{suffix}{character: suffix to be added to the name of the vintage
 folder. Useful for testing purposes. Something of the form "\%Y\%m\%d_test"
@@ -32,7 +32,13 @@ won't be taken into account if the \code{vintage = "latest"}}
 \item{clean}{logical: if TRUE it cleans all empty directories that have been
 created by mistake. Default is FALSE.}
 
-\item{verbose}{logical: display messages. Default is \code{getOption("pipload.verbose")}}
+\item{verbose}{logical: display messages. Default is
+\code{getOption("pipload.verbose")}}
+
+\item{create_dir}{logical: If TRUE creates output directory or any other
+directory that is part of the returned global and that does not exist.
+Otherwise it just returns the directory path \strong{even if}  the
+directory does not exist}
 }
 \value{
 list
