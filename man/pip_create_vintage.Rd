@@ -11,9 +11,11 @@ pip_create_vintage(vintage = list(), DATE = format(Sys.Date(), "\%Y\%m\%d"))
 only the following names are accepted: \code{c("release", "ppp_year", "ppp_rv", "ppp_av", "identity")}. Alternatively, it could a single-object list called
 "names" like \code{vintage = list(name = "some_name")}.  If character, it should
 be of length equal to 1.}
+
+\item{DATE}{character: date in the form \%y\%m\%d.}
 }
 \value{
-
+character  in the form "\%Y\%m\%d_YYYY_##_##_SSS"
 }
 \description{
 This function creates the name of the directory that used as vintage control

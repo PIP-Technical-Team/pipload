@@ -8,7 +8,6 @@ add_gls_to_env(
   root_dir = NULL,
   out_dir = NULL,
   vintage = "latest",
-  suffix = NULL,
   clean = FALSE
 )
 }

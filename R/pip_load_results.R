@@ -8,14 +8,17 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' pip_load_results("interpolated_means")
+#' }
 pip_load_results <- function(output   = NULL,
                              country  = NULL,
                              year     = NULL,
                              tool     = c("PC", "TB"),
                              type     = c("dataframe", "list"),
                              root_dir = Sys.getenv("PIP_ROOT_DIR"),
-                             verbose  = getOption("pipload.verbose")
+                             verbose  = getOption("pipload.verbose"),
+                             vintage  = c("latest", "prod")
                              ) {
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   # check arguments   ---------
@@ -23,11 +26,12 @@ pip_load_results <- function(output   = NULL,
 
   tool <- match.arg(tool)
   type <- match.arg(type)
+  vd   <-  pip_create_globals(root_dir, vintage = vintage)
 
   if (tool == "PC") {
-    resdir   = pip_create_globals(root_dir)$OUT_EST_DIR_PC
+    resdir   <-  vd$OUT_EST_DIR_PC
   } else{
-    resdir   = pip_create_globals(root_dir)$OUT_EST_DIR_TB
+    resdir   <-  vd$OUT_EST_DIR_TB
   }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

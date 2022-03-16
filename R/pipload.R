@@ -44,6 +44,9 @@ if (getRversion() >= "2.15.1") {
       "n_module",
       "tool",
       "vintage_id",
+      "ppp_av",
+      "ppp_rv",
+      "ppp_year",
       ".",
       "!!",
       ":="

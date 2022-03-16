@@ -9,9 +9,9 @@
 #'   "names" like `vintage = list(name = "some_name")`.  If character, it should
 #'   be of length equal to 1.
 #'
-#' @inheritParams pip_create_globals
+#' @param  DATE character: date in the form %y%m%d.
 #'
-#' @return
+#' @return character  in the form "%Y%m%d_YYYY_##_##_SSS"
 #' @export
 pip_create_vintage <- function(vintage = list(),
                                DATE = format(Sys.Date(), "%Y%m%d")) {

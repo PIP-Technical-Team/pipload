@@ -146,6 +146,9 @@ pip_create_globals <- function(root_dir   = Sys.getenv("PIP_ROOT_DIR"),
 
   #
   glbs$DLW_RAW_DIR          <- fs::path(root_dir,"DLW-RAW")
+  if (isTRUE(create_dir)) {
+    create_dir(glbs)
+  }
 
 
 
