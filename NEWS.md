@@ -1,7 +1,7 @@
 # pipload 0.1.19
 * add parameter `suffix` to `pip_load_aux()` to retrieve complementary data of measures. For instance `pip_load_aux("ppp", suffix = "vintage")`
 
-* Add new way to create vintage folders in `pip_create_globals()`
+* Add new way to create vintage folders in `pip_create_globals()` using the new function  `pip_create_vintage()`. **This is still work in progress**. 
 
 
 # pipload 0.1.18
