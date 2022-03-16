@@ -12,7 +12,6 @@
 add_gls_to_env <- function(root_dir = NULL,
                            out_dir  = NULL,
                            vintage  = "latest",
-                           suffix   = NULL,
                            clean    = FALSE) {
 
 
@@ -67,7 +66,6 @@ add_gls_to_env <- function(root_dir = NULL,
     gls <- pip_create_globals(root_dir = root_dir,
                               out_dir  = out_dir,
                               vintage  = vintage,
-                              suffix   = suffix,
                               clean    = clean)
     assign('gls', gls, envir = globalenv())
 
@@ -78,7 +76,6 @@ add_gls_to_env <- function(root_dir = NULL,
                   value      = pip_create_globals(root_dir = root_dir,
                                                   out_dir  = out_dir,
                                                   vintage  = vintage,
-                                                  suffix   = suffix,
                                                   clean    = clean),
                   assign.env =  globalenv(),
                   eval.env   = globalenv())

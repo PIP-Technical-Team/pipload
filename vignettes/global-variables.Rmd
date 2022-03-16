@@ -13,6 +13,7 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 
+options(rmarkdown.html_vignette.check_title = FALSE)
 
 ```
 
@@ -25,7 +26,7 @@ library(pipload)
 the PIP project makes use of many directory paths and ad-hoc information that
 cannot be gathered endogenously from the PIP project. Since `pipload` is the
 package in charge of accessing and loading all the data in PIP, it is also in
-charge of loading into memery the ad-hoc variables that are used across PIP.
+charge of loading into memory the ad-hoc variables that are used across PIP.
 
 ## Functions
 
@@ -44,14 +45,15 @@ where the PIP data resides. Since the directory path of the PIP data cannot be
 made publicly available, it is stored in the environment variable
 `PIP_ROOT_DIR`, which hosted privately by the PIP Technical Team.
 
-For the sake of sake of demostrations, let's use a temporal directory as it it
+For the sake of sake of demonstrations, let's use a temporal directory as it it
 where the root directory. The default behavior of `pip_create_globals()` is to
 create the the whole directory structure in case it does not exist:
 
 ```{r fake-root-1}
+orig_root <- Sys.getenv("PIP_ROOT_DIR")
 fake_dir1 <- paste0(tempdir(), "/1")
 Sys.setenv(PIP_ROOT_DIR = fake_dir1)
-gls <- pip_create_globals()
+gls <- pip_create_globals(create_dir = TRUE)
 fs::dir_tree(fake_dir1, type = "directory")
 ```
 
@@ -69,10 +71,15 @@ user can specify a different directory path to store the output from the PIP
 pipeline.
 
 ```{r fake-root-2}
+Sys.setenv(PIP_ROOT_DIR = orig_root)
+
 fake_dir2 <- paste0(tempdir(), "/2")
 fake_dir3 <- paste0(tempdir(), "/3")
-Sys.setenv(PIP_ROOT_DIR = fake_dir2)
-gls <- pip_create_globals(out_dir = fake_dir3)
+
+gls <- pip_create_globals(root_dir   = fake_dir2, 
+                          out_dir    = fake_dir3, 
+                          create_dir = TRUE,
+                          vintage    = c("latest", "test"))
 fs::dir_tree(fake_dir2, type = "directory")
 fs::dir_tree(fake_dir3, type = "directory")
 ```
@@ -103,10 +110,11 @@ directory different to the official one, `fake_dir2`. In this, can do something
 like this.
 
 ```{r vintage}
-Sys.setenv(PIP_ROOT_DIR = fake_dir2)
+
 gls <- pip_create_globals(root_dir = fake_dir1, 
                           out_dir  = fake_dir2, 
-                          vintage  = "temp_out")
+                          vintage  = c("new", "test"), 
+                          create_dir = TRUE)
 fs::dir_tree(fake_dir1, type = "directory")
 fs::dir_tree(fake_dir2, type = "directory")
 ```

@@ -13,7 +13,8 @@ pip_load_aux(
   file_to_load = NULL,
   apply_label = TRUE,
   verbose = getOption("pipload.verbose"),
-  preferred_format = NULL
+  preferred_format = NULL,
+  suffix = NULL
 )
 }
 \arguments{
@@ -31,9 +32,9 @@ of available versions for \code{measure}. "select"|"pick"|"choose": allows user
 to select the vintage of \code{measure}. if the integer is a zero or a negative
 number (e.g., \code{-1}), \code{pip_load_aux} will load that number of versions
 before the most recent version available. So, if \code{0}, it loads the current
-version. If \code{-1}, it will load the version before the current, \code{-2} loads two
-versions before the current one, and so on. If it is a positive number, it
-must be quoted (as character) and in the form "\%Y\%m\%d\%H\%M\%S".}
+version. If \code{-1}, it will load the version before the current, \code{-2} loads
+two versions before the current one, and so on. If it is a positive number,
+it must be quoted (as character) and in the form "\%Y\%m\%d\%H\%M\%S".}
 
 \item{file_to_load}{character: file path to load. Does not work with any
 other argument}
@@ -45,6 +46,13 @@ the main structure of data has changed and labels have not been updated}
 \item{verbose}{logical: whether to display message. Default is TRUE}
 
 \item{preferred_format}{character: preferred format. default is "fst".}
+
+\item{suffix}{character: suffix to be added to main measure name. Some
+measures have complementary data that depend directly from the main measure
+file. They are intended to be used for metadata purposes and efficiency.
+These complementary data is not used for development of new tools. for
+instance, \code{pip_load_aux(measure = "ppp", suffix = "vintage")} loads the
+vintage available for the PPP database}
 }
 \value{
 data.table

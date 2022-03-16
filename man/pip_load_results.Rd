@@ -11,7 +11,8 @@ pip_load_results(
   tool = c("PC", "TB"),
   type = c("dataframe", "list"),
   root_dir = Sys.getenv("PIP_ROOT_DIR"),
-  verbose = getOption("pipload.verbose")
+  verbose = getOption("pipload.verbose"),
+  vintage = c("latest", "prod")
 )
 }
 \arguments{
@@ -29,6 +30,12 @@ pip_load_results(
 \item{root_dir}{character: root directory of the PIP data}
 
 \item{verbose}{logical: If TRUE, display informative messages. Default TRUE}
+
+\item{vintage}{character: name of output folder. It could be "latest", "new",
+or any other name. if it is "latest" (default), the most recent version
+available in the vintage directory of the form "\%Y\%m\%d" will be used. If it
+is "new", a new folder with a name of the form "\%Y\%m\%d" will be created.
+All the names will be coerced to lower cases}
 }
 \value{
 data.table
@@ -37,5 +44,7 @@ data.table
 Load PIP pre-calculated data sets
 }
 \examples{
+\dontrun{
 pip_load_results("interpolated_means")
+}
 }

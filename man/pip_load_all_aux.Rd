@@ -41,9 +41,9 @@ of available versions for \code{measure}. "select"|"pick"|"choose": allows user
 to select the vintage of \code{measure}. if the integer is a zero or a negative
 number (e.g., \code{-1}), \code{pip_load_aux} will load that number of versions
 before the most recent version available. So, if \code{0}, it loads the current
-version. If \code{-1}, it will load the version before the current, \code{-2} loads two
-versions before the current one, and so on. If it is a positive number, it
-must be quoted (as character) and in the form "\%Y\%m\%d\%H\%M\%S".}
+version. If \code{-1}, it will load the version before the current, \code{-2} loads
+two versions before the current one, and so on. If it is a positive number,
+it must be quoted (as character) and in the form "\%Y\%m\%d\%H\%M\%S".}
 
 \item{file_to_load}{character: file path to load. Does not work with any
 other argument}
