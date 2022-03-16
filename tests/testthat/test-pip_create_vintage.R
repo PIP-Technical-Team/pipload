@@ -1,6 +1,7 @@
 # init parameters
 rqr_sect          <- c("release", "ppp_year", "ppp_rv", "ppp_av", "identity")
-vintage_ch        <- "20220315_2017_01_01_TEST"
+ddtt              <- format(Sys.Date(), "%Y%m%d")
+vintage_ch        <- paste0(ddtt, "_2017_01_01_TEST")
 vintage_lt        <- data.table::tstrsplit(vintage_ch, "_")
 names(vintage_lt) <- rqr_sect
 
@@ -138,7 +139,7 @@ test_that("PPP year is working fine", {
 
 
   # works with numeric values
-  vt3$ppp_year <-  as.numeric(vintage$ppp_year) # short
+  vt3$ppp_year <-  as.numeric(vintage_lt$ppp_year) # short
   expect_equal(pip_create_vintage(vintage = vt3), vintage_ch)
 
   # Wrong year
@@ -181,7 +182,7 @@ test_that("Release version of PPP works fine", {
                )
 
   # works with numeric values
-  vt4$ppp_rv <-  as.numeric(vintage$ppp_rv) # short
+  vt4$ppp_rv <-  as.numeric(vintage_lt$ppp_rv) # short
   expect_equal(pip_create_vintage(vintage = vt4), vintage_ch)
 
   vt4$ppp_rv <-  "1" # just one value
@@ -227,7 +228,7 @@ test_that("Adaptation version of PPP works fine", {
                )
 
   # works with numeric values
-  vt5$ppp_av <-  as.numeric(vintage$ppp_av) # short
+  vt5$ppp_av <-  as.numeric(vintage_lt$ppp_av) # short
   expect_equal(pip_create_vintage(vintage = vt5), vintage_ch)
 
   vt5$ppp_av <-  "1" # just one value

@@ -23,10 +23,6 @@ available in the vintage directory of the form "\%Y\%m\%d" will be used. If it
 is "new", a new folder with a name of the form "\%Y\%m\%d" will be created.
 All the names will be coerced to lower cases}
 
-\item{suffix}{character: suffix to be added to the name of the vintage
-folder. Useful for testing purposes. Something of the form "\%Y\%m\%d_test"
-won't be taken into account if the \code{vintage = "latest"}}
-
 \item{clean}{logical: if TRUE it cleans all empty directories that have been
 created by mistake. Default is FALSE.}
 }
