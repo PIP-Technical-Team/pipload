@@ -211,32 +211,6 @@ pip_create_globals <- function(root_dir   = Sys.getenv("PIP_ROOT_DIR"),
       create_dir(glbs)
     }
 
-    # create vintage dir for PC
-    # vintage_dir_TB <- check_and_create(dir        = glbs$OUT_DIR_TB,
-    #                                    vintage    = vintage,
-    #                                    DATE       = glbs$DATE,
-    #                                    clean      = clean,
-    #                                    verbose    = verbose,
-    #                                    create_dir = create_dir)
-    #
-    #
-    # out_path_tb     <- fs::path(glbs$OUT_DIR_TB, vintage_dir_TB)
-    #
-    # #  Estimations output dir of table baker
-    # glbs$OUT_EST_DIR_TB   <- fs::path(out_path_tb, 'estimations')
-    #
-    #
-    # # Table Maker paths
-    # glbs$TB_DATA          <- fs::path(glbs$PIP_PIPE_DIR, 'tb_data')
-    #
-    # glbs$TB_ARROW         <- fs::path(glbs$PIP_PIPE_DIR, 'tb_data/arrow')
-    #
-    # glbs$CACHE_SVY_DIR_TB <- fs::path(glbs$TB_DATA, 'cache/clean_survey_data')
-    #
-    # if (isTRUE(create_dir)) {
-    #   create_dir(glbs)
-    # }
-
   } else { # end of vintage not null
 
 
