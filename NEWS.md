@@ -1,3 +1,6 @@
+# pipload 0.1.20
+* improve error messages and remove TB output folders for now
+
 # pipload 0.1.19
 * add parameter `suffix` to `pip_load_aux()` to retrieve complementary data of measures. For instance `pip_load_aux("ppp", suffix = "vintage")`
 
