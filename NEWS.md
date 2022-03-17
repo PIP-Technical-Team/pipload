@@ -1,3 +1,5 @@
+# pipload 0.1.20
+
 # pipload 0.1.19
 * add parameter `suffix` to `pip_load_aux()` to retrieve complementary data of measures. For instance `pip_load_aux("ppp", suffix = "vintage")`
 
