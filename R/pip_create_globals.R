@@ -131,9 +131,6 @@ pip_create_globals <- function(root_dir   = Sys.getenv("PIP_ROOT_DIR"),
   # '//w1wbgencifs01/pip/pip_ingestion_pipeline/' # Output dir
   glbs$PIP_PIPE_DIR     <- fs::path(root_dir, 'pip_ingestion_pipeline/')
 
-    # Cached survey data dir
-  glbs$CACHE_SVY_DIR_PC <- fs::path(glbs$PIP_PIPE_DIR, 'pc_data/cache/clean_survey_data/')
-
   # Old POVCalnet
   si <- Sys.info()
   authorized <- c("wb384996", "wb499754", "wb561460") # temporal solution
@@ -193,42 +190,42 @@ pip_create_globals <- function(root_dir   = Sys.getenv("PIP_ROOT_DIR"),
     # aux data output dir
     glbs$OUT_AUX_DIR_PC   <- fs::path(out_path_pc, '/_aux/')
 
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Cached survey data dir -----
+    cache_ppp <- data.table::tstrsplit(vintage_dir, "_", keep = c(2:4))
+    cache_ppp <- paste0(cache_ppp, collapse = "_")
+
+    glbs$CACHE_SVY_DIR_PC <- fs::path(glbs$PIP_PIPE_DIR,
+                                      'pc_data/cache/clean_survey_data',
+                                      cache_ppp)
+    # cache PPP version
+    glbs$cache_ppp <- cache_ppp
+
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Table Maker --------
     #  Main TB output folder
-    glbs$OUT_DIR_TB   <- fs::path(out_dir, 'pip_ingestion_pipeline/tb_data/output')
+    glbs$OUT_DIR_TB   <- fs::path(out_dir,
+                                  'pip_ingestion_pipeline/tb_data/output')
     if (isTRUE(create_dir)) {
       create_dir(glbs)
     }
 
-    # create vintage dir for PC
-    # vintage_dir_TB <- check_and_create(dir        = glbs$OUT_DIR_TB,
-    #                                    vintage    = vintage,
-    #                                    DATE       = glbs$DATE,
-    #                                    clean      = clean,
-    #                                    verbose    = verbose,
-    #                                    create_dir = create_dir)
-    #
-    #
-    # out_path_tb     <- fs::path(glbs$OUT_DIR_TB, vintage_dir_TB)
-    #
-    # #  Estimations output dir of table baker
-    # glbs$OUT_EST_DIR_TB   <- fs::path(out_path_tb, 'estimations')
-    #
-    #
-    # # Table Maker paths
-    # glbs$TB_DATA          <- fs::path(glbs$PIP_PIPE_DIR, 'tb_data')
-    #
-    # glbs$TB_ARROW         <- fs::path(glbs$PIP_PIPE_DIR, 'tb_data/arrow')
-    #
-    # glbs$CACHE_SVY_DIR_TB <- fs::path(glbs$TB_DATA, 'cache/clean_survey_data')
-    #
-    # if (isTRUE(create_dir)) {
-    #   create_dir(glbs)
-    # }
+  } else { # end of vintage not null
 
-  } # end of vintage not null
+    # if no vintage is selected, the default cache directory is the most recent
+    # version of PPP
+    clean_data <- fs::path(glbs$PIP_PIPE_DIR,
+                            'pc_data/cache/clean_survey_data')
+
+    cache_ppps <- fs::dir_ls(clean_data)
+    cache_ppps <- gsub("(.+/)([^/]+$)", "\\2",cache_ppps)
+    cache_ppp  <- max(cache_ppps)
+
+    glbs$CACHE_SVY_DIR_PC <- fs::path(glbs$PIP_PIPE_DIR,
+                                       'pc_data/cache/clean_survey_data',
+                                       cache_ppp)
+  }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   # Max dates   ---------
@@ -237,21 +234,24 @@ pip_create_globals <- function(root_dir   = Sys.getenv("PIP_ROOT_DIR"),
   max_year_country   <- 2019
   if (is.null(max_year_country)) {
 
+    c_year   <- as.integer(format(Sys.Date(), "%Y"))
     c_month  <- as.integer(format(Sys.Date(), "%m"))
+
     max_year <- ifelse(c_month >= 8,  # August
-                       as.integer(format(Sys.Date(), "%Y")) - 1, # After august
-                       as.integer(format(Sys.Date(), "%Y")) - 2) # Before August
+                       c_year - 1, # After or in August
+                       c_year - 2) # Before August
 
   } else {
 
     max_year <- max_year_country
 
   }
-
-  glbs$PIP_YEARS        <- 1977:(max_year + 1) # Years used in PIP
-  glbs$PIP_REF_YEARS    <- 1981:max_year # Years used in the interpolated means table
-
-  glbs$FST_COMP_LVL     <- 100 # Compression level for .fst output files
+  # Years used in PIP
+  glbs$PIP_YEARS        <- 1977:(max_year + 1)
+  # Years used in the interpolated means table
+  glbs$PIP_REF_YEARS    <- 1981:max_year
+  # Compression level for .fst output files
+  glbs$FST_COMP_LVL     <- 100
 
   glbs$max_year_aggregate <- 2017
 

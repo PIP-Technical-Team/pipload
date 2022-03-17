@@ -1,3 +1,8 @@
+# pipload 0.1.21
+* global `glbs$CACHE_SVY_DIR_PC` now uses sub-directories to account for PPP version
+
+* Remove creation of TB output folders. They will be brought back in the future
+
 # pipload 0.1.20
 * improve error messages and remove TB output folders for now
 
