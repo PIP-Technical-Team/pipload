@@ -203,30 +203,30 @@ pip_create_globals <- function(root_dir   = Sys.getenv("PIP_ROOT_DIR"),
     }
 
     # create vintage dir for PC
-    vintage_dir_TB <- check_and_create(dir        = glbs$OUT_DIR_TB,
-                                       vintage    = vintage,
-                                       DATE       = glbs$DATE,
-                                       clean      = clean,
-                                       verbose    = verbose,
-                                       create_dir = create_dir)
-
-
-    out_path_tb     <- fs::path(glbs$OUT_DIR_TB, vintage_dir_TB)
-
-    #  Estimations output dir of table baker
-    glbs$OUT_EST_DIR_TB   <- fs::path(out_path_tb, 'estimations')
-
-
-    # Table Maker paths
-    glbs$TB_DATA          <- fs::path(glbs$PIP_PIPE_DIR, 'tb_data')
-
-    glbs$TB_ARROW         <- fs::path(glbs$PIP_PIPE_DIR, 'tb_data/arrow')
-
-    glbs$CACHE_SVY_DIR_TB <- fs::path(glbs$TB_DATA, 'cache/clean_survey_data')
-
-    if (isTRUE(create_dir)) {
-      create_dir(glbs)
-    }
+    # vintage_dir_TB <- check_and_create(dir        = glbs$OUT_DIR_TB,
+    #                                    vintage    = vintage,
+    #                                    DATE       = glbs$DATE,
+    #                                    clean      = clean,
+    #                                    verbose    = verbose,
+    #                                    create_dir = create_dir)
+    #
+    #
+    # out_path_tb     <- fs::path(glbs$OUT_DIR_TB, vintage_dir_TB)
+    #
+    # #  Estimations output dir of table baker
+    # glbs$OUT_EST_DIR_TB   <- fs::path(out_path_tb, 'estimations')
+    #
+    #
+    # # Table Maker paths
+    # glbs$TB_DATA          <- fs::path(glbs$PIP_PIPE_DIR, 'tb_data')
+    #
+    # glbs$TB_ARROW         <- fs::path(glbs$PIP_PIPE_DIR, 'tb_data/arrow')
+    #
+    # glbs$CACHE_SVY_DIR_TB <- fs::path(glbs$TB_DATA, 'cache/clean_survey_data')
+    #
+    # if (isTRUE(create_dir)) {
+    #   create_dir(glbs)
+    # }
 
   } # end of vintage not null
 
@@ -350,11 +350,54 @@ check_and_create <- function(dir,
 
           # find latest depending on selection
           if ("prod" %in% tolower(vintage)) {
+            if (length(vintages_prod) == 0) {
+
+              msg     <- c(
+                "The combination {.field latest} and {.field prod} is
+                not available in the output folder {.file {dir}}",
+                "*" = "vintages availables are {.file {vintages_av}}"
+                )
+              cli::cli_abort(msg,
+                            class = "pipload_error"
+                            )
+
+            }
             out_dir <- vintages_prod[[1]]
-          } else if  ("test" %in% tolower(vintage)) {
-            out_dir <- vintages_test[[1]]
+
           } else if  ("int" %in% tolower(vintage)) {
+
+            if (length(vintages_int) == 0) {
+
+              msg     <- c(
+                "The combination {.field latest} and {.field int} is
+                not available in the output folder {.file {dir}}",
+                "*" = "vintages availables are {.file {vintages_av}}"
+              )
+              cli::cli_abort(msg,
+                             class = "pipload_error"
+              )
+
+            }
+
             out_dir <- vintages_int[[1]]
+
+          } else if  ("test" %in% tolower(vintage)) {
+
+            if (length(vintages_test) == 0) {
+
+              msg     <- c(
+                "The combination {.field latest} and {.field test} is
+                not available in the output folder {.file {dir}}",
+                "*" = "vintages availables are {.file {vintages_av}}"
+              )
+              cli::cli_abort(msg,
+                             class = "pipload_error"
+              )
+
+            }
+
+            out_dir <- vintages_test[[1]]
+
           } else {
             out_dir <- vintages_av[[1]]
           }
