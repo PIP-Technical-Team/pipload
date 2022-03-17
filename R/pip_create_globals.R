@@ -213,15 +213,16 @@ pip_create_globals <- function(root_dir   = Sys.getenv("PIP_ROOT_DIR"),
 
   } else { # end of vintage not null
 
-
-     clean_data <- fs::path(glbs$PIP_PIPE_DIR,
+    # if no vintage is selected, the default cache directory is the most recent
+    # version of PPP
+    clean_data <- fs::path(glbs$PIP_PIPE_DIR,
                             'pc_data/cache/clean_survey_data')
 
-     cache_ppps <- fs::dir_ls(clean_data)
-     cache_ppps <- gsub("(.+/)([^/]+$)", "\\2",cache_ppps)
-     cache_ppp  <- max(cache_ppps)
+    cache_ppps <- fs::dir_ls(clean_data)
+    cache_ppps <- gsub("(.+/)([^/]+$)", "\\2",cache_ppps)
+    cache_ppp  <- max(cache_ppps)
 
-     glbs$CACHE_SVY_DIR_PC <- fs::path(glbs$PIP_PIPE_DIR,
+    glbs$CACHE_SVY_DIR_PC <- fs::path(glbs$PIP_PIPE_DIR,
                                        'pc_data/cache/clean_survey_data',
                                        cache_ppp)
   }
