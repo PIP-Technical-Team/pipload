@@ -158,7 +158,7 @@ pip_create_globals <- function(root_dir   = Sys.getenv("PIP_ROOT_DIR"),
     ## Poverty calculator --------
 
     # Main output folder
-    glbs$OUT_DIR_PC   <- fs::path(out_dir, 'pip_ingestion_pipeline/pc_data/output/')
+    glbs$OUT_DIR_PC   <- fs::path(out_dir, 'pip_ingestion_pipeline/output-tfs-sync/ITSES-POVERTYSCORE-DATA/')
 
     if (isTRUE(create_dir)) {
       create_dir(glbs)
