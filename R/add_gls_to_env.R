@@ -1,5 +1,6 @@
 #' Add gls list to the global envirnment. To be used in zzz.R in other packages
 #'
+#' `r lifecycle::badge("deprecated")`
 #' if you don't the official value in `Sys.getenv("PIP_ROOT_DIR")` you can
 #' provide the object `root_dir  <- "<you directory>"` before executing the first
 #' function. In this way, object `gls`, which is a promise, will be
@@ -14,6 +15,9 @@ add_gls_to_env <- function(root_dir = NULL,
                            vintage  = "latest",
                            clean    = FALSE) {
 
+  lifecycle::deprecate_soft("0.1.23",
+                            "add_gls_to_env()",
+                            "pip_create_globals()")
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   # evaluate global environment   ---------
