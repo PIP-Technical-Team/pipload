@@ -1,4 +1,5 @@
 # pipload 0.1.22
+* Change output directory to new synced TFS dir
 
 # pipload 0.1.21
 * global `glbs$CACHE_SVY_DIR_PC` now uses sub-directories to account for PPP version
