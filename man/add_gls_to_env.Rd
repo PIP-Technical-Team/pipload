@@ -29,6 +29,7 @@ created by mistake. Default is FALSE.}
 TRUE
 }
 \description{
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
 if you don't the official value in \code{Sys.getenv("PIP_ROOT_DIR")} you can
 provide the object \code{root_dir  <- "<you directory>"} before executing the first
 function. In this way, object \code{gls}, which is a promise, will be
