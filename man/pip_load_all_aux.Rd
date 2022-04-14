@@ -43,7 +43,14 @@ number (e.g., \code{-1}), \code{pip_load_aux} will load that number of versions
 before the most recent version available. So, if \code{0}, it loads the current
 version. If \code{-1}, it will load the version before the current, \code{-2} loads
 two versions before the current one, and so on. If it is a positive number,
-it must be quoted (as character) and in the form "\%Y\%m\%d\%H\%M\%S".}
+it must be quoted (as character) and in the form "\%Y\%m\%d\%H\%M\%S". If "00",
+it load the most recent version of the data (similar to \code{version = 0} or
+\code{version = NULL} or \code{version = "0"}). The dirence is that \code{"00"} load the
+most recent version of the vintage folder, rather than the current version
+in the dynamic folder. Thus, attrbute "version" in \code{attr(dd, "version")} is
+the actual versin of the most recent vintage of the file rathen that
+\code{attr(dd, "version")} equal to "current", which is the default. Option "00"
+is useful for vintage control}
 
 \item{file_to_load}{character: file path to load. Does not work with any
 other argument}
