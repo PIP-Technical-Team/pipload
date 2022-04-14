@@ -1,4 +1,4 @@
-# pipload (development version)
+# pipload 0.1.23
 
 # pipload 0.1.22
 * Change output directory to new synced TFS dir
