@@ -1,4 +1,5 @@
-# pipload (development version)
+# pipload 0.1.23
+* Add option "00" to argumetn `version` in `pip_load_aux` to get the most recent version from vintage folder.
 
 # pipload 0.1.22
 * Change output directory to new synced TFS dir
