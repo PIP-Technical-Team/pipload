@@ -9,7 +9,14 @@
 #'   before the most recent version available. So, if `0`, it loads the current
 #'   version. If `-1`, it will load the version before the current, `-2` loads
 #'   two versions before the current one, and so on. If it is a positive number,
-#'   it must be quoted (as character) and in the form "%Y%m%d%H%M%S".
+#'   it must be quoted (as character) and in the form "%Y%m%d%H%M%S". If "00",
+#'   it load the most recent version of the data (similar to `version = 0` or
+#'   `version = NULL` or `version = "0"`). The dirence is that `"00"` load the
+#'   most recent version of the vintage folder, rather than the current version
+#'   in the dynamic folder. Thus, attrbute "version" in `attr(dd, "version")` is
+#'   the actual versin of the most recent vintage of the file rathen that
+#'   `attr(dd, "version")` equal to "current", which is the default. Option "00"
+#'   is useful for vintage control
 #' @param file_to_load character: file path to load. Does not work with any
 #'   other argument
 #' @param apply_label logical: if TRUE, predefined labels will apply to data
@@ -91,7 +98,7 @@ pip_load_aux <- function(measure           = NULL,
   } else {
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    #---------   if file path is NOT provides   ---------
+    #---------   if file path is NOT provided   ---------
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     if (is.null(measure)) {
@@ -145,7 +152,7 @@ pip_load_aux <- function(measure           = NULL,
     }
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## seelct version --------
+    ## select version --------
 
     # select most recent version
     if (is.null(version)) {
@@ -157,8 +164,12 @@ pip_load_aux <- function(measure           = NULL,
       file_to_load <- fs::path(path_of_file ,  ext = preferred_format)
       load_msg     <- paste("Most recent version of data loaded")
       apply_label  <- TRUE
+      ver_attr     <- "current"
 
     } else {
+      if (version == "00") {
+        version <- 0
+      }
       # Find Vintages options
       vint_dir <- fs::path(msrdir, "_vintage")
 
@@ -194,7 +205,7 @@ pip_load_aux <- function(measure           = NULL,
           )
 
         # If user select x number of versions before the current one
-      } else if (as.numeric(version) < 0) {
+      } else if (as.numeric(version) <= 0) {
 
         ans <- (as.numeric(version) * -1) + 1 # position in the vector of available versions
 
@@ -265,6 +276,7 @@ pip_load_aux <- function(measure           = NULL,
       path_of_file <- gsub(paste0(".", preferred_format), "", file_to_load)
       load_msg     <- paste("Version of data loaded:", ver_dates[ans])
       apply_label  <- FALSE
+      ver_attr     <- tvers[ans]
 
     } # End of condition if version is different to NULL
 
@@ -301,6 +313,7 @@ pip_load_aux <- function(measure           = NULL,
       cli::cli_alert_info("Labels not applied to versioning data")
     }
   }
+  attr(df, "version") <- ver_attr
   return(df)
 }
 
