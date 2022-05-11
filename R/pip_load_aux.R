@@ -313,7 +313,7 @@ pip_load_aux <- function(measure           = NULL,
       cli::cli_alert_info("Labels not applied to versioning data")
     }
   }
-  attr(df, "version") <- ver_attr
+  data.table::setattr(df, "version", ver_attr)
   return(df)
 }
 
