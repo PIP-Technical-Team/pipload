@@ -1,4 +1,4 @@
-# pipload (development version)
+# pipload 0.1.24
 * change `attr` to `data.table::setattr`
 
 # pipload 0.1.23
