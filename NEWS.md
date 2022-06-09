@@ -1,5 +1,6 @@
 # pipload 0.1.24
 * change `attr` to `data.table::setattr`
+* add `identity` to name of cache folder (`CACHE_SVY_DIR_PC`) in `pip_create_globals()`
 
 # pipload 0.1.23
 * Add option "00" to argumetn `version` in `pip_load_aux` to get the most recent version from vintage folder.
