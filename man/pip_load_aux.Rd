@@ -8,7 +8,8 @@ pip_load_aux(
   measure = NULL,
   root_dir = Sys.getenv("PIP_ROOT_DIR"),
   maindir = pip_create_globals(root_dir)$PIP_DATA_DIR,
-  msrdir = fs::path(maindir, "_aux", measure),
+  branch = c("DEV", "PROD", "main"),
+  msrdir = fs::path(maindir, "_aux", match.arg(branch), measure),
   version = NULL,
   file_to_load = NULL,
   apply_label = TRUE,
@@ -24,6 +25,9 @@ pip_load_aux(
 
 \item{maindir}{character: main directory. By default it
 uses \code{pip_create_globals(root_dir)$PIP_DATA_DIR}}
+
+\item{branch}{character: Either "DEV", "PROD", or "main". Refers to which
+version of the data is being updated. Default is DEV for development.}
 
 \item{msrdir}{character: measure (CPI) directory. created on \code{pip_prices()}.}
 

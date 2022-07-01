@@ -1,7 +1,9 @@
 #' Load any auxiliary data
 #'
-#' @param msrdir character: measure (CPI) directory. created on `pip_prices()`.
 #' @param measure character: Measure to be used. e.g., "cpi" or "ppp".
+#' @param branch  character: Either "DEV", "PROD", or "main". Refers to which
+#'   version of the data is being updated. Default is DEV for development.
+#' @param msrdir character: measure (CPI) directory. created on `pip_prices()`.
 #' @param version An integer or a quoted directive. "available": displays list
 #'   of available versions for `measure`. "select"|"pick"|"choose": allows user
 #'   to select the vintage of `measure`. if the integer is a zero or a negative
@@ -56,18 +58,19 @@
 #' \dontrun{
 #' df      <- pip_load_aux(measure, version = "pick")
 #' }
-pip_load_aux <- function(measure           = NULL,
-                         root_dir          = Sys.getenv("PIP_ROOT_DIR"),
-                         maindir           = pip_create_globals(root_dir)$PIP_DATA_DIR,
-                         msrdir            = fs::path(maindir, "_aux", measure),
-                         version           = NULL,
-                         file_to_load      = NULL,
-                         apply_label       = TRUE,
-                         verbose           = getOption("pipload.verbose"),
-                         preferred_format  = NULL,
-                         suffix            = NULL
-                         ) {
-
+pip_load_aux <- function(
+    measure           = NULL,
+    root_dir          = Sys.getenv("PIP_ROOT_DIR"),
+    maindir           = pip_create_globals(root_dir)$PIP_DATA_DIR,
+    branch            = c("DEV", "PROD", "main"),
+    msrdir            = fs::path(maindir, "_aux", match.arg(branch), measure),
+    version           = NULL,
+    file_to_load      = NULL,
+    apply_label       = TRUE,
+    verbose           = getOption("pipload.verbose"),
+    preferred_format  = NULL,
+    suffix            = NULL
+    ) {
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   #---------   If file path IS provided   ---------
