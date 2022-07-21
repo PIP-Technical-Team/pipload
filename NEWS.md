@@ -1,5 +1,9 @@
 # pipload 0.2.0
 
+- Use new folder structure split by DEV and PROD branches. 
+
+- Loads DEV version by default. 
+
 # pipload 0.1.24
 * change `attr` to `data.table::setattr`
 * add `identity` to name of cache folder (`CACHE_SVY_DIR_PC`) in `pip_create_globals()`
