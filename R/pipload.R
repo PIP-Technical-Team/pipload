@@ -4,6 +4,7 @@
 #' @import data.table
 #' @importFrom lifecycle deprecated
 #' @importFrom magrittr "%>%" "%<>%"
+#' @importFrom glue glue
 #' @export
 magrittr::`%>%`
 "_PACKAGE"
