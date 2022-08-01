@@ -7,6 +7,7 @@
 pip_load_all_aux(
   replace = NULL,
   aux = c("cpi", "ppp", "pfw", "pop", "gdm"),
+  branch = c("DEV", "PROD", "main"),
   aux_names = aux,
   envir = globalenv(),
   root_dir = Sys.getenv("PIP_ROOT_DIR"),
@@ -24,6 +25,9 @@ pip_load_all_aux(
 \item{aux}{character: auxiliary files to load. Default is c("cpi", "ppp",
 "pfw", "pop", "gdm", "gdp", "pce"). If "all", all auxiliary frame will be
 loaded in memory}
+
+\item{branch}{character: Either "DEV", "PROD", or "main". Refers to which
+version of the data is being updated. Default is DEV for development.}
 
 \item{aux_names}{character of the same length of \code{aux}. Names of objects to
 be loaded. default is \code{aux}}

@@ -14,6 +14,7 @@
 #' @export
 pip_load_all_aux <- function(replace           = NULL,
                              aux               = c("cpi", "ppp", "pfw", "pop", "gdm"),
+                             branch            = c("DEV", "PROD", "main"),
                              aux_names         = aux,
                              envir             = globalenv(),
                              root_dir          = Sys.getenv("PIP_ROOT_DIR"),
@@ -27,33 +28,42 @@ pip_load_all_aux <- function(replace           = NULL,
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## check arguments --------
+
+  branch <- match.arg(branch)
+
+
   if (length(aux) != length(aux_names)) {
     cli::cli_abort("{.code length(aux)} and {.code length(aux_names)} must
                    be the same",
                    wrap = TRUE)
   }
 
-  auxdir <- fs::path(maindir, "_aux/")
+  auxdir <- fs::path(maindir, glue("_aux/{branch}"))
 
   aux_dirs <- fs::dir_ls(auxdir,
                           recurse = FALSE,
                           type = "directory")
 
-  aux_indicators <- stringr::str_extract(aux_dirs, "[^/]+$")
-  aux_indicators   <-  tolower(unique(aux_indicators))
+  aux_indicators <-
+    fs::path_file(aux_dirs) |>
+    unique() |>
+    tolower()
 
   # keep only those that exist
   dd <-
     purrr::map2(.x = aux_dirs,
                 .y = aux_indicators,
                 .f = ~{
+                  fqs  <- fs::path(.x, .y, ext = "qs")
                   ffst <- fs::path(.x, .y, ext = "fst")
                   frds <- fs::path(.x, .y, ext = "rds")
 
-                  f_exists <- purrr::map_lgl(c(ffst, frds), fs::file_exists)
+                  f_exists <- purrr::map_lgl(c(ffst, frds, fqs), fs::file_exists)
                   any(f_exists)
 
                 })
+
+  # Keep only those that are available
   names(dd) <- aux_indicators
   dd <- purrr::keep(.x = dd,
                     .p = ~isTRUE(.x))
@@ -89,9 +99,8 @@ pip_load_all_aux <- function(replace           = NULL,
                             wrap = TRUE)
       replace <- usethis::ui_yeah("Do you want to replace them?")
     }
-
-
   }
+
 
   if (isFALSE(replace)) {
     cli::cli_alert_warning("No object will be replace in {.field envir}")
@@ -109,13 +118,13 @@ pip_load_all_aux <- function(replace           = NULL,
                    expr = {
                      # Your code...
                      a <- pip_load_aux(measure = .x,
-                                       root_dir          = root_dir        ,
                                        maindir           = maindir         ,
                                        version           = version         ,
                                        file_to_load      = file_to_load    ,
                                        apply_label       = apply_label     ,
                                        verbose           = verbose         ,
-                                       preferred_format  = preferred_format)
+                                       preferred_format  = preferred_format,
+                                       branch            = branch)
                      assign(.y, a, envir = envir)
                    }, # end of expr section
 
