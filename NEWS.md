@@ -4,6 +4,8 @@
 
 - parameter `file_to_load` from `pip_load_aux()` has been softly deprecated. Parameter `filename` is the new way to load files whose names are not the same as the main auxiliary files. 
 
+- make sure `pip_load_all_aux()` works with new structure
+
 # pipload 0.2.0
 
 - Use new folder structure split by DEV and PROD branches. 
