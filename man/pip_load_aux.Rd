@@ -12,7 +12,7 @@ pip_load_aux(
   maindir = pip_create_globals(root_dir)$PIP_DATA_DIR,
   msrdir = fs::path(maindir, "_aux", match.arg(branch), measure),
   filename = measure,
-  file_to_load = filename,
+  file_to_load = lifecycle::deprecated(),
   apply_label = TRUE,
   verbose = getOption("pipload.verbose"),
   preferred_format = NULL

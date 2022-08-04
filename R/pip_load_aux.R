@@ -71,22 +71,35 @@ pip_load_aux <- function(
     maindir           = pip_create_globals(root_dir)$PIP_DATA_DIR,
     msrdir            = fs::path(maindir, "_aux", match.arg(branch), measure),
     filename          = measure,
-    file_to_load      = filename,
+    file_to_load      = lifecycle::deprecated(),
     apply_label       = TRUE,
     verbose           = getOption("pipload.verbose"),
     preferred_format  = NULL
     ) {
 
+  if (lifecycle::is_present(file_to_load))  {
 
-  lifecycle::deprecate_warn("0.2.0",
-                            "pip_load_aux(file_to_load)",
-                            "pip_load_aux(filename)")
+  lifecycle::deprecate_warn(
+    when = "0.2.0",
+    what = "pip_load_aux(file_to_load)",
+    with = "pip_load_aux(filename)",
+    details = "`file_to_load` has been replaced by `filename`, and its
+    functionality has also changed. This is a breaking change. Please revise the
+    documentation"
+    )
+
+    filename <- file_to_load
+  }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  #---------   If file path IS provided   ---------
+  #---------   Conditions   ---------
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   branch <- match.arg(branch)
+
+  if (filename != measure) {
+    apply_label <- FALSE
+  }
 
   #   ____________________________________________________________________________
   #   Defenses                                                                ####
@@ -136,7 +149,6 @@ pip_load_aux <- function(
 
     file_to_load <- fs::path(msrdir, filename, ext = ext)
     load_msg     <- "Most recent version of data loaded"
-    apply_label  <- TRUE
     ver_attr     <- "current"
 
   } else {
