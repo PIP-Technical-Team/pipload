@@ -20,7 +20,6 @@ pip_load_all_aux <- function(replace           = NULL,
                              root_dir          = Sys.getenv("PIP_ROOT_DIR"),
                              maindir           = pip_create_globals(root_dir)$PIP_DATA_DIR,
                              version           = NULL,
-                             file_to_load      = NULL,
                              apply_label       = TRUE,
                              verbose           = FALSE,
                              preferred_format  = NULL
@@ -120,7 +119,6 @@ pip_load_all_aux <- function(replace           = NULL,
                      a <- pip_load_aux(measure = .x,
                                        maindir           = maindir         ,
                                        version           = version         ,
-                                       file_to_load      = file_to_load    ,
                                        apply_label       = apply_label     ,
                                        verbose           = verbose         ,
                                        preferred_format  = preferred_format,
@@ -129,11 +127,13 @@ pip_load_all_aux <- function(replace           = NULL,
                    }, # end of expr section
 
                    error = function(e) {
-                     cli::cli_alert_danger("error loading {.x}")
+                     cli::cli_alert_danger("error loading {.x}
+                                           message: {.field {e$message}}")
                    }, # end of error section
 
                    warning = function(w) {
-                     cli::cli_alert_warning("warning loading {.x}")
+                     cli::cli_alert_warning("warning loading {.x}
+                                           message: {.field {w$message}}")
                    }
 
                  ) # End of trycatch

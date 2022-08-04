@@ -13,7 +13,6 @@ pip_load_all_aux(
   root_dir = Sys.getenv("PIP_ROOT_DIR"),
   maindir = pip_create_globals(root_dir)$PIP_DATA_DIR,
   version = NULL,
-  file_to_load = NULL,
   apply_label = TRUE,
   verbose = FALSE,
   preferred_format = NULL
@@ -54,10 +53,6 @@ the most recent version of the vintage folder, rather than the current
 version in the dynamic folder. Thus, attribute "version" in \code{attr(dd, "version")} is the actual version of the most recent vintage of the file
 rather that \code{attr(dd, "version")} equal to "current", which is the default.
 Option "00" is useful for vintage control}
-
-\item{file_to_load}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} \code{file_to_load} has
-been superseded for a more convenient combination of \code{filename} and
-\code{msrdir}. Now, it defaults to \code{filename}}
 
 \item{apply_label}{logical: if TRUE, predefined labels will apply to data
 loaded using \code{file_to_load} argument. Default TRUE. Tip: change to FALSE if
