@@ -2,11 +2,14 @@
 #'
 #' @param tool character: Either "PC" for Poverty calculator or "TB" for table
 #'   maker
+#' @param version character: version of data in the form
+#'   `yyyy_xx_xx_[PROD|INT|TEST]`. Default is the most recent PROD version
 #' @inheritParams pip_find_cache
 #' @export
 pip_load_cache_inventory <- function(root_dir = Sys.getenv("PIP_ROOT_DIR"),
                                      pipedir  = pip_create_globals(root_dir)$PIP_PIPE_DIR,
-                                     tool     = c("PC", "TB")
+                                     tool     = c("pc", "PC", "TB", "tb"),
+                                     version  = NULL
                                      ) {
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -14,17 +17,22 @@ pip_load_cache_inventory <- function(root_dir = Sys.getenv("PIP_ROOT_DIR"),
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   # right arguments
-  tool <- match.arg(tool)
+  tool <- match.arg(tool)  |>
+    tolower()
 
-  if (tool == "PC") {
-    inv_file <- fs::path(pipedir, "pc_data/cache/clean_survey_data/_crr_inventory/crr_inventory.fst")
-  } else {
-    inv_file <- fs::path(pipedir, "tb_data/cache/clean_survey_data/_crr_inventory/crr_inventory.fst")
+  tool_dir <- fs::path(pipedir, glue("{tool}_data/cache/clean_survey_data/"))
+
+  if (is.null(version)) {
+    version <- last_prod_version(tool_dir)
+
   }
+
+  # inventory file
+  inv_file <- fs::path(tool_dir, version, "_crr_inventory/crr_inventory.fst")
 
   #--------- Load Data ---------
 
-  if (file.exists(inv_file)) {
+  if (fs::file_exists(inv_file)) {
     df       <- fst::read_fst(inv_file,
                               as.data.table = TRUE)
     return(df)

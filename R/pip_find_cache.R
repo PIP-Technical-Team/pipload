@@ -2,6 +2,7 @@
 #'
 #' @inheritParams pip_load_cache
 #' @inheritParams pip_create_globals
+#' @inheritParams pip_load_cache_inventory
 #'
 #' @return data.table
 #' @export
@@ -16,7 +17,8 @@ pip_find_cache <- function(country          = NULL,
                            data_level       = NULL,
                            welfare_type     = NULL,
                            source           = NULL,
-                           tool             = c("PC", "TB"),
+                           version          = NULL,
+                           tool             = c("PC", "pc", "tb", "TB"),
                            root_dir         = Sys.getenv("PIP_ROOT_DIR"),
                            pipedir          = pip_create_globals(root_dir)$PIP_PIPE_DIR
                            )  {
@@ -41,7 +43,8 @@ pip_find_cache <- function(country          = NULL,
   }
 
   ri <- pip_load_cache_inventory(pipedir = pipedir,
-                                 tool    = tool)
+                                 tool    = tool,
+                                 version = version)
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ##           Create regex --------

@@ -2,6 +2,7 @@
 #'
 #' @inheritParams pip_find_data
 #' @inheritParams pip_load_data
+#' @inheritParams pip_load_cache_inventory
 #'
 #' @param welfare_type character: Either "CON" for consumption or "INC" for
 #'   income
@@ -19,13 +20,14 @@
 #' }
 pip_load_cache <- function(country          = NULL,
                            year             = NULL,
-                           tool             = c("PC", "TB"),
+                           tool             = c("PC", "pc", "tb", "TB"),
                            survey_acronym   = NULL,
                            data_level       = NULL,
                            welfare_type     = NULL,
                            source           = NULL,
                            cache_id         = NULL,
                            condition        = NULL,
+                           version          = NULL,
                            type             = c("dataframe", "list"),
                            root_dir         = Sys.getenv("PIP_ROOT_DIR"),
                            pipedir          = pip_create_globals(root_dir)$PIP_PIPE_DIR,
@@ -38,8 +40,13 @@ pip_load_cache <- function(country          = NULL,
 
   # right arguments
   type <- match.arg(type)
-  tool <- match.arg(tool)
+  tool <- match.arg(tool)  |>
+    tolower()
 
+  tool_dir <- fs::path(pipedir, glue("{tool}_data/cache/clean_survey_data/"))
+  if (is.null(version)) {
+    version <- last_prod_version(tool_dir)
+  }
 
   # Correct tool
 
@@ -75,12 +82,6 @@ pip_load_cache <- function(country          = NULL,
 
   }
 
-  if (tool == "PC") {
-    cache_dir <- fs::path(pipedir, "pc_data/cache/clean_survey_data/")
-  } else {
-    cache_dir <- fs::path(pipedir, "tb_data/cache/clean_survey_data/")
-  }
-
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   #---------   If Cache_id is selected   ---------
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -107,6 +108,7 @@ pip_load_cache <- function(country          = NULL,
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ##           find data --------
+
     df <- pip_find_cache(country          = country,
                          year             = year,
                          survey_acronym   = survey_acronym,
@@ -114,7 +116,8 @@ pip_load_cache <- function(country          = NULL,
                          welfare_type     = welfare_type,
                          source           = source,
                          tool             = tool,
-                         pipedir          = pipedir)
+                         pipedir          = pipedir,
+                         version          = version)
   }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -139,6 +142,9 @@ pip_load_cache <- function(country          = NULL,
 
   ps_load_chache <- purrr::possibly(.f = load_chache,
                                      otherwise = NULL)
+
+  # Cache directory
+  cache_dir <- fs::path(tool_dir, version)
 
   tryCatch({
 
