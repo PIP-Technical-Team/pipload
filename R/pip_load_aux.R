@@ -170,7 +170,8 @@ pip_load_aux <- function(
       recurse = FALSE,
       type    = "file",
       regexp  = glue("{filename}_[0-9]+\\.{ext}")
-    )
+    ) |>
+      sort(decreasing = TRUE)
 
     ver_files <-
       fs::path_file(ver_paths) |>
