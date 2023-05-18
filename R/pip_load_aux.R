@@ -65,7 +65,7 @@
 #' }
 pip_load_aux <- function(
     measure           ,
-    branch            = c("DEV", "PROD", "main"),
+    branch            = c("DEV", "PROD", "main", "test"),
     version           = NULL,
     root_dir          = Sys.getenv("PIP_ROOT_DIR"),
     maindir           = pip_create_globals(root_dir)$PIP_DATA_DIR,
