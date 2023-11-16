@@ -7,13 +7,14 @@
 pip_load_cache(
   country = NULL,
   year = NULL,
-  tool = c("PC", "TB"),
+  tool = c("PC", "pc", "tb", "TB"),
   survey_acronym = NULL,
   data_level = NULL,
   welfare_type = NULL,
   source = NULL,
   cache_id = NULL,
   condition = NULL,
+  version = NULL,
   type = c("dataframe", "list"),
   root_dir = Sys.getenv("PIP_ROOT_DIR"),
   pipedir = pip_create_globals(root_dir)$PIP_PIPE_DIR,
@@ -47,6 +48,9 @@ variables in \code{pip_load_inventory()}: orig, filename, country_code, year,
 survey_acronym, vermast, veralt, collection, module, tool, and source.
 Can't be used with arguments \code{country}, \code{year},
 \code{survey_acronym} , \code{vermast}, \code{veralt}, \code{module} or \code{tool}.}
+
+\item{version}{character: version of data in the form
+\code{yyyy_xx_xx_[PROD|INT|TEST]}. Default is the most recent PROD version}
 
 \item{type}{character: Either \code{dataframe} or \code{list}. Defaults is \code{dataframe}.}
 

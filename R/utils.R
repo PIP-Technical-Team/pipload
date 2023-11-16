@@ -1,6 +1,13 @@
+#' Add 'and' at the end of a character vector
+#'
+#' @param x character: Vector of object
+#'
+#' @return character vector
+#' @noRd
+#' @keywords internal
 add_and <- function(x) {
   if (!(is.character(x))) {
-    warning("`x` must be character. coercing to character")
+    cli_alert("{.field x} must be character. coercing to character")
     x <- as.character(x)
   }
 
@@ -19,30 +26,51 @@ add_and <- function(x) {
 }
 
 
-list_of_countries <- function(root_dir          = Sys.getenv("PIP_ROOT_DIR"),
-                              maindir           = pip_create_globals(root_dir)$PIP_DATA_DIR) {
-  cli::cli_progress_step("getting list of countries")
+#' List of countries avaialble in PIP_DATA_DIR
+#'
+#' @param root_dir character: root directory
+#' @param maindir character: main directory
+#'   `pip_create_globals(root_dir)$PIP_DATA_DIR`
+#'
+#' @return character vector with list of countries
+#' @noRd
+#' @keywords internal
+list_of_countries <-
+  function(root_dir = Sys.getenv("PIP_ROOT_DIR"),
+           maindir   = pip_create_globals(root_dir)$PIP_DATA_DIR
+           ) {
+
   countries <- fs::dir_ls(path    = maindir,
                           recurse = FALSE,
                           regexp = "[A-Z]{3}$",
                           type    = "directory"
-                          )
+                          ) |>
+    fs::path_file() |>
+    sort()
 
-  cli::cli_progress_done()
-
-  countries <- as.character(countries)
-  country_list <- stringr::str_extract(countries, "[A-Z]{3}$")
-
-  return(country_list)
+  return(countries)
 }
 
 
 
-# Nesting and unnesting data.tables
+# Nest data.table
+#'
+#' @param ... variable names in data.table
+#'
+#' @return nested variable within data.table
+#' @noRd
+#' @keywords internal
 .nest   <- function(...) {
   list(data.table::data.table(...))
 }
 
+#' Unnest data.table
+#'
+#' @param ... variable names in data.table
+#'
+#' @return data.table with unnested variable
+#' @noRd
+#' @keywords internal
 .unnest <- function(...) {
     unlist(data.table::data.table(...))
 }
@@ -131,3 +159,38 @@ survey_id_to_vars <- function(dt) {
 }
 
 
+#' Find last vintage of PROD directories
+#'
+#' @param tool_dir character: directory path of tool in use
+#'
+#' @return character with the most recent version of PROD data
+#' @noRd
+#' @keywords internal
+last_prod_version <- function(tool_dir) {
+
+#   ________________________________________________________
+#   Defenses                                      ####
+  stopifnot( exprs = {
+    is.character(tool_dir)
+    fs::dir_exists(tool_dir)
+    }
+  )
+
+
+#   ______________________________________________________________
+#   Computations                                      ####
+  versions <- fs::dir_ls(tool_dir) |>
+    fs::path_file()
+
+  # Get most recent production version
+  version <-
+    versions[grepl("PROD$", versions)] |>
+    sort(decreasing = TRUE) |>
+    {\(.) .[1]}()
+
+
+#   __________________________________________________________
+#   Return                                                                  ####
+  return(version)
+
+}

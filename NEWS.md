@@ -1,3 +1,17 @@
+# pipload (development version)
+
+- `pip_load_aux()` now reads from branches folder and loading algorithm has been improved. 
+
+- parameter `file_to_load` from `pip_load_aux()` has been softly deprecated. Parameter `filename` is the new way to load files whose names are not the same as the main auxiliary files. 
+
+- make sure `pip_load_all_aux()` works with new structure
+
+# pipload 0.2.0
+
+- Use new folder structure split by DEV and PROD branches. 
+
+- Loads DEV version by default. 
+
 # pipload 0.1.24
 * change `attr` to `data.table::setattr`
 * add `identity` to name of cache folder (`CACHE_SVY_DIR_PC`) in `pip_create_globals()`

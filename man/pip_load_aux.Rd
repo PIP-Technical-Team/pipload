@@ -5,27 +5,25 @@
 \title{Load any auxiliary data}
 \usage{
 pip_load_aux(
-  measure = NULL,
+  measure,
+  branch = c("DEV", "PROD", "main"),
+  version = NULL,
   root_dir = Sys.getenv("PIP_ROOT_DIR"),
   maindir = pip_create_globals(root_dir)$PIP_DATA_DIR,
-  msrdir = fs::path(maindir, "_aux", measure),
-  version = NULL,
-  file_to_load = NULL,
+  msrdir = fs::path(maindir, "_aux", match.arg(branch), measure),
+  filename = measure,
+  file_to_load = lifecycle::deprecated(),
   apply_label = TRUE,
   verbose = getOption("pipload.verbose"),
-  preferred_format = NULL,
-  suffix = NULL
+  preferred_format = NULL
 )
 }
 \arguments{
-\item{measure}{character: Measure to be used. e.g., "cpi" or "ppp".}
+\item{measure}{character: Measure to be used. e.g., "cpi" or "ppp". It can't
+be \code{NULL} anymore as it requires a main auxiliary directory}
 
-\item{root_dir}{character: root directory of the PIP data}
-
-\item{maindir}{character: main directory. By default it
-uses \code{pip_create_globals(root_dir)$PIP_DATA_DIR}}
-
-\item{msrdir}{character: measure (CPI) directory. created on \code{pip_prices()}.}
+\item{branch}{character: Either "DEV", "PROD", or "main". Refers to which
+version of the data is being updated. Default is DEV for development.}
 
 \item{version}{An integer or a quoted directive. "available": displays list
 of available versions for \code{measure}. "select"|"pick"|"choose": allows user
@@ -36,15 +34,26 @@ version. If \code{-1}, it will load the version before the current, \code{-2} lo
 two versions before the current one, and so on. If it is a positive number,
 it must be quoted (as character) and in the form "\%Y\%m\%d\%H\%M\%S". If "00",
 it load the most recent version of the data (similar to \code{version = 0} or
-\code{version = NULL} or \code{version = "0"}). The dirence is that \code{"00"} load the
-most recent version of the vintage folder, rather than the current version
-in the dynamic folder. Thus, attrbute "version" in \code{attr(dd, "version")} is
-the actual versin of the most recent vintage of the file rathen that
-\code{attr(dd, "version")} equal to "current", which is the default. Option "00"
-is useful for vintage control}
+\code{version = NULL} or \code{version = "0"}). The difference is that \code{"00"} load
+the most recent version of the vintage folder, rather than the current
+version in the dynamic folder. Thus, attribute "version" in \code{attr(dd, "version")} is the actual version of the most recent vintage of the file
+rather that \code{attr(dd, "version")} equal to "current", which is the default.
+Option "00" is useful for vintage control}
 
-\item{file_to_load}{character: file path to load. Does not work with any
-other argument}
+\item{root_dir}{character: root directory of the PIP data}
+
+\item{maindir}{character: main directory. By default it
+uses \code{pip_create_globals(root_dir)$PIP_DATA_DIR}}
+
+\item{msrdir}{character: measure directory. Default is
+\code{fs::path(maindir,"_aux", match.arg(branch), measure)}}
+
+\item{filename}{character: name of file if different from \code{measure}. Default
+is \code{measure}}
+
+\item{file_to_load}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} \code{file_to_load} has
+been superseded for a more convenient combination of \code{filename} and
+\code{msrdir}. Now, it defaults to \code{filename}}
 
 \item{apply_label}{logical: if TRUE, predefined labels will apply to data
 loaded using \code{file_to_load} argument. Default TRUE. Tip: change to FALSE if
@@ -82,9 +91,9 @@ av      <- pip_load_aux(measure, version = "available")
 head(av)
 df      <- pip_load_aux(measure, version = av[1])
 head(df)
+\dontrun{
 df      <- pip_load_aux(measure, version = -1)
 head(df)
-\dontrun{
 df      <- pip_load_aux(measure, version = "pick")
 }
 }

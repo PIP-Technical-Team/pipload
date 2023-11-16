@@ -4,10 +4,10 @@
 \alias{read_by_format}
 \title{read file dependin on format and convert to data.table}
 \usage{
-read_by_format(pformat)
+read_by_format(file_to_load)
 }
 \arguments{
-\item{pformat}{character: format of the file.}
+\item{file_to_load}{character: file to load}
 }
 \value{
 data.table

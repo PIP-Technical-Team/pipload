@@ -1,7 +1,9 @@
 #' Load any auxiliary data
 #'
-#' @param msrdir character: measure (CPI) directory. created on `pip_prices()`.
-#' @param measure character: Measure to be used. e.g., "cpi" or "ppp".
+#' @param measure character: Measure to be used. e.g., "cpi" or "ppp". It can't
+#'   be `NULL` anymore as it requires a main auxiliary directory
+#' @param branch  character: Either "DEV", "PROD", or "main". Refers to which
+#'   version of the data is being updated. Default is DEV for development.
 #' @param version An integer or a quoted directive. "available": displays list
 #'   of available versions for `measure`. "select"|"pick"|"choose": allows user
 #'   to select the vintage of `measure`. if the integer is a zero or a negative
@@ -11,14 +13,19 @@
 #'   two versions before the current one, and so on. If it is a positive number,
 #'   it must be quoted (as character) and in the form "%Y%m%d%H%M%S". If "00",
 #'   it load the most recent version of the data (similar to `version = 0` or
-#'   `version = NULL` or `version = "0"`). The dirence is that `"00"` load the
-#'   most recent version of the vintage folder, rather than the current version
-#'   in the dynamic folder. Thus, attrbute "version" in `attr(dd, "version")` is
-#'   the actual versin of the most recent vintage of the file rathen that
-#'   `attr(dd, "version")` equal to "current", which is the default. Option "00"
-#'   is useful for vintage control
-#' @param file_to_load character: file path to load. Does not work with any
-#'   other argument
+#'   `version = NULL` or `version = "0"`). The difference is that `"00"` load
+#'   the most recent version of the vintage folder, rather than the current
+#'   version in the dynamic folder. Thus, attribute "version" in `attr(dd,
+#'   "version")` is the actual version of the most recent vintage of the file
+#'   rather that `attr(dd, "version")` equal to "current", which is the default.
+#'   Option "00" is useful for vintage control
+#' @param msrdir character: measure directory. Default is
+#'   `fs::path(maindir,"_aux", match.arg(branch), measure)`
+#' @param file_to_load `r lifecycle::badge("deprecated")` `file_to_load` has
+#'   been superseded for a more convenient combination of `filename` and
+#'   `msrdir`. Now, it defaults to `filename`
+#' @param filename character: name of file if different from `measure`. Default
+#'   is `measure`
 #' @param apply_label logical: if TRUE, predefined labels will apply to data
 #'   loaded using `file_to_load` argument. Default TRUE. Tip: change to FALSE if
 #'   the main structure of data has changed and labels have not been updated
@@ -51,256 +58,253 @@
 #' head(av)
 #' df      <- pip_load_aux(measure, version = av[1])
 #' head(df)
+#' \dontrun{
 #' df      <- pip_load_aux(measure, version = -1)
 #' head(df)
-#' \dontrun{
 #' df      <- pip_load_aux(measure, version = "pick")
 #' }
-pip_load_aux <- function(measure           = NULL,
-                         root_dir          = Sys.getenv("PIP_ROOT_DIR"),
-                         maindir           = pip_create_globals(root_dir)$PIP_DATA_DIR,
-                         msrdir            = fs::path(maindir, "_aux", measure),
-                         version           = NULL,
-                         file_to_load      = NULL,
-                         apply_label       = TRUE,
-                         verbose           = getOption("pipload.verbose"),
-                         preferred_format  = NULL,
-                         suffix            = NULL
-                         ) {
+pip_load_aux <- function(
+    measure           ,
+    branch            = c("DEV", "PROD", "main"),
+    version           = NULL,
+    root_dir          = Sys.getenv("PIP_ROOT_DIR"),
+    maindir           = pip_create_globals(root_dir)$PIP_DATA_DIR,
+    msrdir            = fs::path(maindir, "_aux", match.arg(branch), measure),
+    filename          = measure,
+    file_to_load      = lifecycle::deprecated(),
+    apply_label       = TRUE,
+    verbose           = getOption("pipload.verbose"),
+    preferred_format  = NULL
+    ) {
 
+  if (lifecycle::is_present(file_to_load))  {
+
+  lifecycle::deprecate_warn(
+    when = "0.2.0",
+    what = "pip_load_aux(file_to_load)",
+    with = "pip_load_aux(filename)",
+    details = "`file_to_load` has been replaced by `filename`, and its
+    functionality has also changed. This is a breaking change. Please revise the
+    documentation"
+    )
+
+    filename <- file_to_load
+  }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  #---------   If file path IS provided   ---------
+  #---------   Conditions   ---------
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  allowed_formats  <- c("fst", "rds", "dta")
+  branch <- match.arg(branch)
 
+  if (filename != measure) {
+    apply_label <- FALSE
+  }
 
-  if (!(is.null(file_to_load))) {
-    if (!(is.null(measure))) {
-      msg     <- "Syntax error"
-      hint    <- "provide either `measure` or `file_to_load`"
-      problem <- "you provided a value in `measure` that might be inconsistent with `file_to_load`"
-      rlang::abort(c(
-                    msg,
-                    i = hint,
-                    x = problem
-                    ),
-                    class = "error_class"
-                    )
+  #   ____________________________________________________________________________
+  #   Defenses                                                                ####
+  stopifnot( exprs = {
+    fs::dir_exists(msrdir)
+  }
+  )
 
-    }
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Find format --------
 
-    measure  <- gsub("(.*/)([a-z]+)_?[0-9]*\\.fst$", "\\2", file_to_load)
-    load_msg <- paste("Data loaded from file path")
+  file_paths <- fs::dir_ls(msrdir,
+                           type = "file",
+                           regexp = glue("/{filename}\\."))
 
+  if (is.null(preferred_format)) {
+
+    # get the first of the allowed formats that is available
+    fp  <- find_path(file_paths)   # preferred file path
+    ext <- fs::path_ext(fp)        # extension
 
   } else {
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    #---------   if file path is NOT provided   ---------
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    av_formats <- fs::path_ext(file_paths)
 
-    if (is.null(measure)) {
-      msg     <- "Syntax Error"
-      hint    <- "You need to provide either a `measure` of file path in `file_to_load`"
-      problem <- "`measure` needs to be defined when `file_to_load` is NULL"
-      rlang::abort(c(
-                    msg,
-                    i = hint,
-                    x = problem
-                    ),
-                    class = "pipload_error"
-                    )
-    }
-
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## complementary measure if requested --------
-    stopifnot(
-      fs::dir_exists(msrdir)
-    )
-
-
-    if (!is.null(suffix)) {
-      measure <- paste0(measure, "_", suffix)
-    }
-
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Find format --------
-
-    av_files   <- list.files(path = msrdir, pattern = paste0("^", measure, "\\."))
-    av_formats <- gsub("(\\w+\\.)([[:lower:]]+)$", "\\2", av_files)
-
-
-    if (all(!av_formats  %in% allowed_formats)) {
-      cli::cli_abort(c("all the format available are not allowed",
-                       x = "Only {.field {allowed_formats}} are allowed.
-                       Currently directory has formats {.field {av_formats}}"),
+    if (!preferred_format %in% av_formats) {
+      cli::cli_abort(c("Preferred format ({.field {preferred_format}}) is
+                         not available",
+                       x = "Available formats are {.field {av_formats}}"),
                      wrap = TRUE)
     }
 
+    ext <- preferred_format
+    # fp <- grep(glue("{ext}$"), file_paths, value = TRUE)
+  }
 
-    if (is.null(preferred_format)) {
-      # get the first of the allowed formats that is available
-      preferred_format <- allowed_formats[allowed_formats %in% av_formats][1]
-    } else {
-      if (!preferred_format %in% av_formats) {
-        cli::cli_abort(c("Preferred format ({.field {preferred_format}}) is not available",
-                         x = "Available formats are {.field {av_formats}}"),
-                       wrap = TRUE)
-      }
-    }
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## select version --------
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## select version --------
 
-    # select most recent version
-    if (is.null(version)) {
+  # select most recent version
+  if (is.null(version)) {
+    version <- 0
+  }
+
+  if (version == 0) {
+
+    file_to_load <- fs::path(msrdir, filename, ext = ext)
+    load_msg     <- "Most recent version of data loaded"
+    ver_attr     <- "current"
+
+  } else {
+
+    if (version == "00") {
       version <- 0
     }
 
-    if (version == 0) {
-      path_of_file <- fs::path(msrdir, measure)
-      file_to_load <- fs::path(path_of_file ,  ext = preferred_format)
-      load_msg     <- paste("Most recent version of data loaded")
-      apply_label  <- TRUE
-      ver_attr     <- "current"
+    # Find Vintages options
+    vint_dir <- fs::path(msrdir, "_vintage")
+    if (!fs::dir_exists(vint_dir)) {
+      msg <- c("Vintage directory does not exist. {.file {vint_dir}}")
+      cli::cli_abort(msg, class = "pipload_error")
+    }
 
-    } else {
-      if (version == "00") {
-        version <- 0
-      }
-      # Find Vintages options
-      vint_dir <- fs::path(msrdir, "_vintage")
+    # Get all version available
+    ver_paths <- fs::dir_ls(
+      path    = vint_dir,
+      recurse = FALSE,
+      type    = "file",
+      regexp  = glue("{filename}_[0-9]+\\.{ext}")
+    ) |>
+      sort(decreasing = TRUE)
 
-      # Get all version available
-      vers <- fs::dir_ls(
-        path    = vint_dir,
-        recurse = FALSE,
-        type    = "file",
-        regexp  = paste0(measure, "_[0-9]+\\.", preferred_format)
+    ver_files <-
+      fs::path_file(ver_paths) |>
+      fs::path_ext_remove() |>
+      sort(decreasing = TRUE) |>
+      as.character()
+
+
+    # Get just the dates
+    tvers     <-
+      gsub(glue("({filename}_)([0-9]+)"), "\\2", ver_files)
+
+    ver_dates <-
+      as.POSIXct(tvers, "%Y%m%d%H%M%S", tz = Sys.timezone())
+
+    version_posix <-
+      as.character(version) |>
+      as.POSIXct("%Y%m%d%H%M%S", tz = Sys.timezone())
+
+
+    # If the user wants to pick the version.
+    if (version == "available") {
+
+      cli::cli_alert("Versions available for {.field {measure}}:
+                     {.file {ver_dates}}")
+
+      return(invisible(tvers))
+
+    } else if (version %in% c("select", "pick", "choose")) {
+      ans <- menu(
+        ver_dates,
+        title = paste(
+          "There are", length(ver_dates), "versions available.\n",
+          "Please select the one you want to load."
+        )
       )
 
-      # Get just the dates
-      vers      <- as.character(sort(vers, decreasing = TRUE))
-      tvers     <-
-        gsub(paste0("(.*", measure, "_)([0-9]+)(.*)"), "\\2", vers)
-      ver_dates <-
-        as.POSIXct(tvers, "%Y%m%d%H%M%S", tz = Sys.timezone())
+      # If user select x number of versions before the current one
+    } else if (as.numeric(version) <= 0) {
 
-      # If the user wants to pick the version.
-      if (version == "available") {
-        message(paste("Versions available for", measure))
-        print(ver_dates)
+      ans <- (as.numeric(version) * -1) + 1 # position in the vector of available versions
 
-        return(invisible(tvers))
-
-      } else if (version %in% c("select", "pick", "choose")) {
-        ans <- menu(
-          ver_dates,
-          title = paste(
-            "There are", length(ver_dates), "versions available.\n",
-            "Please select the one you want to load."
-            )
-          )
-
-        # If user select x number of versions before the current one
-      } else if (as.numeric(version) <= 0) {
-
-        ans <- (as.numeric(version) * -1) + 1 # position in the vector of available versions
-
-        if (ans > length(ver_dates)) {
-          msg     <- "Invalid number of version"
-          hint    <-
-            "Did you want to load a different version using one of the other two methods?"
-          problem <-
-            paste(
-              "There are only",
-              length(ver_dates),
-              "versions available and you\n",
-              "selected version",
-              ans
-            )
-          rlang::abort(c(msg,
-                         i = hint,
-                         x = problem),
-                       class = "pipload_error")
-        }
-
-        # If the user select a particular date or version.
-      } else if (!(is.na(as.POSIXct(as.character(version), "%Y%m%d%H%M%S", tz = Sys.timezone())))) {
-
-        if (any(grepl(version, vers))) {
-          ans <- which(grepl(version, vers))
-
-        } else {
-          msg     <-
-            "The date you provided is not an available vintage version"
-          hint    <-
-            paste0(
-              "run `pip_load_aux('",
-              measure,
-              "', version('available')`",
-              "\nto check for available versions"
-            )
-          problem <-
-            paste("you selected",
-                  as.POSIXct(version, "%Y%m%d%H%M%S", tz = Sys.timezone()))
-          rlang::abort(c(msg,
-                         i = hint,
-                         x = problem),
-                       class = "pipload_error")
-
-        }
-
-
-      } else {
-        msg     <- "The version selected is not available"
-        hint    <- paste(
-          "Make sure `version` is either \n",
-          "[1] a date character in the form %Y%m%d%H%M%S, \n",
-          "[2] the words, `select`, `pick`, or `choose` to select a particular date.\n",
-          "[3] a negative number, so that  `pip_load_aux` will load that number of versions before the current one."
-        )
+      if (ans > length(ver_dates)) {
+        msg     <- "Invalid number of version"
+        hint    <-
+          "Did you want to load a different version using one of the other two methods?"
         problem <-
-          paste0("you provided ",
-                 version,
-                 ", which is not one of the three options above.")
+          paste(
+            "There are only",
+            length(ver_dates),
+            "versions available and you\n",
+            "selected version",
+            ans
+          )
         rlang::abort(c(msg,
                        i = hint,
                        x = problem),
                      class = "pipload_error")
       }
 
-      file_to_load <- vers[ans]
-      path_of_file <- gsub(paste0(".", preferred_format), "", file_to_load)
-      load_msg     <- paste("Version of data loaded:", ver_dates[ans])
-      apply_label  <- FALSE
-      ver_attr     <- tvers[ans]
+      # If the user select a particular date or version.
+    } else if (!is.na(version_posix)) {
 
-    } # End of condition if version is different to NULL
+      if (version  %in% tvers) {
 
-  } # end of condition if file_to_path is NULL
+        ans <- which(tvers == version)
+
+      } else {
+        msg     <-
+          "The date you provided is not an available vintage version"
+        hint    <-
+          paste0(
+            "run `pip_load_aux('",
+            measure,
+            "', version('available')`",
+            "\nto check for available versions"
+          )
+        problem <-
+          paste("you selected",
+                as.POSIXct(version, "%Y%m%d%H%M%S", tz = Sys.timezone()))
+        rlang::abort(c(msg,
+                       i = hint,
+                       x = problem),
+                     class = "pipload_error")
+
+      }
+
+
+    } else {
+      msg     <- "The version selected is not available"
+      hint    <- paste(
+        "Make sure `version` is either \n",
+        "[1] a date character in the form %Y%m%d%H%M%S, \n",
+        "[2] the words, `select`, `pick`, or `choose` to select a particular date.\n",
+        "[3] a negative number, so that  `pip_load_aux` will load that number of versions before the current one."
+      )
+      problem <-
+        paste0("you provided ",
+               version,
+               ", which is not one of the three options above.")
+      rlang::abort(c(msg,
+                     i = hint,
+                     x = problem),
+                   class = "pipload_error")
+    }
+
+    file_to_load <- ver_paths[ans]
+    load_msg     <- glue("Version of data loaded: {ver_dates[ans]}")
+    apply_label  <- FALSE
+    ver_attr     <- tvers[ans]
+
+  } # End of condition if version is different to NULL
+
+
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   #---------   Load data   ---------
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   # check file exists
-  if (file.exists(file_to_load)) {
-    df <- read_by_format(preferred_format)(path_of_file)
+  wfilename    <- fs::path_file(file_to_load)
+  if (fs::file_exists(file_to_load)) {
+    df  <- read_by_format(file_to_load)
 
     if (verbose) {
       cli::cli_alert_success("{load_msg}:
-                             {.file {path_of_file}.{preferred_format}}")
+                             {.file {wfilename}}")
     }
-
   } else {
-    msg <- paste0("file `", measure, ".", preferred_format, "` does not exist.")
-    rlang::abort(c(msg,
+
+    cli::cli_abort(c("file {.file {wfilename}} does not exist.",
                    i = "check your connection or data availability"),
                  class = "pipload_error")
-
   }
 
   if (apply_label) {
@@ -313,6 +317,7 @@ pip_load_aux <- function(measure           = NULL,
       cli::cli_alert_info("Labels not applied to versioning data")
     }
   }
+
   data.table::setattr(df, "version", ver_attr)
   return(df)
 }
@@ -320,24 +325,30 @@ pip_load_aux <- function(measure           = NULL,
 
 #' read file dependin on format and convert to data.table
 #'
-#' @param pformat character: format of the file.
+#' @param file_to_load character: file to load
 #'
 #' @return data.table
 #' @export
-read_by_format <- function(pformat) {
+read_by_format <- function(file_to_load) {
 
-  force(pformat)
+  pformat <- fs::path_ext(file_to_load)
 
-  function(x) {
-    file2read <- fs::path(x, ext =  pformat)
+  x <-
+    if (pformat == "qs") {
 
-    if (pformat == "fst") {
-      x <- fst::read_fst(file2read, as.data.table = TRUE)
+      qs::qread(file_to_load)
+
+      } else if (pformat == "fst") {
+
+      fst::read_fst(file_to_load, as.data.table = TRUE)
+
     } else if (pformat == "rds") {
 
-      x <- readr::read_rds(file2read)
+      readr::read_rds(file_to_load)
+
     } else if (pformat == "dta") {
-      x <- haven::read_dta(file2read)
+
+      haven::read_dta(file_to_load)
     }
 
   if (is.data.frame(x)) {
@@ -345,5 +356,47 @@ read_by_format <- function(pformat) {
   }
 
   return(x)
-  }
 }
+
+
+#' Find path of file to be loaded depending on extension hierarchy
+#'
+#'
+#' @param file_paths chracter: vector of file paths
+#'
+#' @return character vector of length 1 with preferred file path
+find_path <- function(file_paths) {
+
+  extensions <- fs::path_ext(file_paths)
+  ext_order <- c("qs", "fst", "rds", "dta")
+
+  f <- FALSE
+  i <- 1
+  while (f == FALSE) {
+
+    ext <- ext_order[[i]]
+
+    if(ext  %in% extensions) {
+      p <- which(extensions == ext)
+      f <- file_paths[[p]]
+    } else {
+      i <- i + 1
+    }
+
+  }
+
+  if (f == FALSE) {
+    msg     <- c(
+      "File not found",
+      "*" = "At least one of the following extension should be available: {.file {ext_order}}"
+    )
+    cli::cli_abort(msg,
+                   class = "error_class")
+  }
+
+  return(f)
+
+}
+
+
+
