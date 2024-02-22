@@ -1,13 +1,13 @@
 #' @keywords internal
-#' @docType package
-#' @name pipload-package
+"_PACKAGE"
+
+## usethis namespace: start
 #' @import data.table
 #' @importFrom lifecycle deprecated
 #' @importFrom magrittr "%>%" "%<>%"
 #' @importFrom glue glue
 #' @export
 magrittr::`%>%`
-"_PACKAGE"
 
 
 # Make sure data.table knows we know we're using it
@@ -57,5 +57,5 @@ if (getRversion() >= "2.15.1") {
 }
 
 
+## usethis namespace: end
 NULL
-
