@@ -9,7 +9,7 @@ pip_load_aux(
   branch = c("DEV", "PROD", "main"),
   version = NULL,
   root_dir = Sys.getenv("PIP_ROOT_DIR"),
-  maindir = pip_create_globals(root_dir)$PIP_DATA_DIR,
+  maindir = pipfun::pip_create_globals(root_dir)$PIP_DATA_DIR,
   msrdir = fs::path(maindir, "_aux", match.arg(branch), measure),
   filename = measure,
   file_to_load = lifecycle::deprecated(),
