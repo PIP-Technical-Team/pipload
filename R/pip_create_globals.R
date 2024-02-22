@@ -17,7 +17,7 @@
 #'   directory does not exist
 #'
 #' @return list
-#' @export
+#' @keywords internal
 #'
 #' @examples
 #' \dontrun{
