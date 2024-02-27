@@ -25,6 +25,11 @@ pip_update_inventory <- function(country  = NULL,
   # inventory file to be used everywhere
   inv_file <- fs::path(maindir, "_inventory/inventory.fst")
 
+  pst <- time |> as.POSIXct(format = "%Y%m%d%H%M%S")
+
+  modi_date <- fs::file_info(inv_file)$modification_time
+
+
   if (maindir == pipfun::pip_create_globals(Sys.getenv("PIP_ROOT_DIR"))$PIP_DATA_DIR
       && is.null(country)) {
 
