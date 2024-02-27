@@ -43,7 +43,7 @@ Option "00" is useful for vintage control}
 \item{root_dir}{character: root directory of the PIP data}
 
 \item{maindir}{character: main directory. By default it
-uses \code{pip_create_globals(root_dir)$PIP_DATA_DIR}}
+uses \code{pipfun::pip_create_globals(root_dir)$PIP_DATA_DIR}}
 
 \item{msrdir}{character: measure directory. Default is
 \code{fs::path(maindir,"_aux", match.arg(branch), measure)}}

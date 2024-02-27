@@ -43,7 +43,7 @@ Create global variables for PIP data management
 }
 \examples{
 \dontrun{
-pip_create_globals()
+pipfun::pip_create_globals()
 }
 }
 \keyword{internal}

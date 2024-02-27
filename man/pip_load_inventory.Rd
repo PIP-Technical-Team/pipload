@@ -6,7 +6,7 @@
 \usage{
 pip_load_inventory(
   root_dir = Sys.getenv("PIP_ROOT_DIR"),
-  maindir = pip_create_globals(root_dir)$PIP_DATA_DIR,
+  maindir = pipfun::pip_create_globals(root_dir)$PIP_DATA_DIR,
   inv_file = fs::path(maindir, "_inventory/inventory.fst")
 )
 }
@@ -14,7 +14,7 @@ pip_load_inventory(
 \item{root_dir}{character: root directory of the PIP data}
 
 \item{maindir}{character: main directory. By default it
-uses \code{pip_create_globals(root_dir)$PIP_DATA_DIR}}
+uses \code{pipfun::pip_create_globals(root_dir)$PIP_DATA_DIR}}
 
 \item{inv_file}{character: file path to be loaded.}
 }

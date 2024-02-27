@@ -21,7 +21,7 @@
 #'
 #' @examples
 #' \dontrun{
-#' pip_create_globals()
+#' pipfun::pip_create_globals()
 #' }
 pip_create_globals <- function(root_dir   = Sys.getenv("PIP_ROOT_DIR"),
                                out_dir    = root_dir,

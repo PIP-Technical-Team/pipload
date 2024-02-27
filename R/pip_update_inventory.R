@@ -16,7 +16,7 @@
 #' }
 pip_update_inventory <- function(country  = NULL,
                                  root_dir = Sys.getenv("PIP_ROOT_DIR"),
-                                 maindir  = pip_create_globals(root_dir)$PIP_DATA_DIR,
+                                 maindir  = pipfun::pip_create_globals(root_dir)$PIP_DATA_DIR,
                                  force    = FALSE,
                                  time     = format(Sys.time(), "%Y%m%d%H%M%S"),
                                  user     = Sys.info()[8]
@@ -25,7 +25,7 @@ pip_update_inventory <- function(country  = NULL,
   # inventory file to be used everywhere
   inv_file <- fs::path(maindir, "_inventory/inventory.fst")
 
-  if (maindir == pip_create_globals(Sys.getenv("PIP_ROOT_DIR"))$PIP_DATA_DIR
+  if (maindir == pipfun::pip_create_globals(Sys.getenv("PIP_ROOT_DIR"))$PIP_DATA_DIR
       && is.null(country)) {
 
     # display menu if user wants to updated the whole thing

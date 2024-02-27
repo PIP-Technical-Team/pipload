@@ -14,7 +14,7 @@ pip_find_cache(
   version = NULL,
   tool = c("PC", "pc", "tb", "TB"),
   root_dir = Sys.getenv("PIP_ROOT_DIR"),
-  pipedir = pip_create_globals(root_dir)$PIP_PIPE_DIR
+  pipedir = pipfun::pip_create_globals(root_dir)$PIP_PIPE_DIR
 )
 }
 \arguments{
@@ -42,7 +42,7 @@ income}
 \item{root_dir}{character: root directory of the PIP data}
 
 \item{pipedir}{charater: directory of pipeline. Default is
-\code{pip_create_globals(root_dir)$PIP_PIPE_DIR}}
+\code{pipfun::pip_create_globals(root_dir)$PIP_PIPE_DIR}}
 }
 \value{
 data.table

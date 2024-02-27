@@ -26,7 +26,7 @@ pip_load_results <- function(output   = NULL,
 
   tool <- match.arg(tool)
   type <- match.arg(type)
-  vd   <-  pip_create_globals(root_dir, vintage = vintage)
+  vd   <-  pipfun::pip_create_globals(root_dir, vintage = vintage)
 
   if (tool == "PC") {
     resdir   <-  vd$OUT_EST_DIR_PC

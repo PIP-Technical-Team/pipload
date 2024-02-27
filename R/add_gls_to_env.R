@@ -17,7 +17,7 @@ add_gls_to_env <- function(root_dir = NULL,
 
   lifecycle::deprecate_soft("0.1.23",
                             "add_gls_to_env()",
-                            "pip_create_globals()")
+                            "pipfun::pip_create_globals()")
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   # evaluate global environment   ---------
@@ -67,7 +67,7 @@ add_gls_to_env <- function(root_dir = NULL,
   # create promises and assign to global env
   if (root_dir != "") {
     # globals
-    gls <- pip_create_globals(root_dir = root_dir,
+    gls <- pipfun::pip_create_globals(root_dir = root_dir,
                               out_dir  = out_dir,
                               vintage  = vintage,
                               clean    = clean)
@@ -77,7 +77,7 @@ add_gls_to_env <- function(root_dir = NULL,
 
     # assign('root_dir', "", envir = globalenv())
     delayedAssign(x          =  "gls",
-                  value      = pip_create_globals(root_dir = root_dir,
+                  value      = pipfun::pip_create_globals(root_dir = root_dir,
                                                   out_dir  = out_dir,
                                                   vintage  = vintage,
                                                   clean    = clean),
