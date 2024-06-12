@@ -39,11 +39,13 @@ directory does not exist}
 list
 }
 \description{
-Create global variables for PIP data management
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
+
+\code{pip_create_globals} is now available in the \code{pipfun} package.
 }
 \examples{
 \dontrun{
-pip_create_globals()
+pipfun::pip_create_globals()
 }
 }
 \keyword{internal}

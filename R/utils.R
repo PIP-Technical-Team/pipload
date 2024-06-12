@@ -30,14 +30,14 @@ add_and <- function(x) {
 #'
 #' @param root_dir character: root directory
 #' @param maindir character: main directory
-#'   `pip_create_globals(root_dir)$PIP_DATA_DIR`
+#'   `pipfun::pip_create_globals(root_dir)$PIP_DATA_DIR`
 #'
 #' @return character vector with list of countries
 #' @noRd
 #' @keywords internal
 list_of_countries <-
   function(root_dir = Sys.getenv("PIP_ROOT_DIR"),
-           maindir   = pip_create_globals(root_dir)$PIP_DATA_DIR
+           maindir   = pipfun::pip_create_globals(root_dir)$PIP_DATA_DIR
            ) {
 
   countries <- fs::dir_ls(path    = maindir,

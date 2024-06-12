@@ -31,12 +31,6 @@
 #'   the main structure of data has changed and labels have not been updated
 #' @param verbose logical: whether to display message. Default is TRUE
 #' @param preferred_format character: preferred format. default is "fst".
-#' @param suffix character: suffix to be added to main measure name. Some
-#'   measures have complementary data that depend directly from the main measure
-#'   file. They are intended to be used for metadata purposes and efficiency.
-#'   These complementary data is not used for development of new tools. for
-#'   instance, `pip_load_aux(measure = "ppp", suffix = "vintage")` loads the
-#'   vintage available for the PPP database
 #' @inheritParams pip_find_cache
 #' @inheritParams pip_inventory
 #'
@@ -195,8 +189,8 @@ pip_load_aux <- function(
     # If the user wants to pick the version.
     if (version == "available") {
 
-      cli::cli_alert("Versions available for {.field {measure}}:
-                     {.file {ver_dates}}")
+      cli::cli_alert("Versions available for {.field {measure}}:")
+      cli::cli_ol(as.character(ver_dates))
 
       return(invisible(tvers))
 

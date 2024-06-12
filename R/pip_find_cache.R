@@ -20,7 +20,7 @@ pip_find_cache <- function(country          = NULL,
                            version          = NULL,
                            tool             = c("PC", "pc", "tb", "TB"),
                            root_dir         = Sys.getenv("PIP_ROOT_DIR"),
-                           pipedir          = pip_create_globals(root_dir)$PIP_PIPE_DIR
+                           pipedir          = pipfun::pip_create_globals(root_dir)$PIP_PIPE_DIR
                            )  {
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

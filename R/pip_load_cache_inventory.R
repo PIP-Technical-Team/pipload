@@ -4,12 +4,12 @@
 #'   maker
 #' @param version character: version of data in the form
 #'   `yyyy_xx_xx_[PROD|INT|TEST]`. Default is the most recent PROD version
-#' @inheritParams pip_find_cache
+#' @param root_dir character: root directory of the PIP project
+#' @param pipedir character: directory of the pipeline
 #' @export
 pip_load_cache_inventory <-
   function(root_dir = Sys.getenv("PIP_ROOT_DIR"),
-           gls      = pipfun::pip_create_globals(root_dir),
-           pipedir  = gls$PIP_PIPE_DIR,
+           pipedir  = pipfun::pip_create_globals(root_dir)$PIP_PIPE_DIR,
            tool     = c("pc", "PC", "TB", "tb"),
            version  = NULL
          ) {

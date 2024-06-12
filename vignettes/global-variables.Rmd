@@ -49,11 +49,11 @@ For the sake of sake of demonstrations, let's use a temporal directory as it it
 where the root directory. The default behavior of `pip_create_globals()` is to
 create the the whole directory structure in case it does not exist:
 
-```{r fake-root-1}
+```{r fake-root-1, eval = FALSE}
 orig_root <- Sys.getenv("PIP_ROOT_DIR")
-fake_dir1 <- paste0(tempdir(), "/1")
-Sys.setenv(PIP_ROOT_DIR = fake_dir1)
-gls <- pip_create_globals(create_dir = TRUE)
+fake_dir1 <- tempdir()
+gls <- pipfun::pip_create_globals(create_dir = TRUE,
+                                  root_dir = fake_dir1)
 fs::dir_tree(fake_dir1, type = "directory")
 ```
 
@@ -70,7 +70,7 @@ Since by default both input and output data are stored within the structure of
 user can specify a different directory path to store the output from the PIP
 pipeline.
 
-```{r fake-root-2}
+```{r fake-root-2, eval = FALSE}
 Sys.setenv(PIP_ROOT_DIR = orig_root)
 
 fake_dir2 <- paste0(tempdir(), "/2")
@@ -109,7 +109,7 @@ want to create a new vintage, "temp_out", and you also want to do it in a
 directory different to the official one, `fake_dir2`. In this, can do something
 like this.
 
-```{r vintage}
+```{r vintage, eval = FALSE}
 
 gls <- pip_create_globals(root_dir = fake_dir1, 
                           out_dir  = fake_dir2, 

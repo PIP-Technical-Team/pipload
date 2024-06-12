@@ -9,7 +9,7 @@ pip_inventory(
   action = "load",
   country = NULL,
   root_dir = Sys.getenv("PIP_ROOT_DIR"),
-  maindir = pip_create_globals(root_dir)$PIP_DATA_DIR,
+  maindir = pipfun::pip_create_globals(root_dir)$PIP_DATA_DIR,
   force = FALSE,
   inventory_version = NULL
 )
@@ -22,7 +22,7 @@ pip_inventory(
 \item{root_dir}{character: root directory of the PIP data}
 
 \item{maindir}{character: main directory. By default it
-uses \code{pip_create_globals(root_dir)$PIP_DATA_DIR}}
+uses \code{pipfun::pip_create_globals(root_dir)$PIP_DATA_DIR}}
 
 \item{force}{logical: If TRUE, forced update implemented}
 

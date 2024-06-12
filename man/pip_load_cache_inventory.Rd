@@ -6,13 +6,16 @@
 \usage{
 pip_load_cache_inventory(
   root_dir = Sys.getenv("PIP_ROOT_DIR"),
-  gls = pipfun::pip_create_globals(root_dir),
-  pipedir = gls$PIP_PIPE_DIR,
+  pipedir = pipfun::pip_create_globals(root_dir)$PIP_PIPE_DIR,
   tool = c("pc", "PC", "TB", "tb"),
   version = NULL
 )
 }
 \arguments{
+\item{root_dir}{character: root directory of the PIP project}
+
+\item{pipedir}{character: directory of the pipeline}
+
 \item{tool}{character: Either "PC" for Poverty calculator or "TB" for table
 maker}
 

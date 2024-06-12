@@ -10,7 +10,7 @@
 #'   "D3" for subnational
 #' @param cache_id character: If user knows the precise cache ID
 #' @param pipedir charater: directory of pipeline. Default is
-#'   `pip_create_globals(root_dir)$PIP_PIPE_DIR`
+#'   `pipfun::pip_create_globals(root_dir)$PIP_PIPE_DIR`
 #' @param verbose logical: If TRUE, display informative messages. Default TRUE
 #' @return data frame
 #' @export
@@ -30,7 +30,7 @@ pip_load_cache <- function(country          = NULL,
                            version          = NULL,
                            type             = c("dataframe", "list"),
                            root_dir         = Sys.getenv("PIP_ROOT_DIR"),
-                           pipedir          = pip_create_globals(root_dir)$PIP_PIPE_DIR,
+                           pipedir          = pipfun::pip_create_globals(root_dir)$PIP_PIPE_DIR,
                            verbose          = getOption("pipload.verbose")
                            ) {
 

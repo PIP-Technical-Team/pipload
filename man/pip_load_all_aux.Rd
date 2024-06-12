@@ -11,7 +11,7 @@ pip_load_all_aux(
   aux_names = aux,
   envir = globalenv(),
   root_dir = Sys.getenv("PIP_ROOT_DIR"),
-  maindir = pip_create_globals(root_dir)$PIP_DATA_DIR,
+  maindir = pipfun::pip_create_globals(root_dir)$PIP_DATA_DIR,
   version = NULL,
   apply_label = TRUE,
   verbose = FALSE,
@@ -37,7 +37,7 @@ be loaded. default is \code{aux}}
 \item{root_dir}{character: root directory of the PIP data}
 
 \item{maindir}{character: main directory. By default it
-uses \code{pip_create_globals(root_dir)$PIP_DATA_DIR}}
+uses \code{pipfun::pip_create_globals(root_dir)$PIP_DATA_DIR}}
 
 \item{version}{An integer or a quoted directive. "available": displays list
 of available versions for \code{measure}. "select"|"pick"|"choose": allows user
