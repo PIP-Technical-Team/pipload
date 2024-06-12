@@ -1,4 +1,4 @@
-# pipload (development version)
+# pipload 0.2.1
 
 - `pip_load_aux()` now reads from branches folder and loading algorithm has been improved. 
 
