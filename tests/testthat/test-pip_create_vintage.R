@@ -6,9 +6,7 @@ vintage_lt        <- data.table::tstrsplit(vintage_ch, "_")
 names(vintage_lt) <- rqr_sect
 
 
-ppp_v <- pip_load_aux("ppp",
-                      suffix = "vintage",
-                      verbose = FALSE)
+ppp_v <- pip_load_aux("ppp", verbose = FALSE)
 
 # remove Vs in case they are available and add zeros
 ver_vars <- c("ppp_rv", "ppp_av")

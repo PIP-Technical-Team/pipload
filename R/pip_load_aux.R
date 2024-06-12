@@ -31,12 +31,6 @@
 #'   the main structure of data has changed and labels have not been updated
 #' @param verbose logical: whether to display message. Default is TRUE
 #' @param preferred_format character: preferred format. default is "fst".
-#' @param suffix character: suffix to be added to main measure name. Some
-#'   measures have complementary data that depend directly from the main measure
-#'   file. They are intended to be used for metadata purposes and efficiency.
-#'   These complementary data is not used for development of new tools. for
-#'   instance, `pip_load_aux(measure = "ppp", suffix = "vintage")` loads the
-#'   vintage available for the PPP database
 #' @inheritParams pip_find_cache
 #' @inheritParams pip_inventory
 #'

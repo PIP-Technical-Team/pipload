@@ -99,9 +99,7 @@ pip_create_vintage <- function(vintage = list(),
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Load PPP vintage complementary data --------
-    ppp_v <- pip_load_aux("ppp",
-                          suffix = "vintage",
-                          verbose = FALSE)
+    ppp_v <- pip_load_aux("ppp", verbose = FALSE)
 
     # remove Vs in case they are available and add zeros
     ver_vars <- c("ppp_rv", "ppp_av")
