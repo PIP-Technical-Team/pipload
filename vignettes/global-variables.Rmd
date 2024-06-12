@@ -53,7 +53,7 @@ create the the whole directory structure in case it does not exist:
 orig_root <- Sys.getenv("PIP_ROOT_DIR")
 fake_dir1 <- paste0(tempdir(), "/1")
 Sys.setenv(PIP_ROOT_DIR = fake_dir1)
-gls <- pip_create_globals(create_dir = TRUE)
+gls <- pipfun::pip_create_globals(create_dir = TRUE)
 fs::dir_tree(fake_dir1, type = "directory")
 ```
 
