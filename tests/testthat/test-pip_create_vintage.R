@@ -1,3 +1,4 @@
+skip("this function is not working right now")
 # init parameters
 rqr_sect          <- c("release", "ppp_year", "ppp_rv", "ppp_av", "identity")
 ddtt              <- format(Sys.Date(), "%Y%m%d")

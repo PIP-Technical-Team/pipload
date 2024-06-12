@@ -114,11 +114,15 @@ pip_update_inventory <- function(country  = NULL,
     country <- list_of_countries(maindir = maindir)
   }
 
-  ds_inventory <- purrr::map_df(.x        = country,
-                                .f        = country_ds,
-                                inventory = inventory,
-                                time      = time,
-                                user      = user)
+  ds_inventory <- lapply(country,
+                         \(x) {
+                           country_ds(x = x,
+                                      inventory = inventory,
+                                      time      = time,
+                                      user      = user)
+                           }) |>
+    rbindlist(use.names = TRUE)
+
 
   #minimal database of new inventory
   dsi <- ds_inventory[, c("country_code", "data_signature")]
@@ -145,11 +149,15 @@ pip_update_inventory <- function(country  = NULL,
       inventory_production <- df[, "orig"]
       avaiable_countries   <- unique(df$country_code)
 
-      ds_inventory_production <- purrr::map_df(.x        = country,
-                                               .f        = country_ds,
-                                               inventory = inventory_production,
-                                               time      = time,
-                                               user      = user)
+      ds_inventory_production <- lapply(country,
+                                        \(x) {
+                                          country_ds(x = x,
+                                                     inventory = inventory_production,
+                                                     time      = time,
+                                                     user      = user)
+                                        }) |>
+        rbindlist(use.names = TRUE)
+
 
     } else {
       # fake signature

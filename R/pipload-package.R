@@ -50,7 +50,10 @@ if (getRversion() >= "2.15.1") {
       "ppp_year",
       ".",
       "!!",
-      ":="
+      ":=",
+      "cpi",
+      "data_level",
+      "ppp_default_by_year"
     ),
     package = utils::packageName()
   )
