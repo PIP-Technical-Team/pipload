@@ -195,8 +195,8 @@ pip_load_aux <- function(
     # If the user wants to pick the version.
     if (version == "available") {
 
-      cli::cli_alert("Versions available for {.field {measure}}:
-                     {.file {ver_dates}}")
+      cli::cli_alert("Versions available for {.field {measure}}:")
+      cli::cli_ol(as.character(ver_dates))
 
       return(invisible(tvers))
 

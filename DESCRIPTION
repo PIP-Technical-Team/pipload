@@ -23,17 +23,17 @@ Imports:
     readr,
     fs,
     purrr,
-    dplyr,
     cli,
     magrittr,
     usethis,
     stringr,
     joyn,
-    lubridate,
     lifecycle,
-    withr,
-    pipfun (>= 0.0.0.9018)
+    pipfun (>= 0.0.0.9018),
+    glue,
+    qs
 Suggests: 
+    withr,
     rmarkdown,
     knitr,
     testthat (>= 3.0.0),
