@@ -119,4 +119,31 @@ load_attr <- function(country_code,
 
 
 
+#' Load distribution statistics from lineup data frame
+#'
+#' This function extracts the distribution statistics from the attributes of a file containing lineup distribution data for a specific country and year.
+#'
+#' @inheritParams load_refy
+#'
+#' @return A list containing the distribution statistics from the attributes of the specified `.qs` file.
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' zaf_dist_stats <- load_dist_stats("ZAF", 2020)
+#' col_dist_stats <- load_dist_stats("COL", 2015)
+#' }
+load_dist_stats <- function(country_code,
+                            year,
+                            path = Sys.getenv("PIP_LINEUPS_DIR")) {
+
+  all_attr <- load_attr(country_code,
+                        year,
+                        path)
+
+  all_attr$dist_stats
+
+}
+
+
 
