@@ -179,3 +179,63 @@ load_aux_data <- function(country_code,
 
 
 
+
+# helper functions
+
+
+#' Transform Input List for Country-Year Combinations
+#'
+#' @param input_list A list with two elements: `country_code` and `year`.
+#'   - `country_code`: A vector of country codes (e.g., "ZAF", "COL").
+#'   - `year`: Either a single value (numeric or string) representing a year to be applied to all country codes, or a list of years where each element corresponds to a country code. If `year` is provided as a list, its length must match the length of `country_code`.
+#'
+#' @return A list where each element is a list containing `country_code` and `year`, representing all appropriate combinations of the input `country_code` and `year`.
+#'
+#' @examples
+#' \dontrun{
+#' # Example with a single year for all countries
+#' input_list <- list(
+#'   country_code = c("ZAF", "COL"),
+#'   year = 2020
+#' )
+#' transformed_list <- transform_input(input_list)
+#'
+#' # Example with different years for each country
+#' input_list <- list(
+#'   country_code = c("ZAF", "COL"),
+#'   year = list(c(2020, 2021), c(2015, 2016))
+#' )
+#' transformed_list <- transform_input(input_list)
+#' }
+transform_input <- function(input_list) {
+
+  country_codes <- input_list$country_code
+  years         <- input_list$year
+
+  # years as list
+  if (!is.list(years)) {
+    years <- lapply(country_codes,
+                    function(x) years)
+  } else {
+    # Check if the length of the year list matches the length of the country_codes
+    if (length(years) != length(country_codes)) {
+      stop("The length of the 'year' list must match the length of the 'country_code' vector.")
+    }
+  }
+
+  # each element one country-year
+  output_list <- lapply(seq_along(country_codes), function(i) {
+    lapply(years[[i]], function(y) {
+      list(country_code = country_codes[i], year = y)
+    })
+  })
+
+  # flatten
+  output_list <- unlist(output_list, recursive = FALSE)
+
+  return(output_list)
+}
+
+
+
+
