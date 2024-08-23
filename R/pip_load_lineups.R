@@ -147,3 +147,35 @@ load_dist_stats <- function(country_code,
 
 
 
+
+
+#' Load auxiliary data from lineup data frame
+#'
+#' This function extracts the auxiliary data from the attributes of a file containing lineup distribution data for a specific country and year.
+#'
+#' @inheritParams load_refy
+#'
+#' @return A list containing the auxiliary data from the attributes of the specified `.qs` file.
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' zaf_aux_data <- load_aux_data("ZAF", 2020)
+#' col_aux_data <- load_aux_data("COL", 2015)
+#' }
+load_aux_data <- function(country_code,
+                          year,
+                          path = Sys.getenv("PIP_LINEUPS_DIR")) {
+
+  all_attr <- load_attr(country_code,
+                        year,
+                        path)
+
+  all_attr$aux_data
+
+}
+
+
+
+
+
