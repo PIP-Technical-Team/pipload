@@ -31,3 +31,92 @@ load_refy <- function(country_code,
 
 
 
+
+#' Load and append lineup distributions for given country-years
+#'
+#' This function loads and appends multiple data frames containing lineup distribution data for specific countries and years.
+#' It also stores the attributes of each loaded dataset in the returned data frame.
+#'
+#' @inheritParams transform_input
+#' @inheritParams load_refy
+#'
+#' @return A data table containing the appended lineup data for all specified countries and years. The attributes of each loaded dataset are stored as additional attributes in the returned data table.
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' input_list <- list(
+#'   list(country_code = "ZAF", year = 2020),
+#'   list(country_code = "COL", year = 2015)
+#' )
+#' all_lineups <- load_append_refy(input_list)
+#' }
+load_append_refy <- function(input_list,
+                             path = Sys.getenv("PIP_LINEUPS_DIR")) {
+
+  # transform input list
+  input_list <- transform_input(input_list)
+
+  # envir for attributes
+  e <- rlang::new_environment()
+
+  # appended data
+  dt <- lapply(input_list,
+               FUN = \(x) {
+                 d <-
+                   load_refy(country_code = x$country_code,
+                             year         = x$year,
+                             path         = path)
+                 dattr <- attributes(d)
+                 assign(x     = paste0(x$country_code,
+                                       x$year,
+                                       "_attr"),
+                        value = dattr,
+                        envir = e)
+                 d |>
+                   fmutate(country_code = dattr$country_code,
+                           year         = dattr$reporting_year)
+               })
+
+  # rowbind
+  dt <- rowbind(dt)
+
+  # lsit of attributes
+  dattr <- as.list(e)
+  attributes(dt) <- c(attributes(dt),
+                      as.list(e))
+
+  dt
+
+}
+
+#' Load only attributes from lineup data frame
+#'
+#' This function loads the attributes data frame containing lineup distribution data for a specific country and year.
+#'
+#' @inheritParams load_refy
+#'
+#' @return A list containing the attributes of the specified `.qs` file.
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' zaf_attrs <- load_attr("ZAF", 2020)
+#' col_attrs <- load_attr("COL", 2015)
+#' }
+load_attr <- function(country_code,
+                      year,
+                      path = Sys.getenv("PIP_LINEUPS_DIR")) {
+
+  qs::qattributes(fs::path(path,
+                           paste0(country_code,
+                                  "_",
+                                  year,
+                                  ".qs")))
+
+}
+
+
+
+
+
