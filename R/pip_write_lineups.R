@@ -1,14 +1,13 @@
 #' Function to minimize and save reference year distribution for one
 #' country and one reference year
 #'
-#' @param df_refy output from [refy_distributions]
+#' @param df_refy output from [get_refy_distributions]
 #' @param path path to save the output - "P:\03.pip\lineup_distributions\output-lineup-ref-years"
 #'
 #' @return invisible logical - purpose is to save file
 #' @keywords internal
 write_refy_dist <- function(df_refy,
-                            path = Sys.getenv("PIP_LINEUPS_DIR"),
-                            inc_svy_year = FALSE) {
+                            path = Sys.getenv("PIP_LINEUPS_DIR")) {
 
   cntry_code <- attributes(df_refy)$country_code
   ref_year   <- attributes(df_refy)$reporting_year
@@ -23,4 +22,91 @@ write_refy_dist <- function(df_refy,
 
   invisible(TRUE)
 }
+
+
+
+
+#' Estimate and save the reference year distributions for all countries-ref-years
+#'
+#' A wrapper over [get_refy_distributions]  and [write_refy_dist]
+#' applied on a list of data frames
+#'
+#' @param df_refy Output from [get_refy_distributions]
+#' @param cntry_refy list: each element is another list containing
+#'                   country_code scalar (e.g. "ZAF") and year vector
+#'                   (e.g.`c(2001, 2002, 2003)`). If there are four countries,
+#'                   the `length(cntry_refy) = 4`, one for each country with its
+#'                   year vector.
+#' @param path path to save the output - "P:\03.pip\lineup_distributions\output-lineup-ref-years"
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#' write_multiple_refy_dist(df_refy = dt_ref,
+#'                          cntry_refy = list(list(country_code = "ZAF",
+#'                                                 year         = 2000:2005),
+#'                                            list(country_code = "COL",
+#'                                                 year         = 2000:2005)),
+#'                          path = Sys.getenv("PIP_LINEUPS_DIR"))
+write_multiple_refy_dist <-
+  function(df_refy,
+           cntry_refy,
+           path,
+           gls,
+           dl_aux) {
+
+  # Select surveys for CPIs
+  dl_aux$cpi <-
+    dl_aux$cpi |>
+    fselect(cpi,
+            cpi2017,
+            cpi2011,
+            country_code,
+            cpi_year,
+            cpi_data_level,
+            survey_acronym,
+            survey_year) |>
+    funique() |>
+    joyn::joyn(y = dt_ref |>
+                 fselect(survey_acronym,
+                         survey_year,
+                         country_code,
+                         cpi_data_level) |>
+                 funique(),
+               by = c("survey_acronym",
+                      "survey_year",
+                      "country_code",
+                      "cpi_data_level"),
+               match_type     = "1:1",
+               keep           = "inner",
+               y_vars_to_keep = FALSE,
+               reportvar      = FALSE,
+               verbose        = FALSE)
+
+  lapply(cli::cli_progress_along(cntry_refy,
+                                 total = length(cntry_refy)),
+         FUN = \(i) {
+           x <- cntry_refy[[i]]
+           lapply(x$year,
+                  FUN = \(year = x$year,
+                          country_code = x$country_code){
+
+                    suppressMessages(get_refy_distributions(rm         = df_refy,
+                                                        cntry_code = country_code,
+                                                        ref_year   = year,
+                                                        gls        = gls) |>
+                                       add_aux_data_attr(dl_aux          = dl_aux,
+                                                         df_refy         = df_refy,
+                                                         filter_aux_data = TRUE) |>
+                                       write_refy_dist(path = path,
+                                                     inc_svy_year = inc_svy_year))
+                  }
+           )
+         })
+  invisible(TRUE)
+}
+
+
+
 
