@@ -291,7 +291,10 @@ get_dist_stats <- function(df) {
 #'
 #' @return data frame with added attributes
 #' @export
-add_aux_data_attr <- function(df, dl_aux, df_refy, filter_aux_data = FALSE) {
+add_aux_data_attr <- function(df,
+                              dl_aux,
+                              df_refy,
+                              filter_aux_data = FALSE) {
 
   code <- attr(x = df,
                which = "country_code")
