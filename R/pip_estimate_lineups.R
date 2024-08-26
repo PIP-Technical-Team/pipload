@@ -211,6 +211,80 @@ get_refy_distributions <- function(df_refy, cntry_code, ref_year, gls) {
 
 
 
+#' Distribution statistics of lineup distribution
+#'
+#' @param df data frame: output of [get_refy_distributions]
+#'
+#' @return list with distributional statistics
+#' @export
+get_dist_stats <- function(df) {
+
+  # min
+  min <- fmin(df$welfare_refy,
+              g = df$reporting_level) |>
+    as.list()
+
+  # max
+  max <- fmax(df$welfare_refy,
+              g = df$reporting_level) |>
+    as.list()
+
+  # mean
+  mean <- fmean(x = df$welfare_refy,
+                w = df$weight_refy,
+                g = df$reporting_level) |>
+    as.list()
+
+  # median
+  median <- fmedian(x = df$welfare_refy,
+                    w = df$weight_refy,
+                    g = df$reporting_level) |>
+    as.list()
+
+  # gini
+  gini <- sapply(df$reporting_level |> funique(),
+                 FUN = \(x) {
+                   wbpip::md_compute_gini(welfare = df$welfare_refy[df$reporting_level == x],
+                                          weight  = df$weight_refy[df$reporting_level == x])
+                 }) |>
+    as.list()
+
+  # mld
+  mld <- sapply(df$reporting_level |> funique(),
+                FUN = \(x) {
+                  wbpip::md_compute_mld(welfare = df$welfare_refy[df$reporting_level == x],
+                                        weight  = df$weight_refy[df$reporting_level == x],
+                                        mean    = mean$x)
+                }) |>
+    as.list()
+
+  # polarization
+  pol <- sapply(df$reporting_level |> funique(),
+                FUN = \(x) {
+                  wbpip::md_compute_polarization(welfare = df$welfare_refy[df$reporting_level == x],
+                                                 weight  = df$weight_refy[df$reporting_level == x],
+                                                 gini    = gini[[x]],
+                                                 mean    = mean[[x]],
+                                                 median  = median[[x]])
+                }) |>
+    as.list()
+
+  # results
+  dist_stats <- list(min          = min,
+                     max          = max,
+                     mean         = mean,
+                     median       = median,
+                     gini         = gini,
+                     mld          = mld,
+                     polarization = pol)
+
+  dist_stats
+
+}
+
+
+
+
 
 
 #' Get multiplication factor and add to refy data frame
