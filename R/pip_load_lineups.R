@@ -24,23 +24,23 @@ load_refy <- function(country_code,
               fs::path(path,
                        paste0(country_code,
                               "_",
-                              year,
-                              ".qs")))
+                              year
+                              ), ext = "qs"))
 
 }
 
 
 
 
-#' Load and append lineup distributions for given country-years
+#' Load lineup distributions as a list for given country-years
 #'
-#' This function loads and appends multiple data frames containing lineup distribution data for specific countries and years.
+#' This function loads multiple data frames as a list containing lineup distribution data for specific countries and years.
 #' It also stores the attributes of each loaded dataset in the returned data frame.
 #'
 #' @inheritParams transform_input
 #' @inheritParams load_refy
 #'
-#' @return A data table containing the appended lineup data for all specified countries and years. The attributes of each loaded dataset are stored as additional attributes in the returned data table.
+#' @return A list containing the appended lineup data for all specified countries and years. The attributes of each loaded dataset are stored as additional attributes in the returned data table.
 #' @export
 #'
 #' @examples
@@ -51,44 +51,120 @@ load_refy <- function(country_code,
 #' )
 #' all_lineups <- load_append_refy(input_list)
 #' }
-load_append_refy <- function(input_list,
-                             path = Sys.getenv("PIP_LINEUPS_DIR")) {
+load_list_refy <- function(input_list,
+                           path = Sys.getenv("PIP_LINEUPS_DIR")) {
 
   # transform input list
   input_list <- transform_input(input_list)
 
-  # envir for attributes
-  e <- rlang::new_environment()
+  ## envir for attributes
+  #e <- rlang::new_environment()
 
   # appended data
-  dt <- lapply(input_list,
+  dl <- lapply(input_list,
                FUN = \(x) {
+                 print(x)
                  d <-
                    load_refy(country_code = x$country_code,
                              year         = x$year,
                              path         = path)
-                 dattr <- attributes(d)
-                 assign(x     = paste0(x$country_code,
-                                       x$year,
-                                       "_attr"),
-                        value = dattr,
-                        envir = e)
+                 # dattr <- attributes(d)
+                 # assign(x     = paste0(x$country_code,
+                 #                       x$year,
+                 #                       "_attr"),
+                 #        value = dattr,
+                 #        envir = e)
                  d |>
-                   fmutate(country_code = dattr$country_code,
-                           year         = dattr$reporting_year)
+                   fmutate(country_code = x$country_code,
+                           year         = x$year)
                })
 
+  names(dl) <- vapply(input_list,
+                      FUN = \(x) {
+                        paste0(x$country_code,
+                               x$year)
+                      },
+                      FUN.VALUE = character(1))
   # rowbind
-  dt <- rowbind(dt)
+  #dt <- rowbind(dt)
 
-  # lsit of attributes
+  # # list of attributes
+  # dattr <- as.list(e)
+  # attributes(dt) <- c(attributes(dt), # set attributes
+  #                     as.list(e))
+
+  dl
+
+}
+
+
+#' Append reference year data and store attributes
+#'
+#' @param d_list list of data frames, output from [load_list_refy]
+#' @param add_columns character vector: contains a combination of "reporting_level",
+#' "welfare_type", and "survey_years"
+#'
+#' @return data frame: single appended data frame
+#' @export
+#'
+#' @examples
+#' input_list <- list(country_code = c("ZAF", "COL"),
+#'                    year         = list(c(2020, 2021),
+#'                                        c(2015, 2016)))
+#' x <- load_list_refy(input_list) |>
+#'         append_refy_dt(add_columns = c("reporting_level",
+#'                                         "welfare_type"))
+#'
+append_refy_dt <- function(d_list, add_columns) {
+
+  # envir for attributes
+  e <- rlang::new_environment()
+
+  d_list <- lapply(d_list,
+         FUN = \(x) {
+
+           dattr <- attributes(x)
+           assign(x     = paste0(dattr$country_code,
+                                 dattr$reporting_year,
+                                 "_attr"),
+                  value = dattr,
+                  envir = e)
+
+           if ("reporting_level" %in% add_columns) {
+             rp <- rep(dattr$reporting_level_rows$reporting_level,
+                       times = dattr$reporting_level_rows$rows)
+             x <- x |>
+               fmutate(reporting_level = rp)
+           }
+
+           if ("survey_years" %in% add_columns) {
+             sy <- rep(dattr$survey_years_rows$survey_years,
+                       times = dattr$survey_years_rows$rows)
+             x <- x |>
+               fmutate(survey_years = sy)
+           }
+
+           if ("welfare_type" %in% add_columns) {
+             x <- x |>
+               fmutate(welfare_type = dattr$welfare_type)
+           }
+
+           x
+
+  })
+
+  # rowbind
+  dt <- rowbind(d_list)
+
+  # list of attributes
   dattr <- as.list(e)
-  attributes(dt) <- c(attributes(dt),
-                      as.list(e))
+  attributes(dt) <- c(attributes(dt), # set attributes
+                     as.list(e))
 
   dt
 
 }
+
 
 #' Load only attributes from lineup data frame
 #'
