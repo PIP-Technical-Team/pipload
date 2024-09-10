@@ -187,7 +187,7 @@ get_refy_distributions <- function(df_refy, cntry_code, ref_year, gls) {
                          "survey_acronym",
                          "survey_year"))
 
-  dist_stats <- dist_stats(df = df)
+  dist_stats <- get_dist_stats(df = df)
   attr(df,
        "dist_stats") <- dist_stats
 
