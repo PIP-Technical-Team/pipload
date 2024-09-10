@@ -43,12 +43,14 @@ write_refy_dist <- function(df_refy,
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' write_multiple_refy_dist(df_refy = dt_ref,
 #'                          cntry_refy = list(list(country_code = "ZAF",
 #'                                                 year         = 2000:2005),
 #'                                            list(country_code = "COL",
 #'                                                 year         = 2000:2005)),
 #'                          path = Sys.getenv("PIP_LINEUPS_DIR"))
+#'                          }
 write_multiple_refy_dist <-
   function(df_refy,
            cntry_refy,
