@@ -1,0 +1,169 @@
+---
+title: "Load lineups vignette"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{load-lineups-vignette}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>", 
+  warning = FALSE, 
+  message = FALSE)
+```
+
+```{r setup}
+devtools::load_all(".")
+library(collapse)
+```
+
+
+This vignette demonstrates how to load, manipulate, and append lineup distribution data for specific country-years using the loading functions. We'll walk through the process of loading lineup data from `.qs` files, combining data for multiple country-years, and retrieving distribution statistics and auxiliary data.
+
+# Loading lineup data for a specific country and year
+
+The `load_refy()` function is the core function for loading lineup distribution data for a specific country and year. The function takes the country code and year as input, locates the corresponding `.qs` file, and loads it into R.
+
+
+```{r}
+# Load the lineup data for South Africa in 2020
+ZAF_2020_lineups <- load_refy("ZAF", 
+                              2020)
+ZAF_2020_lineups |> 
+  head()
+```
+
+```{r}
+# Load the lineup data for Colombia in 2015
+COL_2015_lineups <- load_refy("COL", 
+                              "2015")
+COL_2015_lineups |> 
+  head()
+```
+
+
+This function uses the `{qs}` package to read the `.qs` files, which are assumed to be stored in a specified directory (e.g., via the environment variable `PIP_LINEUPS_DIR`, which is set to `"//wbntpcifs/PovCalNet/03.pip/lineup_distributions/output-lineup-ref-years"`).
+
+# Loading multiple lineup distributions
+
+The `load_list_refy()` function allows loading multiple lineup distributions as a list. This is useful if you need to work with data from multiple countries and years.
+
+```{r}
+# Create a list of country-year combinations
+input_list <- list(
+   country_code = c("ZAF", "COL"),
+   year         = list(c(2020), 
+                       c(2015, 2016)))
+
+# Load data for all country-year combinations in the list
+all_lineups <- load_list_refy(input_list) |> 
+  head()
+all_lineups
+```
+
+In this example, `load_list_refy()` uses the helper function `transform_input()` to process the input list into a format that can be iterated over. The function returns a list of data frames, each corresponding to a country-year combination.
+
+# Combining data from multiple country-years
+
+After loading the lineup data for multiple countries and years, the next step is to combine these datasets into a single data frame. The `append_refy_dt()` function does this by appending the loaded datasets and adding additional columns, such as `reporting_level`, `welfare_type`, or `survey_years.`
+
+
+```{r}
+# Append the data and add columns for "reporting_level" and "welfare_type"
+appended_lineups <- load_list_refy(input_list) |> 
+  append_refy_dt(add_columns = c("reporting_level", 
+                                 "welfare_type"))
+appended_lineups |> 
+  head()
+```
+
+In this example, we first load the data using `load_list_refy()`, then combine it with `append_refy_dt()`. The add_columns parameter allows you to specify additional attributes (like `reporting_level` and `welfare_type`) to be included in the final data frame.
+
+# Extracting specific attributes
+
+## Loading attributes
+
+The `load_attr()` function allows you to load the attributes of a lineup distribution for a specific country and year. This can be useful if you're interested in metadata or distribution statistics without loading the entire data frame.
+
+
+```{r}
+# Load attributes for South Africa in 2020
+ZAF_attrs <- load_attr("ZAF", 
+                       2020)
+```
+
+## Extracting distributional statistics
+
+The `load_dist_stats()` function can be used to extract distribution statistics from the attributes of a `.qs` file.
+
+```{r}
+# Load distribution statistics for South Africa in 2020
+ZAF_dist_stats <- load_dist_stats("ZAF", 2020)
+ZAF_dist_stats
+```
+
+This function loads the attributes using `load_attr()` and extracts the `dist_stats` element, which contains the distribution statistics.
+
+## Extracting auxiliary data
+
+Similarly, you can use the `load_aux_data()` function to extract auxiliary data from the attributes.
+
+```{r}
+# Load auxiliary data for South Africa in 2020
+ZAF_aux_data <- load_aux_data("ZAF", 2020)
+ZAF_aux_data
+```
+
+
+This function extracts the `aux_data` from the attributes, which may contain additional relevant information.
+
+
+
+# Helper function: transform input list
+
+The `transform_input()` function processes input lists for `load_list_refy()`, allowing you to handle combinations of countries and years more easily. It accepts a list containing `country_code` and `year`, and it outputs a list of individual country-year pairs.
+
+
+```{r}
+# Example with a single year for all countries
+input_list <- list(
+  country_code = c("ZAF", "COL"),
+  year         = 2020)
+transformed_list <- transform_input(input_list)
+transformed_list
+# Example with different years for each country
+input_list <- list(
+  country_code = c("ZAF", "COL"),
+  year         = list(c(2020, 2021), 
+                      c(2015, 2016)))
+transformed_list <- transform_input(input_list)
+transformed_list
+```
+
+
+This function ensures that the input list is correctly structured, whether you're dealing with a single year for multiple countries or different years for each country.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
