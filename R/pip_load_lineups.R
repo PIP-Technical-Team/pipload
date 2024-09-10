@@ -46,8 +46,8 @@ load_refy <- function(country_code,
 #' @examples
 #' \dontrun{
 #' input_list <- list(
-#'   list(country_code = "ZAF", year = 2020),
-#'   list(country_code = "COL", year = 2015)
+#'   country_code = c("ZAF", "COL"),
+#'   year = list(c(2020, 2021), c(2015, 2016))
 #' )
 #' all_lineups <- load_append_refy(input_list)
 #' }
@@ -57,23 +57,14 @@ load_list_refy <- function(input_list,
   # transform input list
   input_list <- transform_input(input_list)
 
-  ## envir for attributes
-  #e <- rlang::new_environment()
-
   # appended data
   dl <- lapply(input_list,
                FUN = \(x) {
-                 print(x)
                  d <-
                    load_refy(country_code = x$country_code,
                              year         = x$year,
                              path         = path)
-                 # dattr <- attributes(d)
-                 # assign(x     = paste0(x$country_code,
-                 #                       x$year,
-                 #                       "_attr"),
-                 #        value = dattr,
-                 #        envir = e)
+
                  d |>
                    fmutate(country_code = x$country_code,
                            year         = x$year)
@@ -85,13 +76,6 @@ load_list_refy <- function(input_list,
                                x$year)
                       },
                       FUN.VALUE = character(1))
-  # rowbind
-  #dt <- rowbind(dt)
-
-  # # list of attributes
-  # dattr <- as.list(e)
-  # attributes(dt) <- c(attributes(dt), # set attributes
-  #                     as.list(e))
 
   dl
 
