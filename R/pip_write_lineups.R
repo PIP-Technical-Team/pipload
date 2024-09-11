@@ -44,7 +44,7 @@ write_refy_dist <- function(df_refy,
 #'
 #' @examples
 #' \dontrun{
-#' write_multiple_refy_dist(df_refy = dt_ref,
+#' write_multiple_refy_dist(df_refy = df_refy,
 #'                          cntry_refy = list(list(country_code = "ZAF",
 #'                                                 year         = 2000:2005),
 #'                                            list(country_code = "COL",
@@ -70,7 +70,7 @@ write_multiple_refy_dist <-
             survey_acronym,
             survey_year) |>
     funique() |>
-    joyn::joyn(y = dt_ref |>
+    joyn::joyn(y = df_refy |>
                  fselect(survey_acronym,
                          survey_year,
                          country_code,
