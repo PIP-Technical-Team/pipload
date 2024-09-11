@@ -94,10 +94,10 @@ write_multiple_refy_dist <-
                   FUN = \(year = x$year,
                           country_code = x$country_code){
 
-                    suppressMessages(get_refy_distributions(rm         = df_refy,
-                                                        cntry_code = country_code,
-                                                        ref_year   = year,
-                                                        gls        = gls) |>
+                    suppressMessages(get_refy_distributions(df_refy    = df_refy,
+                                                            cntry_code = country_code,
+                                                            ref_year   = year,
+                                                            gls        = gls) |>
                                        add_aux_data_attr(dl_aux          = dl_aux,
                                                          df_refy         = df_refy,
                                                          filter_aux_data = TRUE) |>
