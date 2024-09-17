@@ -115,15 +115,27 @@ append_refy_dt <- function(d_list, add_columns) {
                   envir = e)
 
            if ("reporting_level" %in% add_columns) {
+
+             tm <- dattr$reporting_level_rows$rows
+             if (length(tm) > 1) {
+               tm <- c(tm[1], tm[2] - tm[1])
+             }
+
              rp <- rep(dattr$reporting_level_rows$reporting_level,
-                       times = dattr$reporting_level_rows$rows)
+                       times = tm)
              x <- x |>
                fmutate(reporting_level = rp)
+
            }
 
            if ("survey_years" %in% add_columns) {
+             tm <- dattr$survey_years_rows$rows
+             if (length(tm) > 1) {
+               tm <- c(tm[1], tm[2] - tm[1])
+             }
+
              sy <- rep(dattr$survey_years_rows$survey_years,
-                       times = dattr$survey_years_rows$rows)
+                       times = tm)
              x <- x |>
                fmutate(survey_years = sy)
            }
