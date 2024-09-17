@@ -89,7 +89,9 @@ write_multiple_refy_dist <-
   lapply(cli::cli_progress_along(cntry_refy,
                                  total = length(cntry_refy)),
          FUN = \(i) {
+
            x <- cntry_refy[[i]]
+
            lapply(x$year,
                   FUN = \(year = x$year,
                           country_code = x$country_code){
@@ -107,7 +109,5 @@ write_multiple_refy_dist <-
          })
   invisible(TRUE)
 }
-
-
 
 
