@@ -17,9 +17,11 @@ knitr::opts_chunk$set(
 
 ```{r setup}
 devtools::load_all(".")
+here::i_am("vignettes/write-lineups-vignette.Rmd")
 library(collapse)
 library(pipdata)
 library(joyn)
+library(here)
 ```
 
 This vignette demonstrates how to estimate, manipulate, and save lineup distribution data for multiple country-years using the writing functions. This process involves estimating the reference year distributions and saving them to `.qs` files.
@@ -29,22 +31,22 @@ This vignette demonstrates how to estimate, manipulate, and save lineup distribu
 Before we begin using the writing functions, we need to ensure that the necessary objects (`gls`, `df_refy`, `dl_aux`) are properly loaded. These objects are created using the following code chunk:
 
 ```{r, results='hide'}
-dir <- "C:/Users/wb612474/OneDrive - WBG/pip_technical_work/pipload"
-file_list <- list.files(path = fs::path(dir,
-                                        "refy-objects"))
-vapply(file_list, 
-       FUN = \(x) {
-         nm <- gsub("\\.qs$", "", x)
-         obj <- qs::qread(file = fs::path(dir, 
-                                          "refy-objects", 
-                                          x))
-         assign(x     = paste(nm), 
-                value = obj, 
-                envir = .GlobalEnv)
-         invisible(TRUE)
-       }, 
-       FUN.VALUE = logical(1), 
-       USE.NAMES = F)
+dir <- here("refy-objects")
+  # if (Sys.info()[["user"]] == "wb612474") {
+  #   "C:/Users/wb612474/OneDrive - WBG/pip_technical_work/pipload"
+  #   } else if (Sys.info()[["user"]] == "wb384996") {
+  #     "."
+  #   }
+file_list <- fs::dir_ls(dir)
+
+file_names <- 
+  fs::path_ext_remove(file_list) |> 
+  fs::path_file()
+
+lt <- lapply(file_list, qs::qread)
+names(lt) <- file_names
+list2env(lt, envir = .GlobalEnv)
+
 ```
 With the objects loaded, we're ready to proceed.
 
