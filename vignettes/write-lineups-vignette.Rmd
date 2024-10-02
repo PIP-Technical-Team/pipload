@@ -32,11 +32,6 @@ Before we begin using the writing functions, we need to ensure that the necessar
 
 ```{r, results='hide'}
 dir <- here("refy-objects")
-  # if (Sys.info()[["user"]] == "wb612474") {
-  #   "C:/Users/wb612474/OneDrive - WBG/pip_technical_work/pipload"
-  #   } else if (Sys.info()[["user"]] == "wb384996") {
-  #     "."
-  #   }
 file_list <- fs::dir_ls(dir)
 
 file_names <- 
@@ -59,9 +54,9 @@ The `get_refy_distributions()` function estimates the reference year distributio
 COL_2000_dist <- get_refy_distributions(df_refy    = df_refy, 
                                         cntry_code = "COL", 
                                         ref_year   = 2000, 
-                                        gls        = gls) |> 
-  head()
-COL_2000_dist
+                                        gls        = gls)  
+  
+head(COL_2000_dist)
 ```
 
 This function generates a data frame that contains the lineup distribution for the specified country and year. It applies the necessary transformations and joins relevant data. It also creates a variety of attributes for the resulting data frame, including the distributional statistics, which are estimated using a helper function `get_dist_stats()`. The distribution statistics include the min, max, mean, median, gini, mld, and polarization measures. The full list of attributes can be seen below, and includes more information about the survey/s used to estimate the lineup distribution.
@@ -87,7 +82,7 @@ write_multiple_refy_dist(df_refy     = df_refy,
                          dl_aux      = dl_aux)
 ```
 
-The `write_multiple_refy_dist()` also makes use of the internal `add_aux_data_attr()` function, which uses `dl_aux` to find the auxiliary data for that specific country-year which was used to create the lineup distribution. It then adds this data as an attributes. These attributes can be seen below for Colombia 2018 (for more on how to load the attributes directly, see the loading lineups vignette). 
+The `write_multiple_refy_dist()` also makes use of the internal `add_aux_data_attr()` function, which uses `dl_aux` to find the auxiliary data for that specific country-year which was used to create the lineup distribution. It then adds this data as attributes. These attributes can be seen below for Colombia 2018 (for more on how to load the attributes directly, see the loading lineups vignette). 
 
 ```{r}
 load_aux_data(country_code = "COL", 
