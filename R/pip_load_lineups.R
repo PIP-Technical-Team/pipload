@@ -65,9 +65,7 @@ load_list_refy <- function(input_list,
                              year         = x$year,
                              path         = path)
 
-                 d |>
-                   fmutate(country_code = x$country_code,
-                           year         = x$year)
+                 d
                })
 
   names(dl) <- vapply(input_list,
