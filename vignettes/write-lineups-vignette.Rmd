@@ -17,9 +17,11 @@ knitr::opts_chunk$set(
 
 ```{r setup}
 devtools::load_all(".")
+here::i_am("vignettes/write-lineups-vignette.Rmd")
 library(collapse)
 library(pipdata)
 library(joyn)
+library(here)
 ```
 
 This vignette demonstrates how to estimate, manipulate, and save lineup distribution data for multiple country-years using the writing functions. This process involves estimating the reference year distributions and saving them to `.qs` files.
@@ -29,22 +31,17 @@ This vignette demonstrates how to estimate, manipulate, and save lineup distribu
 Before we begin using the writing functions, we need to ensure that the necessary objects (`gls`, `df_refy`, `dl_aux`) are properly loaded. These objects are created using the following code chunk:
 
 ```{r, results='hide'}
-dir <- "C:/Users/wb612474/OneDrive - WBG/pip_technical_work/pipload"
-file_list <- list.files(path = fs::path(dir,
-                                        "refy-objects"))
-vapply(file_list, 
-       FUN = \(x) {
-         nm <- gsub("\\.qs$", "", x)
-         obj <- qs::qread(file = fs::path(dir, 
-                                          "refy-objects", 
-                                          x))
-         assign(x     = paste(nm), 
-                value = obj, 
-                envir = .GlobalEnv)
-         invisible(TRUE)
-       }, 
-       FUN.VALUE = logical(1), 
-       USE.NAMES = F)
+dir <- here("refy-objects")
+file_list <- fs::dir_ls(dir)
+
+file_names <- 
+  fs::path_ext_remove(file_list) |> 
+  fs::path_file()
+
+lt <- lapply(file_list, qs::qread)
+names(lt) <- file_names
+list2env(lt, envir = .GlobalEnv)
+
 ```
 With the objects loaded, we're ready to proceed.
 
@@ -57,9 +54,9 @@ The `get_refy_distributions()` function estimates the reference year distributio
 COL_2000_dist <- get_refy_distributions(df_refy    = df_refy, 
                                         cntry_code = "COL", 
                                         ref_year   = 2000, 
-                                        gls        = gls) |> 
-  head()
-COL_2000_dist
+                                        gls        = gls)  
+  
+head(COL_2000_dist)
 ```
 
 This function generates a data frame that contains the lineup distribution for the specified country and year. It applies the necessary transformations and joins relevant data. It also creates a variety of attributes for the resulting data frame, including the distributional statistics, which are estimated using a helper function `get_dist_stats()`. The distribution statistics include the min, max, mean, median, gini, mld, and polarization measures. The full list of attributes can be seen below, and includes more information about the survey/s used to estimate the lineup distribution.
@@ -85,7 +82,7 @@ write_multiple_refy_dist(df_refy     = df_refy,
                          dl_aux      = dl_aux)
 ```
 
-The `write_multiple_refy_dist()` also makes use of the internal `add_aux_data_attr()` function, which uses `dl_aux` to find the auxiliary data for that specific country-year which was used to create the lineup distribution. It then adds this data as an attributes. These attributes can be seen below for Colombia 2018 (for more on how to load the attributes directly, see the loading lineups vignette). 
+The `write_multiple_refy_dist()` also makes use of the internal `add_aux_data_attr()` function, which uses `dl_aux` to find the auxiliary data for that specific country-year which was used to create the lineup distribution. It then adds this data as attributes. These attributes can be seen below for Colombia 2018 (for more on how to load the attributes directly, see the loading lineups vignette). 
 
 ```{r}
 load_aux_data(country_code = "COL", 
