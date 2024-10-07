@@ -47,6 +47,41 @@ COL_2015_lineups |>
 
 This function uses the `{qs}` package to read the `.qs` files, which are assumed to be stored in a specified directory (e.g., via the environment variable `PIP_LINEUPS_DIR`, which is set to `"//wbntpcifs/PovCalNet/03.pip/lineup_distributions/output-lineup-ref-years"`).
 
+
+## Extract attributes
+Once a data frame has been loaded, the attributes can also be extracted using the `extract_attr()` function. To get the general attributes, maintain default arguments as `dist_stats = FALSE` and `aux_data = FALSE`. 
+```{r}
+# Extract only one attr, not dist or aux
+extract_attr(ZAF_2020_lineups, 
+             attr = "welfare_type")
+
+# Extract dist stats
+extract_attr(ZAF_2020_lineups, 
+             dist_stats = TRUE,
+             attr       = "mean")
+# Extract dist stats
+extract_attr(ZAF_2020_lineups, 
+             aux_data = TRUE,
+             attr     = "pop")
+```
+
+
+## Add attributes as column
+
+We can also add attributes as columns using the `attr_to_column()`, which uses `extract_attr()` under the hood. Again, the default for `dist_stats` and `aux_data` arguments is `FALSE`. This function can be piped to add multiple attributes as columns, as is shown below.
+
+```{r}
+ZAF_2020_lineups |> 
+  attr_to_column(attr_to_column = "country_code") |> 
+  attr_to_column(dist_stats     = TRUE,
+                 aux_data       = FALSE,
+                 attr_to_column = "mean") |> 
+  attr_to_column(dist_stats     = TRUE, 
+                 aux_data       = FALSE,
+                 attr_to_column = "median")
+```
+
+
 # Loading multiple lineup distributions
 
 The `load_list_refy()` function allows loading multiple lineup distributions as a list. This is useful if you need to work with data from multiple countries and years.
@@ -68,14 +103,19 @@ In this example, `load_list_refy()` uses the helper function `transform_input()`
 
 # Combining data from multiple country-years
 
-After loading the lineup data for multiple countries and years, the next step is to combine these datasets into a single data frame. The `append_refy_dt()` function does this by appending the loaded datasets and adding additional columns, such as `reporting_level`, `welfare_type`, or `survey_years.`
+After loading the lineup data for multiple countries and years, the next step is to combine these datasets into a single data frame. The `append_refy_dt()` function does this by appending the loaded data and adding additional columns. It follows a similar logic to `attr_to_column()` above, requiring the specification of `dist_stats` and `aux_data` logical vectors as arguments. This function, however, can take in vectors as arguments for `attr_to_column`, `dist_stats`, and `aux_data`, but each must be of the same length. 
 
 
 ```{r}
 # Append the data and add columns for "reporting_level" and "welfare_type"
 appended_lineups <- load_list_refy(input_list) |> 
-  append_refy_dt(add_columns = c("reporting_level", 
-                                 "welfare_type"))
+  append_refy_dt(attr_to_column = c("reporting_level_rows", 
+                                    "min", 
+                                    "country_code"), 
+                 dist_stats     = c(FALSE,   # for `reporting_level_rows`
+                                    TRUE,    # for `min`
+                                    FALSE))  # for `country_code`
+  
 appended_lineups |> 
   head()
 ```
