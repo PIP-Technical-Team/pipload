@@ -207,8 +207,14 @@ attr_to_column <- function(df,
 #' Append reference year data and store attributes
 #'
 #' @param d_list list of data frames, output from [load_list_refy]
-#' @param add_columns character vector: contains a combination of "reporting_level",
+#' @param attr_to_column character vector: contains a combination of "reporting_level",
 #' "welfare_type", and "survey_years"
+#' @param dist_stats logical: same length as `attr_to_column`, indicating whether
+#' the attribute is a distributional statistic (TRUE) or not (FALSE). The latter
+#' is the default.
+#' @param aux_data logical: same length as `attr_to_column`, indicating whether
+#' the attribute is from the auxiliary data (TRUE) or not (FALSE). The latter
+#' is the default.
 #'
 #' @return data frame: single appended data frame
 #' @export
@@ -221,7 +227,12 @@ attr_to_column <- function(df,
 #'         append_refy_dt(add_columns = c("reporting_level",
 #'                                         "welfare_type"))
 #'
-append_refy_dt <- function(d_list, add_columns) {
+append_refy_dt <- function(d_list,
+                           attr_to_column,
+                           dist_stats = rep(FALSE,
+                                            length(attr_to_column)),
+                           aux_data   = rep(FALSE,
+                                            length(attr_to_column))) {
 
   # envir for attributes
   e <- rlang::new_environment()
@@ -236,36 +247,18 @@ append_refy_dt <- function(d_list, add_columns) {
                   value = dattr,
                   envir = e)
 
-           if ("reporting_level" %in% add_columns) {
+           idx_list <- seq_along(attr_to_column)
 
-             tm <- dattr$reporting_level_rows$rows
-             if (length(tm) > 1) {
-               tm <- c(tm[1], tm[2] - tm[1])
-             }
+           x <- Reduce(function(acc, i) {
 
-             rp <- rep(dattr$reporting_level_rows$reporting_level,
-                       times = tm)
-             x <- x |>
-               fmutate(reporting_level = rp)
-
-           }
-
-           if ("survey_years" %in% add_columns) {
-             tm <- dattr$survey_years_rows$rows
-             if (length(tm) > 1) {
-               tm <- c(tm[1], tm[2] - tm[1])
-             }
-
-             sy <- rep(dattr$survey_years_rows$survey_years,
-                       times = tm)
-             x <- x |>
-               fmutate(survey_years = sy)
-           }
-
-           if ("welfare_type" %in% add_columns) {
-             x <- x |>
-               fmutate(welfare_type = dattr$welfare_type)
-           }
+             attr_to_column(acc,
+                            attr_to_column = attr_to_column[i],
+                            dist_stats     = dist_stats[i],
+                            aux_data       = aux_data[i],
+                            dattr          = dattr)
+           },
+           idx_list,
+           init = x)
 
            x
 
