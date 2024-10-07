@@ -79,6 +79,130 @@ load_list_refy <- function(input_list,
 
 }
 
+#' Extract attribute from data frame
+#'
+#' @param df data frame: output of one of the load functions like [load_list_refy]
+#' or [load_refy]
+#' @param dist_stats logical: if TRUE then will extract one of the distributional statistics
+#' @param aux_data logical: if TRUE then will extract one of the auxiliary data stats
+#' @param attr character: which attribute to
+#'
+#' @return requested attribute
+#' @export
+extract_attr <- function(df,
+                         dist_stats = FALSE,
+                         aux_data   = FALSE,
+                         attr) {
+
+  # Args
+  if (dist_stats & aux_data) {
+    cli::cli_abort("`dist_stats` and `aux_data` cannot both be TRUE")
+  }
+
+  # all attributes
+  l_attr <- attributes(df)
+
+  # attr selection
+  if (dist_stats) {
+    a      <- l_attr$dist_stats[[attr]]
+    n_attr <- names(l_attr$dist_stats)
+    err    <- !attr %in% n_attr
+  } else if (aux_data) {
+    a      <- l_attr$aux_data[[attr]]
+    n_attr <- names(l_attr$aux_data)
+    err    <- !attr %in% n_attr
+  } else {
+    a      <- l_attr[[attr]]
+    n_attr <- names(l_attr)
+    err    <- !attr %in% n_attr
+  }
+
+  # If selected attr not in attribute list
+  if (err) {
+    n_attr <- n_attr[!grepl(pattern = "names|row.names|.internal.selfref|class",
+                            x       = n_attr)]
+    cli::cli_abort("If `dist_stats`={dist_stats} and `aux_data`={aux_data}
+                   then `attr` argument must be one of {n_attr}")
+  }
+
+  a
+
+}
+
+#' Make attribute into column
+#'
+#' @param df data frame: output from [load_list_refy]
+#' or [load_refy]
+#' @param attr_to_column contains one or all of "reporting_level", "survey_years", or "welfare_type"
+#' @param dattr attributes of [df], NULL is default
+#'
+#' @return data frame
+#' @export
+attr_to_column <- function(df,
+                           attr_to_column,
+                           dist_stats = FALSE,
+                           aux_data   = FALSE,
+                           dattr      = NULL) {
+
+  if (is.null(dattr)) {
+    dattr <- attributes(df)
+  }
+
+  dattr <- extract_attr(df         = df,
+                        attr       = attr_to_column,
+                        dist_stats = dist_stats,
+                        aux_data   = aux_data)
+
+  if (isFALSE(dist_stats) &
+      attr_to_column == "dist_stats") {
+    cli::cli_abort("Cannot set `attr_to_column = dist_stats` - rather use `dist_stats = TRUE`.")
+  }
+  if (isFALSE(aux_data) &
+      attr_to_column == "aux_data") {
+    cli::cli_abort("Cannot set `attr_to_column = aux_data` - rather use `aux_data = TRUE`.")
+  }
+
+  if (isFALSE(aux_data) &
+      isFALSE(dist_stats) &
+      is.list(dattr) &
+      length(dattr) > 1) {
+
+    nm <- names(dattr)
+    tm <- dattr$rows
+
+    if (length(tm) > 1) {
+      tm <- c(tm[1],
+              tm[2] - tm[1])
+    }
+
+    rp <- rep(dattr[[nm[1]]],
+              times = tm)
+
+    nm <- nm[1]
+    df <- df |>
+      fmutate(temp = rp) |>
+      frename(temp = nm,
+              .nse = FALSE)
+
+  } else if (isFALSE(aux_data) &
+             length(dattr) == 1) {
+
+    nm <- attr_to_column
+
+    df <- df |>
+      fmutate(temp   = dattr[[1]]) |>
+      setrename(temp = nm,
+                .nse = FALSE)
+
+  } else if (aux_data) {
+    cli::cli_abort("`aux_data` not able to be added as a column.")
+  } else {
+    cli::cli_abort("None of the criteria matched")
+  }
+
+  df
+}
+
 
 #' Append reference year data and store attributes
 #'
