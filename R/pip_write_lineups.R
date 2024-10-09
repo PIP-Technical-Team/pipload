@@ -39,7 +39,7 @@ write_refy_dist <- function(df_refy,
 #'                   year vector.
 #' @param path path to save the output - "P:\03.pip\lineup_distributions\output-lineup-ref-years"
 #'
-#' @return
+#' @return invisible logical: writes files
 #' @export
 #'
 #' @examples
