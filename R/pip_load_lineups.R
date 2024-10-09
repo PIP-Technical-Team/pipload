@@ -377,7 +377,7 @@ load_aux_data <- function(country_code,
 #'   - `year`: Either a single value (numeric or string) representing a year to be applied to all country codes, or a list of years where each element corresponds to a country code. If `year` is provided as a list, its length must match the length of `country_code`.
 #'
 #' @return A list where each element is a list containing `country_code` and `year`, representing all appropriate combinations of the input `country_code` and `year`.
-#'
+#' @export
 #' @examples
 #' \dontrun{
 #' # Example with a single year for all countries
