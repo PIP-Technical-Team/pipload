@@ -144,7 +144,7 @@ get_refy_distributions <- function(df_refy, cntry_code, ref_year, gls) {
          verbose    = FALSE,
          reportvar  = FALSE) |>
     # Group by survey year
-    fgroup_by(survey_year) |>
+    fgroup_by(survey_year, reporting_level, welfare_type, country_code) |>
     # number of imputations per survey year (if micro data then n_imp = 1)
     fmutate(n_imp      = data.table::uniqueN(imputation_id),
             # population at survey (decimal) year found by summing survey weights
