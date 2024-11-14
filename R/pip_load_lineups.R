@@ -172,7 +172,7 @@ attr_to_column <- function(df,
 
     if (length(tm) > 1) {
       tm <- c(tm[1],
-              tm[2] - tm[1])
+              diff(tm))
     }
 
     rp <- rep(dattr[[nm[1]]],

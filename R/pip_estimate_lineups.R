@@ -103,9 +103,15 @@ get_refy_distributions <- function(df_refy, cntry_code, ref_year, gls) {
                                      FUN = function(x){
                                        pipload::pip_load_cache(cache_id = x,
                                                                version  = gls$vintage_dir) |>
-                                         fselect(country_code, surveyid_year, survey_acronym,
-                                                 survey_year, welfare_ppp, weight,
-                                                 reporting_level, welfare_type, imputation_id)
+                                         fselect(country_code,
+                                                 surveyid_year,
+                                                 survey_acronym,
+                                                 survey_year,
+                                                 welfare_ppp,
+                                                 weight,
+                                                 reporting_level,
+                                                 welfare_type,
+                                                 imputation_id)
 
                                      }))
 
@@ -122,10 +128,14 @@ get_refy_distributions <- function(df_refy, cntry_code, ref_year, gls) {
 
   # Make reporting level rows an attribute
   reporting_level_rows <- df_svy |>
-    fselect(reporting_level) |>
-    fmutate(rows = 1:fnrow(df_svy)) |>
-    fgroup_by(reporting_level) |>
-    fsummarise(rows = fmax(rows))
+    fselect(reporting_level, survey_year) |>
+    fmutate(rows = 1:fnrow(df_svy),
+            rl   = paste0(reporting_level, survey_year)) |>
+    fgroup_by(rl) |>
+    fmutate(rows = fmax(rows)) |>
+    fungroup() |>
+    fselect(reporting_level, rows) |>
+    funique()
 
   reporting_level_rows <-
     list(reporting_level = as.character(reporting_level_rows$reporting_level),
@@ -144,7 +154,7 @@ get_refy_distributions <- function(df_refy, cntry_code, ref_year, gls) {
          verbose    = FALSE,
          reportvar  = FALSE) |>
     # Group by survey year
-    fgroup_by(survey_year, reporting_level, welfare_type, country_code) |>
+    fgroup_by(survey_year) |>
     # number of imputations per survey year (if micro data then n_imp = 1)
     fmutate(n_imp      = data.table::uniqueN(imputation_id),
             # population at survey (decimal) year found by summing survey weights
