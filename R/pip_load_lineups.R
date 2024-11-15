@@ -133,7 +133,7 @@ extract_attr <- function(df,
 #'
 #' @param df data frame: output from [load_list_refy]
 #' or [load_refy]
-#' @param attr_to_column contains one or all of "reporting_level", "survey_years", or "welfare_type"
+#' @param attr_to_column contains one or all of "reporting_level", "survey_year", or "welfare_type"
 #' @param dattr attributes of [df], NULL is default
 #'
 #' @return data frame
@@ -208,7 +208,7 @@ attr_to_column <- function(df,
 #'
 #' @param d_list list of data frames, output from [load_list_refy]
 #' @param attr_to_column character vector: contains a combination of "reporting_level",
-#' "welfare_type", and "survey_years"
+#' "welfare_type", and "survey_year"
 #' @param dist_stats logical: same length as `attr_to_column`, indicating whether
 #' the attribute is a distributional statistic (TRUE) or not (FALSE). The latter
 #' is the default.

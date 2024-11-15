@@ -20,6 +20,7 @@ get_refy_distributions <- function(df_refy, cntry_code, ref_year, gls) {
            }
          }) |>
     qDT()
+
   # Filter df_refy
   df_refy <-
     df_refy |>
@@ -112,46 +113,20 @@ get_refy_distributions <- function(df_refy, cntry_code, ref_year, gls) {
                                                  reporting_level,
                                                  welfare_type,
                                                  imputation_id)
-
                                      }))
-
-  # Make survey year rows an attribute
-  survey_years_rows <- df_svy |>
-    fselect(survey_year) |>
-    fmutate(rows = 1:fnrow(df_svy)) |>
-    fgroup_by(survey_year) |>
-    fsummarise(rows = fmax(rows))
-
-  survey_years_rows <-
-    list(survey_years = survey_years_rows$survey_year,
-         rows         = survey_years_rows$rows)
-
-  # Make reporting level rows an attribute
-  reporting_level_rows <- df_svy |>
-    fselect(reporting_level, survey_year) |>
-    fmutate(rows = 1:fnrow(df_svy),
-            rl   = paste0(reporting_level, survey_year)) |>
-    fgroup_by(rl) |>
-    fmutate(rows = fmax(rows)) |>
-    fungroup() |>
-    fselect(reporting_level, rows) |>
-    funique()
-
-  reporting_level_rows <-
-    list(reporting_level = as.character(reporting_level_rows$reporting_level),
-         rows            = reporting_level_rows$rows)
 
   # Join welfare & weights vectors from surveys to df_refy
   df <-
     df_refy |>
     joyn(y          = df_svy,
          by         = c("country_code",
+                        "survey_year",
                         "reporting_level",
-                        "welfare_type",
-                        "survey_year"),
+                        "welfare_type"),
          keep       = "left",
          match_type = "1:m",
          verbose    = FALSE,
+         sort       = FALSE,
          reportvar  = FALSE) |>
     # Group by survey year
     fgroup_by(survey_year) |>
@@ -171,8 +146,41 @@ get_refy_distributions <- function(df_refy, cntry_code, ref_year, gls) {
     fungroup() |>
     fmutate(welfare_refy = welfare_ppp * mult_factor)
 
+  if (any(diff(df$survey_year) < 0) &
+      !any(diff(df_svy$survey_year) < 0)) {
+    data.table::setorder(df,
+                         survey_year)
+  }
+
   # temp
   setkey(df, NULL)
+
+  # Make survey year rows an attribute
+  survey_year_rows <- df_svy |>
+    fselect(survey_year) |>
+    fmutate(rows = 1:fnrow(df_svy)) |>
+    fgroup_by(survey_year) |>
+    fsummarise(rows = fmax(rows))
+
+  survey_year_rows <-
+    list(survey_year  = survey_year_rows$survey_year,
+         rows         = survey_year_rows$rows)
+
+  # Make reporting level rows an attribute
+  reporting_level_rows <- df_svy |>
+    fselect(reporting_level, survey_year) |>
+    fmutate(rows = 1:fnrow(df_svy),
+            rl   = paste0(reporting_level,
+                          survey_year)) |>
+    fgroup_by(rl) |>
+    fmutate(rows = fmax(rows)) |>
+    fungroup() |>
+    fselect(reporting_level, rows) |>
+    funique()
+
+  reporting_level_rows <-
+    list(reporting_level = as.character(reporting_level_rows$reporting_level),
+         rows            = reporting_level_rows$rows)
 
   # Make welfare type an attribute
   df <-
@@ -188,9 +196,12 @@ get_refy_distributions <- function(df_refy, cntry_code, ref_year, gls) {
                                                      "class",
                                                      ".internal.selfref",
                                                      names(attributes(df))))])
+
   df <- vars_to_attr(df, "n_imp")
   attr(df,
-       "survey_years_rows")    <- survey_years_rows
+       "survey_year_rows")    <- survey_year_rows
+
+
 
   df <- df |>
     vars_to_attr(var = c("country_code",
@@ -203,6 +214,7 @@ get_refy_distributions <- function(df_refy, cntry_code, ref_year, gls) {
 
   attr(df,
        "reporting_level_rows") <- reporting_level_rows
+
 
   gv(df,
      c("svy_pop",
