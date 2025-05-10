@@ -59,17 +59,28 @@
 #' }
 pip_load_aux <- function(
     measure           ,
-    branch            = c("DEV", "PROD", "main"),
+    #branch            = c("DEV", "PROD", "main"),
     version           = NULL,
     root_dir          = Sys.getenv("PIP_ROOT_DIR"),
-    maindir           = pipfun::pip_create_globals(root_dir)$PIP_DATA_DIR,
-    msrdir            = fs::path(maindir, "_aux", match.arg(branch), measure),
+    maindir           = getOption("pipload.working_dir"),
     filename          = measure,
     file_to_load      = lifecycle::deprecated(),
     apply_label       = TRUE,
     verbose           = getOption("pipload.verbose"),
     preferred_format  = NULL
     ) {
+
+
+  # Get release
+  pipfun::get_wrk_release(verbose = FALSE)
+
+  branch <- paste0(wrk_release$release,
+                           "_",
+                           wrk_release$identity)
+
+  msrdir            = fs::path(root_dir, maindir, "aux_data", branch, measure)
+
+  print(msrdir)
 
   if (lifecycle::is_present(file_to_load))  {
 
@@ -89,7 +100,6 @@ pip_load_aux <- function(
   #---------   Conditions   ---------
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  branch <- match.arg(branch)
 
   if (filename != measure) {
     apply_label <- FALSE

@@ -1,5 +1,6 @@
 pipuax_default_options <- list(
-  pipload.verbose = TRUE
+  pipload.verbose = TRUE,
+  pipload.working_dir = "PIP_ingestion_pipeline_v2"
 )
 
 .onLoad <- function(libname, pkgname) {
