@@ -12,8 +12,8 @@ pip_add_aux_labels <- function(x, measure, verbose) {
 
     # Label variables
     #attr(x$survey_year, "label") <- "Proportion of first year of survey"
-    attr(x$cpi_domain,     "label") <- "CPI domain to join with microdata"
-    attr(x$cpi_data_level, "label") <- "Values to use as keys to join with cpi_domain_var"
+    attr(x$cpi_domain_value,     "label") <- "CPI domain to join with microdata"
+    #attr(x$cpi_data_level, "label") <- "Values to use as keys to join with cpi_domain_var"
     #attr(x$cpi_year,  "label") <- "Year of survey ID"
     attr(x$ccf,            "label") <- "Currency conversion factor"
     attr(x$cpi,            "label") <- "Consumer Price Index (Based on 2011)."
