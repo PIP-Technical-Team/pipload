@@ -49,9 +49,9 @@ pip_add_aux_labels <- function(x, measure, verbose) {
     # Label Variables
     attr(x$country_code,   "label")  <- "Country code"
     attr(x$year,           "label")  <- "Year"
-    attr(x$gdp_data_level, "label")  <- "Values to use as keys to join with gdp_domain_var"
+    #attr(x$gdp_data_level, "label")  <- "Values to use as keys to join with gdp_domain_var"
     attr(x$gdp,            "label")  <- "GDP per capita (constant 2010 US$)"
-    attr(x$gdp_domain,     "label")  <- "GDP domain to join with microdata"
+    #attr(x$gdp_domain,     "label")  <- "GDP domain to join with microdata"
 
   } else if (measure == "pce") {
 
