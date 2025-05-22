@@ -59,16 +59,19 @@ write_multiple_refy_dist <-
            dl_aux) {
 
   # Select surveys for CPIs
+  vars <-
+    grep("cpi",
+         names(dl_aux$cpi),
+         value = TRUE)
+
   dl_aux$cpi <-
     dl_aux$cpi |>
-    fselect(cpi,
-            cpi2017,
-            cpi2011,
-            country_code,
-            cpi_year,
-            cpi_data_level,
-            survey_acronym,
-            survey_year) |>
+    fselect(c(vars,
+              "country_code",
+              "cpi_year",
+              "cpi_data_level",
+              "survey_acronym",
+              "survey_year")) |>
     funique() |>
     joyn::joyn(y = df_refy |>
                  fselect(survey_acronym,
