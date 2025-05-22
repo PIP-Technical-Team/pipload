@@ -68,8 +68,6 @@ write_multiple_refy_dist <-
     dl_aux$cpi |>
     fselect(c(vars,
               "country_code",
-              "cpi_year",
-              "cpi_data_level",
               "survey_acronym",
               "survey_year")) |>
     funique() |>
