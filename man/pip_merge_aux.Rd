@@ -19,9 +19,6 @@ pip_merge_aux(
 
 \item{ppp_year}{numeric: PPP round year}
 
-\item{branch}{character: Either "DEV", "PROD", or "main". Refers to which
-version of the data is being updated. Default is DEV for development.}
-
 \item{root_dir}{character: root directory of the PIP data}
 
 \item{maindir}{character: main directory. By default it

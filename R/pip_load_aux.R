@@ -2,8 +2,6 @@
 #'
 #' @param measure character: Measure to be used. e.g., "cpi" or "ppp". It can't
 #'   be `NULL` anymore as it requires a main auxiliary directory
-#' @param branch  character: Either "DEV", "PROD", or "main". Refers to which
-#'   version of the data is being updated. Default is DEV for development.
 #' @param version An integer or a quoted directive. "available": displays list
 #'   of available versions for `measure`. "select"|"pick"|"choose": allows user
 #'   to select the vintage of `measure`. if the integer is a zero or a negative
@@ -19,8 +17,7 @@
 #'   "version")` is the actual version of the most recent vintage of the file
 #'   rather that `attr(dd, "version")` equal to "current", which is the default.
 #'   Option "00" is useful for vintage control
-#' @param msrdir character: measure directory. Default is
-#'   `fs::path(maindir,"_aux", match.arg(branch), measure)`
+#' @param character: main directory. By default it uses `getOption("pipload.working_dir")`
 #' @param file_to_load `r lifecycle::badge("deprecated")` `file_to_load` has
 #'   been superseded for a more convenient combination of `filename` and
 #'   `msrdir`. Now, it defaults to `filename`
@@ -59,7 +56,6 @@
 #' }
 pip_load_aux <- function(
     measure           ,
-    #branch            = c("DEV", "PROD", "main"),
     version           = NULL,
     root_dir          = Sys.getenv("PIP_ROOT_DIR"),
     maindir           = getOption("pipload.working_dir"),
@@ -79,8 +75,6 @@ pip_load_aux <- function(
                            wrk_release$identity)
 
   msrdir            = fs::path(root_dir, maindir, "aux_data", branch, measure)
-
-  print(msrdir)
 
   if (lifecycle::is_present(file_to_load))  {
 

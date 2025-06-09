@@ -25,9 +25,6 @@ pip_load_all_aux(
 "pfw", "pop", "gdm", "gdp", "pce"). If "all", all auxiliary frame will be
 loaded in memory}
 
-\item{branch}{character: Either "DEV", "PROD", or "main". Refers to which
-version of the data is being updated. Default is DEV for development.}
-
 \item{aux_names}{character of the same length of \code{aux}. Names of objects to
 be loaded. default is \code{aux}}
 
