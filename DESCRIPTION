@@ -44,4 +44,5 @@ Depends:
     R (>= 2.10)
 Config/testthat/edition: 3
 Remotes: 
-    github::PIP-Technical-team/pipfun@DEV
+    github::PIP-Technical-Team/pipfun@DEV_v2
+
