@@ -16,7 +16,7 @@ pip_add_aux_labels <- function(x, measure, verbose) {
     #attr(x$cpi_data_level, "label") <- "Values to use as keys to join with cpi_domain_var"
     #attr(x$cpi_year,  "label") <- "Year of survey ID"
     attr(x$ccf,            "label") <- "Currency conversion factor"
-    attr(x$cpi,            "label") <- "Consumer Price Index (Based on 2011)."
+    #attr(x$cpi,            "label") <- "Consumer Price Index (Based on 2011)."
 
   }  else if (measure == "ppp") {
 
