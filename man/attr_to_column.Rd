@@ -16,7 +16,7 @@ attr_to_column(
 \item{df}{data frame: output from \link{load_list_refy}
 or \link{load_refy}}
 
-\item{attr_to_column}{contains one or all of "reporting_level", "survey_years", or "welfare_type"}
+\item{attr_to_column}{contains one or all of "reporting_level", "survey_year", or "welfare_type"}
 
 \item{dattr}{attributes of \link{df}, NULL is default}
 }

@@ -194,6 +194,27 @@ attr_to_column <- function(df,
       setrename(temp = nm,
                 .nse = FALSE)
 
+  } else if (isFALSE(aux_data) &
+             isTRUE(dist_stats) &
+             is.list(dattr) &
+             length(dattr) > 1) {
+
+    if (!"reporting_level" %in% names(df)) {
+      cli::cli_abort("In order to add this distributional statistic, reporting_level should be added first.")
+    }
+    nm    <- names(dattr)
+    vals  <- unname(unlist(dattr))
+    dtemp <- data.table(reporting_level = nm,
+                        vals            = vals)
+    names(dtemp)[!names(dtemp) == "reporting_level"] <- attr_to_column
+    df <-
+      joyn::left_join(x            = df,
+                      y            = dtemp,
+                      by           = "reporting_level",
+                      relationship = "many-to-one",
+                      reportvar    = FALSE,
+                      verbose      = FALSE)
+
   } else if (aux_data) {
     cli::cli_abort("`aux_data` not able to be added as a column.")
   } else {
