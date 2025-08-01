@@ -19,3 +19,52 @@ devtools::load_all(".")
 # library(pipload)
 ```
 
+## Quick Start: Reading and Writing with `pins`
+
+This vignette shows how to use the `pip_write` and `pip_read` functions to save and retrieve data with versioning using the `pins` package. We'll use a temporary board for demonstration, but the same logic applies to your real boards.
+
+## Create a temporary board
+
+```{r}
+board <- pins::board_temp(versioned = TRUE)
+name <- "x"
+```
+
+## Write several versions of an object
+
+```{r}
+pip_write(board, x = 1:5,  name = name)
+Sys.sleep(3)
+pip_write(board, x = 1:10, name = name)
+Sys.sleep(3)
+pip_write(board, x = 4:9,  name = name)
+```
+
+## Read 
+
+### the latest version
+
+```{r}
+pip_read(board, name)
+```
+
+### List all available versions
+
+```{r}
+vers <- pip_read(board, name, version = "available")
+vers
+```
+
+### Read a specific version by version string
+
+```{r}
+version <- vers[3, version]
+pip_read(board, name, version = version)
+```
+
+### Read previous versions by index
+
+```{r}
+pip_read(board, name, version = -1) # previous version
+pip_read(board, name, version = -2) # two versions back
+```
