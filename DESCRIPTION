@@ -31,7 +31,8 @@ Imports:
     lifecycle,
     pipfun (>= 0.0.0.9018),
     glue,
-    qs
+    qs,
+    pins
 Suggests: 
     withr,
     rmarkdown,
@@ -45,4 +46,3 @@ Depends:
 Config/testthat/edition: 3
 Remotes: 
     github::PIP-Technical-Team/pipfun@DEV_v2
-

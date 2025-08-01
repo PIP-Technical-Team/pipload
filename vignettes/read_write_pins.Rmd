@@ -1,0 +1,21 @@
+---
+title: "Read and Write with `pins`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Read and Write with `pins`}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+devtools::load_all(".")
+# library(pipload)
+```
+
