@@ -9,6 +9,9 @@
 #' @param version An integer or a quoted directive. Retrieve a specific version
 #'   of a pin. This argument is more powerful than the one in [pins::pin_read].
 #'   See details.
+#' @param pin_name character: pin name. It is the same as `name` argument in
+#'   [pins::pin_read]. The reason it is is different is to make it clear in
+#'   higher-level functions.
 #'
 #' @returns pip_read() returns an R object in the pip board; pip_write() returns
 #'   the fully qualified name of the new pin, invisibly.
@@ -52,7 +55,7 @@
 #' pip_read(board, name, version = "select")
 #' }
 pip_read <- function(board,
-                     name,
+                     pin_name,
                      version = NULL,
                      hash = NULL,
                      ...) {
@@ -69,7 +72,7 @@ pip_read <- function(board,
   # Treat version
   if (!is.null(version) && version != 0) {
     vr <- get_pin_versions(board = board,
-                            name = name)
+                           pin_name = pin_name)
 
     # If Available
     if (version == "available") {
@@ -91,7 +94,7 @@ pip_read <- function(board,
   }
 
   pins::pin_read(board   = board,
-                 name    = name,
+                 name    = pin_name,
                  version = version,
                  hash    = hash,
                  ...)
@@ -105,13 +108,13 @@ pip_read <- function(board,
 #' @rdname pip_read
 pip_write <- function(board,
                       x,
-                      name = NULL,
+                      pin_name = NULL,
                       force_identical_write = FALSE,
                       ...) {
 
   pins::pin_write(board                 = board,
                   x                     = x,
-                  name                  = name,
+                  name                  = pin_name,
                   force_identical_write = force_identical_write,
                   type                  = "qs",
                   versioned             = TRUE,
@@ -127,8 +130,9 @@ pip_write <- function(board,
 #'
 #' @returns pins_version modified invisible
 #' @keywords internal
-get_pin_versions <- function(board, name) {
-  ver <- pins::pin_versions(board, name) |>
+get_pin_versions <- function(board, pin_name) {
+  ver <- pins::pin_versions(board = board,
+                            name = pin_name) |>
     setDT()
 
   setorder(ver, -created)

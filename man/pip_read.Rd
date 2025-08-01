@@ -5,15 +5,17 @@
 \alias{pip_write}
 \title{Read and write objects in the PIP ecosystem using \code{pins}}
 \usage{
-pip_read(board, name, version = NULL, hash = NULL, ...)
+pip_read(board, pin_name, version = NULL, hash = NULL, ...)
 
-pip_write(board, x, name = NULL, force_identical_write = FALSE, ...)
+pip_write(board, x, pin_name = NULL, force_identical_write = FALSE, ...)
 }
 \arguments{
 \item{board}{A pin board, created by \code{\link[pins:board_folder]{board_folder()}}, \code{\link[pins:board_connect]{board_connect()}},
 \code{\link[pins:board_url]{board_url()}} or another \code{board_} function.}
 
-\item{name}{Pin name.}
+\item{pin_name}{character: pin name. It is the same as \code{name} argument in
+\link[pins:pin_read]{pins::pin_read}. The reason it is is different is to make it clear in
+higher-level functions.}
 
 \item{version}{An integer or a quoted directive. Retrieve a specific version
 of a pin. This argument is more powerful than the one in \link[pins:pin_read]{pins::pin_read}.

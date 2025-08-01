@@ -4,11 +4,11 @@ library(pins)
 create_test_board <- function() {
   board <- board_temp(versioned = TRUE)
   name <- "x"
-  pip_write(board, x = 1:5, name = name)
+  pip_write(board, x = 1:5, pin_name = name)
   Sys.sleep(1)
-  pip_write(board, x = 1:10, name = name)
+  pip_write(board, x = 1:10, pin_name = name)
   Sys.sleep(1)
-  pip_write(board, x = 4:9, name = name)
+  pip_write(board, x = 4:9, pin_name = name)
   list(board = board, name = name)
 }
 

@@ -4,13 +4,15 @@
 \alias{get_pin_versions}
 \title{get pins_versions slightly modified}
 \usage{
-get_pin_versions(board, name)
+get_pin_versions(board, pin_name)
 }
 \arguments{
 \item{board}{A pin board, created by \code{\link[pins:board_folder]{board_folder()}}, \code{\link[pins:board_connect]{board_connect()}},
 \code{\link[pins:board_url]{board_url()}} or another \code{board_} function.}
 
-\item{name}{Pin name.}
+\item{pin_name}{character: pin name. It is the same as \code{name} argument in
+\link[pins:pin_read]{pins::pin_read}. The reason it is is different is to make it clear in
+higher-level functions.}
 }
 \value{
 pins_version modified invisible
