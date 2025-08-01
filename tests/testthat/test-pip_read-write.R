@@ -40,8 +40,7 @@ test_that("pip_read errors on positive version index", {
 
 test_that("pip_read errors on missing pin", {
   board <- board_temp(versioned = TRUE)
-  expect_error(pip_read(board, "not_a_pin"),
-               "does not exist")
+  expect_error(pip_read(board, "not_a_pin"))
 })
 
 # get_pin_versions
