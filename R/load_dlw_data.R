@@ -70,51 +70,33 @@ load_dlw_data <- function(country_code   = NULL,
 
   # When pin name is defined   ------
   if (!is.null(pin_name)) {
-    pin_name <- pin_name |>
-      fs::path_ext_remove() |>
-      fs::path(ext = "qs")
+    pin_name <- check_dlw_pin_name(pin_name)
 
-    ptt <- "^[A-Za-z]+_[0-9]{4}_[^_]+_[Vv][0-9]{2}_M_[Vv][0-9]{2}_A_[^_]+_[^_]+\\.[A-Za-z]+$"
+  } else {
+    # filter   ---------
 
-    if (!grepl(ptt, pin_name)) {
-      cli::cli_abort(c(x = "Wrong {.arg pin_name} specification",
-                       i = "it should follow the pattern {.field {ptt}}",
-                       i = "like in {.file HRV_2011_EU-SILC_V01_M_V04_A_GMD_GPWG.qs}"))
-    }
+    fd <- find_dlw_data(board          = br,
+                        latest_version = latest_version,
+                        latest_year    = latest_year,
+                        verbose        = verbose,
+                        country_code   = country_code,
+                        year           = year,
+                        survey         = survey,
+                        vermast        = vermast,
+                        veralt         = veralt,
+                        collection     = collection,
+                        module         = module)
 
-    # Early return
-    return(pip_read(board = br,
-                    pin_name = pin_name,
-                    version = version,
-                    hash    = hash))
+    pin_name <- fd[, pin_name]
   }
-
-
-
-  # filter   ---------
-
-  fd <- find_dlw_data(board          = br,
-                      latest_version = latest_version,
-                      latest_year    = latest_year,
-                      verbose        = verbose,
-                      country_code   = country_code,
-                      year           = year,
-                      survey         = survey,
-                      vermast        = vermast,
-                      veralt         = veralt,
-                      collection     = collection,
-                      module         = module)
-
-  return(fd)
-
-
-
-
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   # Return   ---------
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    return(TRUE)
+  return(pip_read(board = br,
+                  pin_name = pin_name,
+                  version = version,
+                  hash    = hash))
 
 }
 
@@ -195,10 +177,7 @@ find_dlw_data <- function(board = NULL,
   ctl <- ctl[rlang::eval_tidy(cnds, data = args)] |>
     unique()
 
-  if (latest_year == TRUE &&
-      # when year is not in dots, R would use `year` as the function, so it
-      # won't be NULL unless it is set up as such
-      (!exists("year", where = dots) || is.null(year))) {
+  if (latest_year == TRUE && !("year" %in% args_info)) {
     ctl <- ctl[,
                #  for each collectiona and module, the row(s) with the maximum Year
                .SD[Year == max(Year, na.rm = TRUE)],
@@ -206,8 +185,8 @@ find_dlw_data <- function(board = NULL,
     ]
   }
 
-  if ((!exists("vermast", where = dots)) &&
-      !exists("veralt", where = dots) &&
+  if (!("vermast" %in% args_info) &&
+      !("veralt" %in% args_info) &&
       latest_version == TRUE) {
     ctl <- ctl[ ,
                 #  for each year, the row(s) with the maximum Vermast.
@@ -220,4 +199,31 @@ find_dlw_data <- function(board = NULL,
   }
 
   return(ctl)
+}
+
+
+
+#' check that dlw pin_name is correct
+#'
+#' @param pin_name pin name of dlw data
+#'
+#' @returns character with pin_name
+#' @keywords internal
+#'
+#' @examples
+#' check_dlw_pin_name("HRV_2011_EU-SILC_V01_M_V04_A_GMD_GPWG.qs")
+#' check_dlw_pin_name("HRV_2011_EU-SILC_V01_M_V04_A_GMD_GPWG")
+check_dlw_pin_name <- \(pin_name) {
+  pin_name <- pin_name |>
+    fs::path_ext_remove() |>
+    fs::path(ext = "qs")
+
+  ptt <- "^[A-Za-z]+_[0-9]{4}_[^_]+_[Vv][0-9]{2}_M_[Vv][0-9]{2}_A_[^_]+_[^_]+\\.[A-Za-z]+$"
+
+  if (!grepl(ptt, pin_name)) {
+    cli::cli_abort(c(x = "Wrong {.arg pin_name} specification",
+                     i = "it should follow the pattern {.field {ptt}}",
+                     i = "like in {.file HRV_2011_EU-SILC_V01_M_V04_A_GMD_GPWG.qs}"))
+  }
+  invisible(pin_name)
 }
