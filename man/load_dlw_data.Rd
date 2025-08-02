@@ -18,8 +18,7 @@ load_dlw_data(
   pin_name = NULL,
   version = NULL,
   hash = NULL,
-  verbose = getOption("pipload.verbose"),
-  ...
+  verbose = getOption("pipload.verbose")
 )
 
 find_dlw_data(
@@ -70,13 +69,13 @@ you expect. You can find the hash of an existing pin by looking for
 \item{verbose}{logical. If TRUE display information. Default is option
 "pipload.verbose"}
 
+\item{board}{board from \code{pipfun::get_pins_boards(board = "dlw_data")}}
+
 \item{...}{
   Arguments passed on to \code{\link[=load_dlw_data]{load_dlw_data}}
   \describe{
     \item{\code{}}{}
   }}
-
-\item{board}{board from \code{pipfun::get_pins_boards(board = "dlw_data")}}
 
 \item{filename}{character: File name}
 }
@@ -92,6 +91,7 @@ Find data available in DLW data board
 `
 }
 \examples{
+\dontrun{
 lr <- pipfun::get_latest_pip_release()
 pipfun::setup_working_release(release = lr$release,
                               identity = lr$identity,
@@ -100,8 +100,12 @@ pipfun::setup_working_release(release = lr$release,
 # Using pin_name
 load_dlw_data(pin_name = "HRV_2011_EU-SILC_V01_M_V04_A_GMD_GPWG.qs")
 
-# wrihtout ext also works
+# without ext also works
 load_dlw_data(pin_name = "HRV_2011_EU-SILC_V01_M_V04_A_GMD_GPWG")
+
+# country and year
+load_dlw_data(country_code = "HRV", year = 2022)
+}
 lr <- pipfun::get_latest_pip_release()
 pipfun::setup_working_release(release = lr$release,
                               identity = lr$identity,

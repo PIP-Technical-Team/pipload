@@ -25,6 +25,7 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' lr <- pipfun::get_latest_pip_release()
 #' pipfun::setup_working_release(release = lr$release,
 #'                               identity = lr$identity,
@@ -33,8 +34,12 @@
 #' # Using pin_name
 #' load_dlw_data(pin_name = "HRV_2011_EU-SILC_V01_M_V04_A_GMD_GPWG.qs")
 #'
-#' # wrihtout ext also works
+#' # without ext also works
 #' load_dlw_data(pin_name = "HRV_2011_EU-SILC_V01_M_V04_A_GMD_GPWG")
+#'
+#' # country and year
+#' load_dlw_data(country_code = "HRV", year = 2022)
+#' }
 load_dlw_data <- function(country_code   = NULL,
                           year           = NULL,
                           survey         = NULL,
@@ -47,18 +52,7 @@ load_dlw_data <- function(country_code   = NULL,
                           pin_name       = NULL,
                           version        = NULL,
                           hash           = NULL,
-                          verbose        =  getOption("pipload.verbose"),
-                          ...) {
-
-  # Robustly capture all arguments, including named ...
-  mc <- match.call(expand.dots = FALSE)
-  all_args <- as.list(mc)[-1] # remove function name
-  if (!is.null(all_args$`...`)) {
-    dots <- all_args$`...`
-    all_args$`...` <- NULL
-    all_args <- c(all_args, dots)
-  }
-
+                          verbose        =  getOption("pipload.verbose")) {
 
   # defenses   ---------
   stopifnot(exprs = {
