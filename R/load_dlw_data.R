@@ -1,4 +1,4 @@
-#' Title
+#' Load data from dlw repository
 #'
 #' @param country_code Character: country ISO 3 code.
 #' @param year numeric: four digit year
@@ -19,7 +19,6 @@
 #' @param verbose logical. If TRUE display information. Default is option
 #'   "pipload.verbose"
 #' @inheritParams pip_read
-#' @param ...
 #'
 #' @returns data table with dlw data
 #' @export
@@ -38,7 +37,13 @@
 #' load_dlw_data(pin_name = "HRV_2011_EU-SILC_V01_M_V04_A_GMD_GPWG")
 #'
 #' # country and year
-#' load_dlw_data(country_code = "HRV", year = 2022)
+#' load_dlw_data(country_code = "HRV", year = 2011)
+#'
+#' # Find data
+#' find_dlw_data(country_code = "HRV")
+#'
+#' # Latest year in EACH module
+#' find_dlw_data(country_code = "HRV", latest_year = TRUE)
 #' }
 load_dlw_data <- function(country_code   = NULL,
                           year           = NULL,
@@ -87,6 +92,9 @@ load_dlw_data <- function(country_code   = NULL,
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   # Return   ---------
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  if (verbose) {
+    cli::cli_alert_info("Loading {.field {pin_name}}")
+  }
   return(pip_read(board = br,
                   pin_name = pin_name,
                   version = version,
@@ -95,24 +103,17 @@ load_dlw_data <- function(country_code   = NULL,
 }
 
 
-#' Find data available in DLW data board
-#'`
+#' Find data available in DLW data board `
 #' @param board board from `pipfun::get_pins_boards(board = "dlw_data")`
 #' @inheritParams load_dlw_data
-#' @inheritDotParams load_dlw_data country_code year module survey vermast veralt collection module
+#' @param ... Just the following: country_code, year, module, survey, vermast,
+#'   veralt, collection, module. They work exactly the same as the ones in
+#'   [load_dlw_data]
 #'
 #' @returns data from with filter data
 #' @export
 #'
 #' @rdname load_dlw_data
-#'
-#' @examples
-#' lr <- pipfun::get_latest_pip_release()
-#' pipfun::setup_working_release(release = lr$release,
-#'                               identity = lr$identity,
-#'                               verbose = FALSE)
-#'
-#' find_dlw_data(country_code = "HRV")
 find_dlw_data <- function(board = NULL,
                           latest_version = TRUE,
                           latest_year    = FALSE,

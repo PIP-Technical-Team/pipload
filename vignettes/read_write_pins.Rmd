@@ -33,11 +33,11 @@ name <- "x"
 ## Write several versions of an object
 
 ```{r}
-pip_write(board, x = 1:5,  name = name)
+pip_write(board, x = 1:5,  pin_name = name)
 Sys.sleep(3)
-pip_write(board, x = 1:10, name = name)
+pip_write(board, x = 1:10, pin_name = name)
 Sys.sleep(3)
-pip_write(board, x = 4:9,  name = name)
+pip_write(board, x = 4:9,  pin_name = name)
 ```
 
 ## Read 
@@ -45,13 +45,16 @@ pip_write(board, x = 4:9,  name = name)
 ### the latest version
 
 ```{r}
-pip_read(board, name)
+pip_read(board = board, 
+         pin_name = name)
 ```
 
 ### List all available versions
 
 ```{r}
-vers <- pip_read(board, name, version = "available")
+vers <- pip_read(board, 
+                 pin_name = name, 
+                 version = "available")
 vers
 ```
 
@@ -59,12 +62,49 @@ vers
 
 ```{r}
 version <- vers[3, version]
-pip_read(board, name, version = version)
+pip_read(board, pin_name = name, version = version)
 ```
 
 ### Read previous versions by index
 
 ```{r}
-pip_read(board, name, version = -1) # previous version
-pip_read(board, name, version = -2) # two versions back
+pip_read(board, pin_name =  name, version = -1) # previous version
+pip_read(board,pin_name =  name, version = -2) # two versions back
 ```
+
+
+
+## Build higher-level functions
+
+`pip_read()` and `pip_write()` are the backbone of any other function in the `{pipload}` package. For instance, the function `load_dlw_data()` makes use of all the functionality of pins and `pip_read()`.
+
+Below are some real-world examples of how you might use these higher-level functions in your workflow:
+
+```{r load_dlw_data}
+# Get the latest release and set up the working environment
+lr <- pipfun::get_latest_pip_release()
+pipfun::setup_working_release(release = lr$release,
+                              identity = lr$identity,
+                              verbose = FALSE)
+
+# Using pin_name (with extension)
+load_dlw_data(pin_name = "HRV_2011_EU-SILC_V01_M_V04_A_GMD_GPWG.qs") |> 
+  head()
+
+# Using pin_name (without extension also works)
+load_dlw_data(pin_name = "HRV_2011_EU-SILC_V01_M_V04_A_GMD_GPWG") |> 
+  head()
+
+# Using country and year
+load_dlw_data(country_code = "HRV", year = 2011) |> 
+  head()
+
+# Find all data for a country
+find_dlw_data(country_code = "HRV") |> 
+  head()
+
+# Find the latest year in EACH module for a country
+find_dlw_data(country_code = "HRV", latest_year = TRUE)
+```
+
+

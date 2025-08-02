@@ -3,7 +3,7 @@
 \name{load_dlw_data}
 \alias{load_dlw_data}
 \alias{find_dlw_data}
-\title{Title}
+\title{Load data from dlw repository}
 \usage{
 load_dlw_data(
   country_code = NULL,
@@ -71,11 +71,9 @@ you expect. You can find the hash of an existing pin by looking for
 
 \item{board}{board from \code{pipfun::get_pins_boards(board = "dlw_data")}}
 
-\item{...}{
-  Arguments passed on to \code{\link[=load_dlw_data]{load_dlw_data}}
-  \describe{
-    \item{\code{}}{}
-  }}
+\item{...}{Just the following: country_code, year, module, survey, vermast,
+veralt, collection, module. They work exactly the same as the ones in
+\link{load_dlw_data}}
 
 \item{filename}{character: File name}
 }
@@ -85,10 +83,9 @@ data table with dlw data
 data from with filter data
 }
 \description{
-Title
+Load data from dlw repository
 
-Find data available in DLW data board
-`
+Find data available in DLW data board `
 }
 \examples{
 \dontrun{
@@ -105,11 +102,11 @@ load_dlw_data(pin_name = "HRV_2011_EU-SILC_V01_M_V04_A_GMD_GPWG")
 
 # country and year
 load_dlw_data(country_code = "HRV", year = 2022)
-}
-lr <- pipfun::get_latest_pip_release()
-pipfun::setup_working_release(release = lr$release,
-                              identity = lr$identity,
-                              verbose = FALSE)
 
+# Find data
 find_dlw_data(country_code = "HRV")
+
+# Latest year in EACH module
+find_dlw_data(country_code = "HRV", latest_year = TRUE)
+}
 }
