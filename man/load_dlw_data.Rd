@@ -2,20 +2,30 @@
 % Please edit documentation in R/load_dlw_data.R
 \name{load_dlw_data}
 \alias{load_dlw_data}
+\alias{find_dlw_data}
 \title{Title}
 \usage{
 load_dlw_data(
   country_code = NULL,
   year = NULL,
-  module = NULL,
   survey = NULL,
-  filename = NULL,
   vermast = NULL,
   veralt = NULL,
+  collection = "GMD",
+  module = "GPWG",
   latest_version = TRUE,
   latest_year = FALSE,
   pin_name = NULL,
   version = NULL,
+  hash = NULL,
+  verbose = getOption("pipload.verbose"),
+  ...
+)
+
+find_dlw_data(
+  board = NULL,
+  latest_version = TRUE,
+  latest_year = FALSE,
   verbose = getOption("pipload.verbose"),
   ...
 )
@@ -25,17 +35,18 @@ load_dlw_data(
 
 \item{year}{numeric: four digit year}
 
-\item{module}{character: module of GMD collection (e.g., ALL, GPWG, L)}
-
 \item{survey}{character: survey acronyn}
-
-\item{filename}{character: File name}
 
 \item{vermast}{character: Version of the master data in the form "vXX" where
 X is a number of two digits like "01" or "02".}
 
 \item{veralt}{character: Version of the alternative  data in the form "vXX"
 where X is a number of two digits like "01" or "02".}
+
+\item{collection}{character: It should always be "GMD"}
+
+\item{module}{character: module of GMD collection (e.g., ALL, GPWG, L).
+Default is GPWG}
 
 \item{latest_version}{logical: If TRUE and  \code{vermast} and \code{veralt} are NULL,
 it will use the most recent version of the data for a particular year.}
@@ -44,13 +55,57 @@ it will use the most recent version of the data for a particular year.}
 most recent year. Otherwise, it will return the calls for all the years
 available. This is the default.}
 
-\item{verbose}{logical. If TRUE display information. Default is option "pipload.verbose"}
+\item{pin_name}{character: pin name. It is the same as \code{name} argument in
+\link[pins:pin_read]{pins::pin_read}. The reason it is is different is to make it clear in
+higher-level functions.}
 
-\item{...}{}
+\item{version}{An integer or a quoted directive. Retrieve a specific version
+of a pin. This argument is more powerful than the one in \link[pins:pin_read]{pins::pin_read}.
+See details.}
+
+\item{hash}{Specify a hash to verify that you get exactly the dataset that
+you expect. You can find the hash of an existing pin by looking for
+\code{pin_hash} in \code{\link[pins:pin_meta]{pin_meta()}}.}
+
+\item{verbose}{logical. If TRUE display information. Default is option
+"pipload.verbose"}
+
+\item{...}{
+  Arguments passed on to \code{\link[=load_dlw_data]{load_dlw_data}}
+  \describe{
+    \item{\code{}}{}
+  }}
+
+\item{board}{board from \code{pipfun::get_pins_boards(board = "dlw_data")}}
+
+\item{filename}{character: File name}
 }
 \value{
 data table with dlw data
+
+data from with filter data
 }
 \description{
 Title
+
+Find data available in DLW data board
+`
+}
+\examples{
+lr <- pipfun::get_latest_pip_release()
+pipfun::setup_working_release(release = lr$release,
+                              identity = lr$identity,
+                              verbose = FALSE)
+
+# Using pin_name
+load_dlw_data(pin_name = "HRV_2011_EU-SILC_V01_M_V04_A_GMD_GPWG.qs")
+
+# wrihtout ext also works
+load_dlw_data(pin_name = "HRV_2011_EU-SILC_V01_M_V04_A_GMD_GPWG")
+lr <- pipfun::get_latest_pip_release()
+pipfun::setup_working_release(release = lr$release,
+                              identity = lr$identity,
+                              verbose = FALSE)
+
+find_dlw_data(country_code = "HRV")
 }

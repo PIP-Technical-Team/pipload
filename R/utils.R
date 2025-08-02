@@ -194,3 +194,17 @@ last_prod_version <- function(tool_dir) {
   return(version)
 
 }
+
+
+#' capitalize first letter in each word
+#'
+#' @param s character
+#'
+#' @returns first letter of each work in s capitalized
+#' @keywords internal
+simpleCap <- function(s) {
+  s <- strsplit(s, " ")[[1]]
+  paste(toupper(substring(s, 1, 1)), substring(s, 2),
+        sep = "", collapse = " ")
+}
+
