@@ -1,3 +1,9 @@
+# pipload 0.2.2
+
+* Add new functions to read and write data in the PIP ecosystem, `pip_read()` and `pip_write()`
+* Implement preliminary version of `load_dlw_data()` and `find_dlw_data()`, which are built over `pip_read()` and `pip_write()`. 
+* This version requires `{pipfun}` >= 0.3.6
+
 # pipload 0.2.1
 
 - `pip_load_aux()` now reads from branches folder and loading algorithm has been improved. 
