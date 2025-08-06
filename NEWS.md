@@ -1,4 +1,7 @@
 # pipload (development version)
+* Develop `find_data()` as lower-level function for `find_dlw_data()` and `find_pip_data()`. The latter is still to be developed. 
+
+* change `check_dlw_pin_name()` for `check_data_pin_name()` , because, in theory, bot dlw and pip data should have the same structure. Yet, it still could be changed in needed. 
 
 # pipload 0.2.2
 
