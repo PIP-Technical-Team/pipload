@@ -69,7 +69,7 @@ load_dlw_data <- function(country_code   = NULL,
 
   # When pin name is defined   ------
   if (!is.null(pin_name)) {
-    pin_name <- check_dlw_pin_name(pin_name)
+    pin_name <- check_data_pin_name(pin_name)
 
   } else {
     # filter   ---------
@@ -119,106 +119,17 @@ find_dlw_data <- function(board = NULL,
                           latest_year    = FALSE,
                           verbose        =  getOption("pipload.verbose"),
                           ...) {
-  # Capture ... arguments as a list
-  dots <- list(...)
-  # Combine country and ... into a single list of arguments
-  args <- lapply(dots, \(.) {
-    if (is.character(.)) {
-      toupper(.)
-    } else {
-      .
-    }
-  })
-
-  # get names of arguments that are not null
-  args_info <- Filter(Negate(is.null), args) |>
-    names()
-
-  cnds <- lapply(args_info, \(.) {
-    paste(simpleCap(.), ., sep = " %in% ")
-  }) |>
-    # append them together
-    paste(collapse = " & ") |>
-    # convert to expression
-    rlang::parse_expr()
 
 
   if (is.null(board)) {
     board <- pipfun::get_pins_boards(board = "dlw_data")
   }
-  bl <- pins::pin_list(board)
 
-  # Build catalog
-  ctl <- data.table(pin_name = bl)
-
-  vars <- c(
-    "Country_code",
-    "Year",
-    "survey",
-    "Vermast",
-    "M",
-    "Veralt",
-    "A",
-    "Collection",
-    "Module",
-    "ext"
-  )
-
-  ctl[, (vars) := tstrsplit(pin_name, split = "_|[.]", fill = NA)
-  ][,
-    c("M", "A") := NULL]
-
-
-  ctl <- ctl[rlang::eval_tidy(cnds, data = args)] |>
-    unique()
-
-  if (latest_year == TRUE && !("year" %in% args_info)) {
-    ctl <- ctl[,
-               #  for each collectiona and module, the row(s) with the maximum Year
-               .SD[Year == max(Year, na.rm = TRUE)],
-               by = .(Collection, Module)
-    ]
-  }
-
-  if (!("vermast" %in% args_info) &&
-      !("veralt" %in% args_info) &&
-      latest_version == TRUE) {
-    ctl <- ctl[ ,
-                #  for each year, the row(s) with the maximum Vermast.
-                .SD[Vermast == max(Vermast, na.rm = TRUE)],
-                by = .(Year, Collection, Module)
-    ][,
-      #It should return only one row per year (even if there are ties)
-      .SD[Veralt == max(Veralt, na.rm = TRUE)],
-      by = .(Year, Collection, Module)]
-  }
-
-  return(ctl)
+  find_data(board = board,
+            latest_version = latest_version,
+            latest_year    = latest_year,
+            verbose        =  verbose,
+            ...)
 }
 
 
-
-#' check that dlw pin_name is correct
-#'
-#' @param pin_name pin name of dlw data
-#'
-#' @returns character with pin_name
-#' @keywords internal
-#'
-#' @examples
-#' check_dlw_pin_name("HRV_2011_EU-SILC_V01_M_V04_A_GMD_GPWG.qs")
-#' check_dlw_pin_name("HRV_2011_EU-SILC_V01_M_V04_A_GMD_GPWG")
-check_dlw_pin_name <- \(pin_name) {
-  pin_name <- pin_name |>
-    fs::path_ext_remove() |>
-    fs::path(ext = "qs")
-
-  ptt <- "^[A-Za-z]+_[0-9]{4}_[^_]+_[Vv][0-9]{2}_M_[Vv][0-9]{2}_A_[^_]+_[^_]+\\.[A-Za-z]+$"
-
-  if (!grepl(ptt, pin_name)) {
-    cli::cli_abort(c(x = "Wrong {.arg pin_name} specification",
-                     i = "it should follow the pattern {.field {ptt}}",
-                     i = "like in {.file HRV_2011_EU-SILC_V01_M_V04_A_GMD_GPWG.qs}"))
-  }
-  invisible(pin_name)
-}
