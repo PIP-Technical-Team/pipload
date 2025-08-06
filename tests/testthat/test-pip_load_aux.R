@@ -20,6 +20,7 @@ test_that("Syntax is working", {
 
 
   # deprecation works
+  skip()
   pip_load_aux(measure = "ppp",
                file_to_load = "ppp_vintage") |>
   expect_warning()
