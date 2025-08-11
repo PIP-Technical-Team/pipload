@@ -152,7 +152,7 @@ check_pin_name <- \(pin_name,
 #'
 #' @returns data from with filter data
 #' @export
-#' @example
+#' @examples
 #' \dontrun{
 #' lr <- pipfun::get_latest_pip_release()
 #' pipfun::setup_working_release(release = lr$release,
@@ -167,16 +167,13 @@ check_pin_name <- \(pin_name,
 #' # Latest year in EACH module
 #' find_data(board = board_pip, country_code = "HRV", latest_year = TRUE)
 #' }
-find_data <- function(board = NULL,
+find_data <- function(board,
                       latest_version = TRUE,
                       latest_year    = FALSE,
                       verbose        =  getOption("pipload.verbose"),
                       ...) {
   # Defenses
 
-  if (is.null(board)) {
-    cli::cli_abort("Need to provide the name of the board")
-  }
 
   # Capture ... arguments as a list
   dots <- list(...)
