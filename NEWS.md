@@ -1,4 +1,5 @@
 # pipload (development version)
+* First version of `load_pip_data()` and `find_pip_data()`.
 
 # pipload 0.2.2
 
