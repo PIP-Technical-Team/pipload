@@ -56,9 +56,8 @@ load_pip_data <- function(country_code   = NULL,
     !is.null(country_code) || !is.null(pin_name)
   })
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  # computations   ---------
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  # computations   --------
+
 
   # Get board
   br <- pipfun::get_pins_boards(board = "pip_data")
@@ -68,9 +67,9 @@ load_pip_data <- function(country_code   = NULL,
     pin_name <- check_pin_name(pin_name, "pip_data")
 
   } else {
-    # filter   ---------
+  # filter   ---------
 
-    inv <- find_data(board          = br,
+    inv <- find_pip_data(board          = br,
                         latest_version = latest_version,
                         latest_year    = latest_year,
                         verbose        = verbose,
@@ -85,9 +84,7 @@ load_pip_data <- function(country_code   = NULL,
     pin_name <- inv[, pip_id]
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   # Return   ---------
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   if (verbose) {
     cli::cli_alert_info("Loading {.field {pin_name}}")
   }
@@ -98,57 +95,11 @@ load_pip_data <- function(country_code   = NULL,
 
 }
 
-#' check that pin_name is correct
-#'
-#' @param pin_name pin name data
-#' @param board_name either dlw_data or pip_data (for now)
-#'
-#' @returns character with pin_name
-#' @keywords internal
-#'
-#' @examples
-#' check_pin_name("HRV_2011_EU-SILC_V01_M_V04_A_GMD_GPWG.qs", "dlw")
-#' check_pin_name("LCA_2015_SLCHBS_D1_INC_GPWG.qs","pip")
-check_pin_name <- \(pin_name,
-                    board_name = c("dlw_data","pip_data")) {
-
-  # Defenses
-  stopifnot(board_name %in% c("dlw_data","pip_data"))
-
-  pin_name <- pin_name |>
-    fs::path_ext_remove() |>
-    fs::path(ext = "qs")
-
-  if(board_name == "dlw_data"){
-    ptt <- "^[A-Za-z]+_[0-9]{4}_[^_]+_[Vv][0-9]{2}_M_[Vv][0-9]{2}_A_[^_]+_[^_]+\\.[A-Za-z]+$"
-
-    if (!grepl(ptt, pin_name)) {
-      cli::cli_abort(c(x = "Wrong {.arg pin_name} specification",
-                       i = "it should follow the pattern {.field {ptt}}",
-                       i = "like in {.file HRV_2011_EU-SILC_V01_M_V04_A_GMD_GPWG.qs}"))
-    }
-
-  }else if(board_name == "pip_data"){
-
-    ptt <- "^[A-Za-z]+_[0-9]{4}_[^_]+_(D1|D2)_(INC|CON)+_[^_]+\\.[A-Za-z]+$"
-
-    if (!grepl(ptt, pin_name)) {
-      cli::cli_abort(c(x = "Wrong {.arg pin_name} specification",
-                       i = "it should follow the pattern {.field {ptt}}",
-                       i = "like in {.file LCA_2015_SLCHBS_D1_INC_GPWG.qs}"))
-    }
-  }
-
-  invisible(pin_name)
-}
-
-
 #' Find data available in pin board `
 #' @param board pin board
 #' @inheritParams load_pip_data
-#' @param ... Just the following: country_code, year, module, survey, vermast,
-#'   veralt, collection, module. They work exactly the same as the ones in
-#'   [load_pip_data]
+#' @param ... Just the following: country_code, year, survey, welfare_type,and
+#'   module. They work exactly the same as the ones in [load_pip_data]
 #'
 #' @returns data from with filter data
 #' @export
@@ -167,14 +118,11 @@ check_pin_name <- \(pin_name,
 #' # Latest year in EACH module
 #' find_data(board = board_pip, country_code = "HRV", latest_year = TRUE)
 #' }
-find_data <- function(board,
-                      latest_version = TRUE,
-                      latest_year    = FALSE,
-                      verbose        =  getOption("pipload.verbose"),
-                      ...) {
-  # Defenses
-
-
+find_pip_data <- function(board = NULL,
+                          latest_version = TRUE,
+                          latest_year    = FALSE,
+                          verbose        =  getOption("pipload.verbose"),
+                          ...) {
   # Capture ... arguments as a list
   dots <- list(...)
   # Combine country and ... into a single list of arguments
@@ -186,53 +134,105 @@ find_data <- function(board,
     }
   })
 
+  # get names of arguments that are not null
   args_info <- Filter(Negate(is.null), args) |>
     names()
 
-  # Load inventory
-  if(grepl("dlw_data", board$path)){
+  cnds <- lapply(args_info, \(.) {
+    paste(simpleCap(.), ., sep = " %in% ")
+  }) |>
+    # append them together
+    paste(collapse = " & ") |>
+    # convert to expression
+    rlang::parse_expr()
 
-    # board_inv <- pipfun::get_pins_boards(board = "dlw_inventory")
-    # inv       <- pins::pin_read(board = board_inv ,name = "dlw_inventory")
-    cli::cli_abort("Cannot be done until dlw_inventory exist in board dlw_inventory")
 
-  }else if(grepl("pip_data", board$path)){
+  if (is.null(board)) {
+    board <- pipfun::get_pins_boards(board = "pip_data")
 
-    board_inv <- pipfun::get_pins_boards(board = "pip_inventory")
-    inv       <- pins::pin_read(board = board_inv ,name = "pip_inventory")
   }
+  bl <- pins::pin_list(board)
 
-  if(!is.data.table(inv)){
-    inv <- as.data.table(inv)
-  }
+  # Build catalog
+  ctl <- data.table(pin_name = bl)
 
-  for (nm in args_info) {
-    inv <- inv[get(nm) %in% args[[nm]]]
-  }
+  vars <- get_from_piploadenv("pip_id_vars")
 
-  inv <- unique(inv)
+  ctl[, (vars) := tstrsplit(pin_name, split = "_|[.]", fill = NA)
+  ]
+
+
+  ctl <- ctl[rlang::eval_tidy(cnds, data = args)] |>
+    unique()
 
   if (latest_year == TRUE && !("surveyid_year" %in% args_info)) {
-    inv <- inv[,
-               #  for each collection and module, the row(s) with the maximum Year
-               .SD[surveyid_year == max(surveyid_year, na.rm = TRUE)],
-               by = .(collection, module)
+    ctl <- ctl[,
+               #  for each collection and module,
+               # the row(s) with the maximum Year
+               .SD[Year == max(Year, na.rm = TRUE)],
+               by = .(Collection, Module)
     ]
   }
+
+
+  ## load inventory and versions infor per release
+
+  inv <- load_pip_inventory()
 
   if (!("vermast" %in% args_info) &&
       !("veralt" %in% args_info) &&
       latest_version == TRUE) {
-    inv <- inv[ ,
+    ctl <- ctl[ ,
                 #  for each year, the row(s) with the maximum Vermast.
-                .SD[vermast == max(vermast, na.rm = TRUE)],
-                by = .(surveyid_year, collection, module)
+                .SD[Vermast == max(Vermast, na.rm = TRUE)],
+                by = .(Year, Collection, Module)
     ][,
       #It should return only one row per year (even if there are ties)
-      .SD[veralt == max(veralt, na.rm = TRUE)],
-      by = .(surveyid_year, collection, module)]
+      .SD[Veralt == max(Veralt, na.rm = TRUE)],
+      by = .(Year, Collection, Module)]
   }
 
-  return(inv)
+  return(ctl)
 }
 
+
+
+
+#' Load pip inventory for corresponding release
+#'
+#' @returns data.table with PIP inventory
+#' @export
+#'
+#' @examples
+#' load_pip_inventory()
+load_pip_inventory <- \() {
+  binv <- pipfun::get_pins_boards(board = "pip_inventory")
+  pip_read(binv, "pip_inventory")
+}
+
+
+
+#' check that dlw pin_name is correct
+#'
+#' @param pin_name pin name of dlw data
+#'
+#' @returns character with pin_name
+#' @keywords internal
+#'
+#' @examples
+#' check_dlw_pin_name("HRV_2011_EU-SILC_V01_M_V04_A_GMD_GPWG.qs")
+#' check_dlw_pin_name("HRV_2011_EU-SILC_V01_M_V04_A_GMD_GPWG")
+check_dlw_pin_name <- \(pin_name) {
+  pin_name <- pin_name |>
+    fs::path_ext_remove() |>
+    fs::path(ext = "qs")
+
+  ptt <- get_from_piploadenv("dlw_name_pattern")
+
+  if (!grepl(ptt, pin_name)) {
+    cli::cli_abort(c(x = "Wrong {.arg pin_name} specification",
+                     i = "it should follow the pattern {.field {ptt}}",
+                     i = "like in {.file HRV_2011_EU-SILC_V01_M_V04_A_GMD_GPWG.qs}"))
+  }
+  invisible(pin_name)
+}

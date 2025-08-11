@@ -46,8 +46,8 @@
 #' find_dlw_data(country_code = "HRV", latest_year = TRUE)
 #' }
 load_dlw_data <- function(country_code   = NULL,
-                          year           = NULL,
-                          survey         = NULL,
+                          surveyid_year  = NULL,
+                          survey_acronym = NULL,
                           vermast        = NULL,
                           veralt         = NULL,
                           collection     = "GMD",
@@ -79,8 +79,8 @@ load_dlw_data <- function(country_code   = NULL,
                         latest_year    = latest_year,
                         verbose        = verbose,
                         country_code   = country_code,
-                        year           = year,
-                        survey         = survey,
+                        surveyid_year  = surveyid_year,
+                        survey_acronym = survey_acronym,
                         vermast        = vermast,
                         veralt         = veralt,
                         collection     = collection,
@@ -153,8 +153,8 @@ find_dlw_data <- function(board = NULL,
 
   vars <- c(
     "Country_code",
-    "Year",
-    "survey",
+    "surveyid_year",
+    "survey_acronym",
     "Vermast",
     "M",
     "Veralt",
@@ -213,7 +213,7 @@ check_dlw_pin_name <- \(pin_name) {
     fs::path_ext_remove() |>
     fs::path(ext = "qs")
 
-  ptt <- "^[A-Za-z]+_[0-9]{4}_[^_]+_[Vv][0-9]{2}_M_[Vv][0-9]{2}_A_[^_]+_[^_]+\\.[A-Za-z]+$"
+  ptt <- get_from_piploadenv("dlw_name_pattern")
 
   if (!grepl(ptt, pin_name)) {
     cli::cli_abort(c(x = "Wrong {.arg pin_name} specification",
