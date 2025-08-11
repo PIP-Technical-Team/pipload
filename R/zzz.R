@@ -21,8 +21,8 @@ set_in_piploadenv(key = "dlw_name_pattern",
 set_in_piploadenv(key = "dlw_id_vars",
                   value = c(
                     "Country_code",
-                    "surveyid_year",
-                    "survey_acronym",
+                    "Surveyid_year",
+                    "Survey_acronym",
                     "Vermast",
                     "M",
                     "Veralt",
@@ -41,10 +41,9 @@ set_in_piploadenv(key = "pip_name_pattern",
 set_in_piploadenv(key = "pip_id_vars",
                   value = c(
                     "Country_code",
-                    "surveyid_year",
-                    "survey_acronym",
-                    "welfare_type",
-                    "reporting_level",
+                    "Surveyid_year",
+                    "Survey_acronym",
+                    "Welfare_type",
                     "Module"
                   ))
 

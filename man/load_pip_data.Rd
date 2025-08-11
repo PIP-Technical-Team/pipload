@@ -2,30 +2,58 @@
 % Please edit documentation in R/load_pip_data.R
 \name{load_pip_data}
 \alias{load_pip_data}
-\title{Load data from pip repository}
+\alias{find_pip_data}
+\alias{load_pip_inventory_release}
+\alias{load_pip_master_inventory}
+\alias{check_pip_pin_name}
+\title{Set of functions to interact with PIP data.}
 \usage{
 load_pip_data(
   country_code = NULL,
-  year = NULL,
-  survey = NULL,
+  surveyid_year = NULL,
+  survey_acronym = NULL,
+  welfare_type = NULL,
+  module = "GPWG",
+  pin_name = NULL,
   vermast = NULL,
   veralt = NULL,
   collection = "GMD",
-  module = "GPWG",
   latest_version = TRUE,
   latest_year = FALSE,
-  pin_name = NULL,
   version = NULL,
   hash = NULL,
   verbose = getOption("pipload.verbose")
 )
+
+find_pip_data(
+  board = pipfun::get_pins_boards(board = "pip_data"),
+  latest_year = FALSE,
+  where = c("release", "master"),
+  verbose = getOption("pipload.verbose"),
+  ...
+)
+
+load_pip_inventory_release()
+
+load_pip_master_inventory()
+
+check_pip_pin_name(pin_name)
 }
 \arguments{
 \item{country_code}{Character: country ISO 3 code.}
 
-\item{year}{numeric: four digit year}
+\item{surveyid_year}{numeric: four digit year}
 
-\item{survey}{character: survey acronym}
+\item{survey_acronym}{character: survey acronym}
+
+\item{welfare_type}{character: either "INC" for income or "CON" for
+consumption. This is only useul when there are two welfare types in the
+same year for the same country}
+
+\item{module}{character: module of GMD collection (e.g., ALL, GPWG, L).
+Default is GPWG}
+
+\item{pin_name}{pin name of dlw data}
 
 \item{vermast}{character: Version of the master data in the form "vXX" where
 X is a number of two digits like "01" or "02".}
@@ -35,17 +63,12 @@ where X is a number of two digits like "01" or "02".}
 
 \item{collection}{character: It should always be "GMD"}
 
-\item{module}{character: module of GMD collection (e.g., ALL, GPWG, L).
-Default is GPWG}
-
 \item{latest_version}{logical: If TRUE and  \code{vermast} and \code{veralt} are NULL,
 it will use the most recent version of the data given pins.}
 
 \item{latest_year}{logical: If \code{TRUE} and  \code{year} is NULL, it retrieves the
 most recent year. Otherwise, it will return the calls for all the years
 available. This is the default.}
-
-\item{pin_name}{character: File name}
 
 \item{version}{An integer or a quoted directive. Retrieve a specific version
 of a pin. This argument is more powerful than the one in \link[pins:pin_read]{pins::pin_read}.
@@ -58,13 +81,35 @@ you expect. You can find the hash of an existing pin by looking for
 \item{verbose}{logical. If TRUE display information. Default is option
 "pipload.verbose"}
 
+\item{board}{pin board}
+
+\item{where}{character: Either "release" or "master". Se details.}
+
+\item{...}{Just the following: country_code, year, survey, welfare_type,and
+module. They work exactly the same as the ones in \link{load_pip_data}}
+
 \item{pin_version}{character: version given by pins}
 }
 \value{
 data table with pip data
+
+filtered data table from inventory
+
+data.table with PIP inventory
+
+data.table with PIP inventory
+
+character with pin_name
 }
 \description{
-Load data from pip repository
+\link{load_pip_data} Load data from pip repository. \link{find_pip_data} Finds data
+available in pin board. \link{load_pip_inventory_release} Loads pip inventory for
+corresponding release. \link{load_pip_master_inventory} Loads pip master inventory
+for corresponding release. \link{check_pip_pin_name} checks that pip pin_name is
+correct (INTERNAL)
+}
+\details{
+\strong{where} specifies \emph{where} to find data. It could be at the release level or at the master level. Release refers to the surveys specified in the Price Framework data of each release. Master refers to all the pip cleaned data
 }
 \examples{
 \dontrun{
@@ -79,4 +124,23 @@ load_pip_data(pin_name = "LCA_2015_SLCHBS_D1_INC_GPWG")
 # country and year
 load_pip_data(country_code = "HRV", year = 2011)
 }
+\dontrun{
+lr <- pipfun::get_latest_pip_release()
+pipfun::setup_working_release(release = lr$release,
+                              identity = lr$identity,
+                              verbose = FALSE)
+
+board_pip <- pipfun::get_pins_boards(board = "pip_data")
+
+# Find data
+find_data(board = board_pip, country_code = "HRV")
+
+# Latest year in EACH module
+find_data(board = board_pip, country_code = "HRV", latest_year = TRUE)
 }
+load_pip_inventory()
+load_pip_master_inventory()
+check_dlw_pin_name("HRV_2011_EU-SILC_V01_M_V04_A_GMD_GPWG.qs")
+check_dlw_pin_name("HRV_2011_EU-SILC_V01_M_V04_A_GMD_GPWG")
+}
+\keyword{internal}
