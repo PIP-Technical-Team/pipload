@@ -7,8 +7,8 @@
 \usage{
 load_dlw_data(
   country_code = NULL,
-  year = NULL,
-  survey = NULL,
+  surveyid_year = NULL,
+  survey_acronym = NULL,
   vermast = NULL,
   veralt = NULL,
   collection = "GMD",
@@ -31,10 +31,6 @@ find_dlw_data(
 }
 \arguments{
 \item{country_code}{Character: country ISO 3 code.}
-
-\item{year}{numeric: four digit year}
-
-\item{survey}{character: survey acronyn}
 
 \item{vermast}{character: Version of the master data in the form "vXX" where
 X is a number of two digits like "01" or "02".}
@@ -74,6 +70,10 @@ you expect. You can find the hash of an existing pin by looking for
 \item{...}{Just the following: country_code, year, module, survey, vermast,
 veralt, collection, module. They work exactly the same as the ones in
 \link{load_dlw_data}}
+
+\item{year}{numeric: four digit year}
+
+\item{survey}{character: survey acronyn}
 
 \item{filename}{character: File name}
 }
