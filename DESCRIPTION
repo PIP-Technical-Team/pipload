@@ -29,7 +29,7 @@ Imports:
     stringr,
     joyn,
     lifecycle,
-    pipfun (>= 0.3.6),
+    pipfun (>= 0.3.10),
     glue,
     qs,
     pins
