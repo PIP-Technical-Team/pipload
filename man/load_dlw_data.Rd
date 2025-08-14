@@ -3,6 +3,9 @@
 \name{load_dlw_data}
 \alias{load_dlw_data}
 \alias{find_dlw_data}
+\alias{check_dlw_pin_name}
+\alias{load_dlw_gmd_inventory}
+\alias{load_dlw_gmd_log}
 \title{Load data from dlw repository}
 \usage{
 load_dlw_data(
@@ -28,6 +31,12 @@ find_dlw_data(
   verbose = getOption("pipload.verbose"),
   ...
 )
+
+check_dlw_pin_name(pin_name)
+
+load_dlw_gmd_inventory()
+
+load_dlw_gmd_log()
 }
 \arguments{
 \item{country_code}{Character: country ISO 3 code.}
@@ -50,9 +59,7 @@ it will use the most recent version of the data for a particular year.}
 most recent year. Otherwise, it will return the calls for all the years
 available. This is the default.}
 
-\item{pin_name}{character: pin name. It is the same as \code{name} argument in
-\link[pins:pin_read]{pins::pin_read}. The reason it is is different is to make it clear in
-higher-level functions.}
+\item{pin_name}{pin name of dlw data}
 
 \item{version}{An integer or a quoted directive. Retrieve a specific version
 of a pin. This argument is more powerful than the one in \link[pins:pin_read]{pins::pin_read}.
@@ -81,11 +88,20 @@ veralt, collection, module. They work exactly the same as the ones in
 data table with dlw data
 
 data from with filter data
+
+character with pin_name
+
+\link{load_dlw_gmd_inventory} data.table with inventory of GMD data from
+DLW
+
+\link{load_dlw_gmd_log} data.table with log of retrieval process from DLW
 }
 \description{
 Load data from dlw repository
 
 Find data available in DLW data board `
+
+check that dlw pin_name is correct
 }
 \examples{
 \dontrun{
@@ -109,4 +125,9 @@ find_dlw_data(country_code = "HRV")
 # Latest year in EACH module
 find_dlw_data(country_code = "HRV", latest_year = TRUE)
 }
+check_dlw_pin_name("HRV_2011_EU-SILC_V01_M_V04_A_GMD_GPWG.qs")
+check_dlw_pin_name("HRV_2011_EU-SILC_V01_M_V04_A_GMD_GPWG")
+load_pip_inventory()
+load_dlw_master_inventory()
 }
+\keyword{internal}

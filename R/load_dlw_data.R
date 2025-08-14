@@ -1,4 +1,7 @@
-#' Load data from dlw repository
+#' Load and find data from dlw repository
+#'
+#' [load_dlw_data] loads data from dlw. [find_dlw_data] Find data available in DLW data board. [load_dlw_gmd_inventory] loads  inventory of GMD data from
+#'   DLW
 #'
 #' @param country_code Character: country ISO 3 code.
 #' @param year numeric: four digit year
@@ -103,7 +106,6 @@ load_dlw_data <- function(country_code   = NULL,
 }
 
 
-#' Find data available in DLW data board `
 #' @param board board from `pipfun::get_pins_boards(board = "dlw_data")`
 #' @inheritParams load_dlw_data
 #' @param ... Just the following: country_code, year, module, survey, vermast,
@@ -111,6 +113,7 @@ load_dlw_data <- function(country_code   = NULL,
 #'   [load_dlw_data]
 #'
 #' @returns data from with filter data
+#' @rdname load_dlw_data
 #' @export
 #'
 #' @rdname load_dlw_data
@@ -204,6 +207,7 @@ find_dlw_data <- function(board = NULL,
 #'
 #' @returns character with pin_name
 #' @keywords internal
+#' @rdname load_dlw_data
 #'
 #' @examples
 #' check_dlw_pin_name("HRV_2011_EU-SILC_V01_M_V04_A_GMD_GPWG.qs")
@@ -221,4 +225,32 @@ check_dlw_pin_name <- \(pin_name) {
                      i = "like in {.file HRV_2011_EU-SILC_V01_M_V04_A_GMD_GPWG.qs}"))
   }
   invisible(pin_name)
+}
+
+
+
+
+
+#' @returns [load_dlw_gmd_inventory] data.table with inventory of GMD data from
+#'   DLW
+#' @rdname load_dlw_data
+#' @export
+#'
+#' @examples
+#' load_pip_inventory()
+load_dlw_gmd_inventory <- \() {
+  binv <- pipfun::get_pins_boards(board = "dlw_inventory")
+  pip_read(binv, "dlw_gmd_inv")
+}
+
+
+#' @returns [load_dlw_gmd_log] data.table with log of retrieval process from DLW
+#' @rdname load_dlw_data
+#' @export
+#'
+#' @examples
+#' load_dlw_master_inventory()
+load_dlw_gmd_log <- \() {
+  binv <- pipfun::get_pins_boards(board = "dlw_inventory")
+  pip_read(binv, "dlw_gmd_log")
 }
