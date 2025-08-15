@@ -41,10 +41,8 @@
 #'                               verbose = FALSE)
 #'
 #' # Using pin_name
-#' load_pip_data(pin_name = "LCA_2015_SLCHBS_D1_INC_GPWG")
+#' load_pip_data(pin_name = "LCA_2015_SLCHBS_INC_GPWG")
 #'
-#' # country and year
-#' load_pip_data(country_code = "HRV", year = 2011)
 #' }
 load_pip_data <- function(country_code   = NULL,
                           surveyid_year  = NULL,
@@ -57,6 +55,7 @@ load_pip_data <- function(country_code   = NULL,
                           collection     = "GMD",
                           latest_version = TRUE,
                           latest_year    = FALSE,
+                          where          = c("release", "master"),
                           version        = NULL,
                           hash           = NULL,
                           verbose        =  getOption("pipload.verbose")) {
@@ -67,7 +66,7 @@ load_pip_data <- function(country_code   = NULL,
   })
 
   # computations   --------
-
+  where <- match.arg(where)
 
   # Get board
   br <- pipfun::get_pins_boards(board = "pip_data")
@@ -82,6 +81,7 @@ load_pip_data <- function(country_code   = NULL,
     inv <- find_pip_data(board          = br,
                         latest_version = latest_version,
                         latest_year    = latest_year,
+                        where          = where,
                         verbose        = verbose,
                         country_code   = country_code,
                         surveyid_year  = surveyid_year,
@@ -139,10 +139,10 @@ load_pip_data <- function(country_code   = NULL,
 #' board_pip <- pipfun::get_pins_boards(board = "pip_data")
 #'
 #' # Find data
-#' find_data(board = board_pip, country_code = "HRV")
+#' find_pip_data(board = board_pip, country_code = "HRV")
 #'
 #' # Latest year in EACH module
-#' find_data(board = board_pip, country_code = "HRV", latest_year = TRUE)
+#' find_pip_data(board = board_pip, country_code = "HRV", latest_year = TRUE)
 #' }
 find_pip_data <- function(board = pipfun::get_pins_boards(board = "pip_data"),
                           latest_year    = FALSE,
