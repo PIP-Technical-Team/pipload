@@ -1,7 +1,9 @@
 #' Load and find data from dlw repository
 #'
-#' [load_dlw_data] loads data from dlw. [find_dlw_data] Find data available in DLW data board. [load_dlw_gmd_inventory] loads inventory of GMD data from
-#'   DLW. [load_dlw_gmd_log] loads GMD log of GMD from DLW. [load_gmd_valid_inv] loads GMD validated inventory. [load_gmd_valid_log] loads GMD validation
+#' [load_dlw_data] loads data from dlw. [find_dlw_data] Find data available in
+#' DLW data board. [load_dlw_gmd_inventory] loads inventory of GMD data from
+#' DLW. [load_dlw_gmd_log] loads GMD log of GMD from DLW. [load_gmd_valid_inv]
+#' loads GMD validated inventory. [load_gmd_valid_log] loads GMD validation
 #'   workflow log. [load_gmd_valid_report] loads GMD validation report.
 #'
 #' @param country_code Character: country ISO 3 code.
