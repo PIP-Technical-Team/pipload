@@ -69,35 +69,45 @@ pip_read <- function(board,
   }
 
 
-  # Treat version
-  if (!is.null(version) && version != 0) {
-    vr <- get_pin_versions(board = board,
-                           pin_name = pin_name)
+  # get available versions for pin
+  vr <- get_pin_versions(board = board, pin_name = pin_name)
 
-    # If Available
-    if (version == "available") {
-      vr <- vr[, .(vintage, version = ver, created)]
-      return(vr[])
+  # NULL or 0 → load version where vintage == 0
+  if (is.null(version) || identical(version, 0)) {
+    version <- vr[vintage == 0, ver]
+
+    if (length(version) == 0) {
+      cli::cli_abort("No version with {.field vintage == 0} found for {.val {pin_name}}.")
     }
 
-    # If select version manually
-    if (version %in% c("select", "pick", "choose")) {
-      vr_dates <- vr[, created]
-      selection <- menu(choices = vr_dates,
-                        title = "select the version to load")
-      version <- vr[selection, vintage]
-    }
+    cli::cli_alert_info("Loading latest version (vintage == 0): {.val {version}}")
 
-    # Filter versions.
+    # return version metadata
+  } else if (identical(version, "available")) {
+    vr <- vr[, .(vintage, version = ver, created)]
+    return(vr[])
+
+    # If select version manually - (interactive menu)
+  } else if (version %in% c("select", "pick", "choose")) {
+    vr_dates <- vr[, created]
+    selection <- menu(choices = vr_dates,
+                      title = "select the version to load")
+    version <- vr[selection, vintage]
+
+    # resolve version - for all other case
+  } else {
     version <- filter_version(vr = vr, version = version)
-
   }
 
-  pins::pin_read(board   = board,
-                 name    = pin_name,
-                 version = version,
-                 hash    = hash,
-                 ...)
+  # read pin
+  cli::cli_alert_info("Reading pin {.val {pin_name}} with version {.val {version}}")
+  pins::pin_read(
+    board   = board,
+    name    = pin_name,
+    version = version,
+    hash    = hash,
+    ...
+  )
 
 }
 
