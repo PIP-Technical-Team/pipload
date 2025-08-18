@@ -78,13 +78,7 @@ pip_read <- function(board,
   if (is.null(version) || identical(version, 0)) {
     version <- vr[vintage == 0, ver]
 
-    if (length(version) == 0) {
-      cli::cli_abort("No version with {.field vintage == 0} found for pin {.val {pin_name}}.")
-    }
-
-    if (verbose) cli::cli_alert_info("Loading latest version (vintage == 0): {.val {version}}")
-
-    # return version metadata
+     # return version metadata
   } else if (identical(version, "available")) {
     vr <- vr[, .(vintage, version = ver, created)]
     return(vr[])
