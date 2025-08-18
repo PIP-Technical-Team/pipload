@@ -12,6 +12,7 @@
 #' @param pin_name character: pin name. It is the same as `name` argument in
 #'   [pins::pin_read]. The reason it is is different is to make it clear in
 #'   higher-level functions.
+#' @param verbose logical:  display information
 #'
 #' @returns pip_read() returns an R object in the pip board; pip_write() returns
 #'   the fully qualified name of the new pin, invisibly.
@@ -58,6 +59,7 @@ pip_read <- function(board,
                      pin_name,
                      version = NULL,
                      hash = NULL,
+                     verbose = TRUE,
                      ...) {
   # defenses
   stopifnot(exprs = {
@@ -77,10 +79,10 @@ pip_read <- function(board,
     version <- vr[vintage == 0, ver]
 
     if (length(version) == 0) {
-      cli::cli_abort("No version with {.field vintage == 0} found for {.val {pin_name}}.")
+      cli::cli_abort("No version with {.field vintage == 0} found for pin {.val {pin_name}}.")
     }
 
-    cli::cli_alert_info("Loading latest version (vintage == 0): {.val {version}}")
+    if (verbose) cli::cli_alert_info("Loading latest version (vintage == 0): {.val {version}}")
 
     # return version metadata
   } else if (identical(version, "available")) {
@@ -100,7 +102,7 @@ pip_read <- function(board,
   }
 
   # read pin
-  cli::cli_alert_info("Reading pin {.val {pin_name}} with version {.val {version}}")
+  if (verbose)  cli::cli_alert_info("Reading pin {.val {pin_name}} with version {.val {version}}")
   pins::pin_read(
     board   = board,
     name    = pin_name,

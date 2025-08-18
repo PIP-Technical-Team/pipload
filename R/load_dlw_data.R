@@ -116,8 +116,6 @@ load_dlw_data <- function(country_code   = NULL,
 #' @returns data from with filter data
 #' @rdname load_dlw_data
 #' @export
-#'
-#' @rdname load_dlw_data
 find_dlw_data <- function(board = NULL,
                           latest_version = TRUE,
                           latest_year    = FALSE,

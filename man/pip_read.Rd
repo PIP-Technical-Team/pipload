@@ -5,7 +5,7 @@
 \alias{pip_write}
 \title{Read and write objects in the PIP ecosystem using \code{pins}}
 \usage{
-pip_read(board, pin_name, version = NULL, hash = NULL, ...)
+pip_read(board, pin_name, version = NULL, hash = NULL, verbose = TRUE, ...)
 
 pip_write(board, x, pin_name = NULL, force_identical_write = FALSE, ...)
 }
@@ -24,6 +24,8 @@ See details.}
 \item{hash}{Specify a hash to verify that you get exactly the dataset that
 you expect. You can find the hash of an existing pin by looking for
 \code{pin_hash} in \code{\link[pins:pin_meta]{pin_meta()}}.}
+
+\item{verbose}{logical:  display information}
 
 \item{...}{
   Arguments passed on to \code{\link[pins:pin_read]{pins::pin_write}}
