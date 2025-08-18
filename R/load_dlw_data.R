@@ -1,7 +1,8 @@
 #' Load and find data from dlw repository
 #'
-#' [load_dlw_data] loads data from dlw. [find_dlw_data] Find data available in DLW data board. [load_dlw_gmd_inventory] loads  inventory of GMD data from
-#'   DLW
+#' [load_dlw_data] loads data from dlw. [find_dlw_data] Find data available in DLW data board. [load_dlw_gmd_inventory] loads inventory of GMD data from
+#'   DLW. [load_dlw_gmd_log] loads GMD log of GMD from DLW. [load_gmd_valid_inv] loads GMD validated inventory. [load_gmd_valid_log] loads GMD validation
+#'   workflow log. [load_gmd_valid_report] loads GMD validation report.
 #'
 #' @param country_code Character: country ISO 3 code.
 #' @param year numeric: four digit year
@@ -237,7 +238,7 @@ check_dlw_pin_name <- \(pin_name) {
 #' @export
 #'
 #' @examples
-#' load_pip_inventory()
+#' load_dlw_gmd_inventory()
 load_dlw_gmd_inventory <- \() {
   binv <- pipfun::get_pins_boards(board = "dlw_inventory")
   pip_read(binv, "dlw_gmd_inv")
@@ -249,8 +250,41 @@ load_dlw_gmd_inventory <- \() {
 #' @export
 #'
 #' @examples
-#' load_dlw_master_inventory()
+#' load_dlw_gmd_log()
 load_dlw_gmd_log <- \() {
   binv <- pipfun::get_pins_boards(board = "dlw_inventory")
   pip_read(binv, "dlw_gmd_log")
+}
+
+#' @returns [load_gmd_valid_inv] data.table with inventory of validated GMD data
+#' @rdname load_dlw_data
+#' @export
+#'
+#' @examples
+#' load_gmd_valid_inv()
+load_gmd_valid_inv <- \() {
+  binv <- pipfun::get_pins_boards(board = "dlw_metadata")
+  pip_read(binv, "gmd_valid_inv")
+}
+
+#' @returns [load_gmd_valid_log] data.table with log of GMD validated workflow
+#' @rdname load_dlw_data
+#' @export
+#'
+#' @examples
+#' load_gmd_valid_log()
+load_gmd_valid_log <- \() {
+  binv <- pipfun::get_pins_boards(board = "dlw_metadata")
+  pip_read(binv, "dlw_validation_log")
+}
+
+#' @returns [load_gmd_valid_report] data.table with validation report data
+#' @rdname load_dlw_data
+#' @export
+#'
+#' @examples
+#' load_gmd_valid_report()
+load_gmd_valid_report <- \() {
+  binv <- pipfun::get_pins_boards(board = "dlw_metadata")
+  pip_read(binv, "validation_report")
 }

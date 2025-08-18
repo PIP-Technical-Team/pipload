@@ -6,7 +6,10 @@
 \alias{check_dlw_pin_name}
 \alias{load_dlw_gmd_inventory}
 \alias{load_dlw_gmd_log}
-\title{Load data from dlw repository}
+\alias{load_gmd_valid_inv}
+\alias{load_gmd_valid_log}
+\alias{load_gmd_valid_report}
+\title{Load and find data from dlw repository}
 \usage{
 load_dlw_data(
   country_code = NULL,
@@ -37,6 +40,12 @@ check_dlw_pin_name(pin_name)
 load_dlw_gmd_inventory()
 
 load_dlw_gmd_log()
+
+load_gmd_valid_inv()
+
+load_gmd_valid_log()
+
+load_gmd_valid_report()
 }
 \arguments{
 \item{country_code}{Character: country ISO 3 code.}
@@ -95,13 +104,16 @@ character with pin_name
 DLW
 
 \link{load_dlw_gmd_log} data.table with log of retrieval process from DLW
+
+\link{load_gmd_valid_inv} data.table with inventory of validated GMD data
+
+\link{load_gmd_valid_log} data.table with log of GMD validated workflow
+
+\link{load_gmd_valid_report} data.table with validation report data
 }
 \description{
-Load data from dlw repository
-
-Find data available in DLW data board `
-
-check that dlw pin_name is correct
+\link{load_dlw_data} loads data from dlw. \link{find_dlw_data} Find data available in DLW data board. \link{load_dlw_gmd_inventory} loads  inventory of GMD data from
+DLW
 }
 \examples{
 \dontrun{
@@ -127,7 +139,10 @@ find_dlw_data(country_code = "HRV", latest_year = TRUE)
 }
 check_dlw_pin_name("HRV_2011_EU-SILC_V01_M_V04_A_GMD_GPWG.qs")
 check_dlw_pin_name("HRV_2011_EU-SILC_V01_M_V04_A_GMD_GPWG")
-load_pip_inventory()
-load_dlw_master_inventory()
+load_dlw_gmd_inventory()
+load_dlw_gmd_log()
+load_gmd_valid_inv()
+load_gmd_valid_log()
+load_gmd_valid_report()
 }
 \keyword{internal}
