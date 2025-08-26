@@ -5,10 +5,7 @@
 #' @param measure character: name of measure to load e.g., "cpi" or "ppp"
 #' @inheritParams pip_read
 #'
-#'
-#'
-#'
-#'
+#' @param ppp_defaults logical: If TRUE, wider format ppp data will be returned
 #'
 #'
 #'
@@ -21,7 +18,7 @@
 #' @export
 load_aux_data <- function(measure  = NULL,
                           version  = NULL,
-                          #pin_name = NULL,  #to check how to use it, depending on how it's saved
+                          pin_name = measure,  #to check how to use it, depending on how it's saved
                           apply_label = TRUE,
                           ppp_defaults = TRUE,
                           hash      = NULL,
@@ -63,7 +60,6 @@ load_aux_data <- function(measure  = NULL,
     dt <- dt[ppp_default_by_year == TRUE]
 
   }
-
 
 
   # Return
