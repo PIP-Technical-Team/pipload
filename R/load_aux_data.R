@@ -45,7 +45,7 @@ load_aux_data <- function(measure  = NULL,
   )
 
   # Apply labels optionally
-  if (apply_labels) {
+  if (apply_label) {
     dt <- pip_add_aux_labels(df,
                              measure = measure,
                              verbose = verbose)
