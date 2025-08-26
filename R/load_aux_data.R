@@ -18,8 +18,8 @@
 #' @export
 load_aux_data <- function(measure  = NULL,
                           version  = NULL,
-                          pin_name = measure,  #to check how to use it, depending on how it's saved
-                          apply_label = TRUE,
+                          #pin_name = measure,  #to check how to use it, depending on how it's saved
+                          #apply_label = FALSE,
                           ppp_defaults = TRUE,
                           hash      = NULL,
                           verbose  = getOption("pipload.verbose")) {
@@ -36,6 +36,8 @@ load_aux_data <- function(measure  = NULL,
   # Get board
   br <- pipfun::get_pins_boards(board = "aux_data")
 
+  pin_name <- measure
+
 
   # Read pin
   dt <- pip_read(board    = br,
@@ -45,14 +47,14 @@ load_aux_data <- function(measure  = NULL,
   )
 
   # Apply labels optionally
-  if (apply_label) {
-    dt <- pip_add_aux_labels(df,
-                             measure = measure,
-                             verbose = verbose)
-
-    if (verbose) {cli::cli_alert_info("Labels applied to data")}
-
-  }
+  # if (apply_label) {
+  #   dt <- pip_add_aux_labels(df,
+  #                            measure = measure,
+  #                            verbose = verbose)
+  #
+  #   if (verbose) {cli::cli_alert_info("Labels applied to data")}
+  #
+  # }
 
   # Keep only ppp default years
   if (measure == "ppp" && ppp_defaults == TRUE) {
@@ -64,13 +66,5 @@ load_aux_data <- function(measure  = NULL,
 
   # Return
   return(dt)
-
-
-
-
-
-
-
-
 
 }
