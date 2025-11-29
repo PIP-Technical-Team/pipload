@@ -7,8 +7,6 @@
 load_aux_data(
   measure = NULL,
   version = NULL,
-  pin_name = measure,
-  apply_label = TRUE,
   ppp_defaults = TRUE,
   hash = NULL,
   verbose = getOption("pipload.verbose")
@@ -21,14 +19,6 @@ load_aux_data(
 of a pin. This argument is more powerful than the one in \link[pins:pin_read]{pins::pin_read}.
 See details.}
 
-\item{pin_name}{character: pin name. It is the same as \code{name} argument in
-\link[pins:pin_read]{pins::pin_read}. The reason it is is different is to make it clear in
-higher-level functions.}
-
-\item{apply_label}{logical: if TRUE, predefined labels will apply to data
-loaded using \code{file_to_load} argument. Default TRUE. Tip: change to FALSE if
-the main structure of data has changed and labels have not been updated}
-
 \item{ppp_defaults}{logical: If TRUE, wider format ppp data will be returned}
 
 \item{hash}{Specify a hash to verify that you get exactly the dataset that
@@ -36,6 +26,10 @@ you expect. You can find the hash of an existing pin by looking for
 \code{pin_hash} in \code{\link[pins:pin_meta]{pin_meta()}}.}
 
 \item{verbose}{logical: whether to display message. Default is TRUE}
+
+\item{apply_label}{logical: if TRUE, predefined labels will apply to data
+loaded using \code{file_to_load} argument. Default TRUE. Tip: change to FALSE if
+the main structure of data has changed and labels have not been updated}
 }
 \value{
 data.table with aux data

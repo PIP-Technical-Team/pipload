@@ -107,27 +107,87 @@ pip_read <- function(board,
 
 }
 
-#' @inheritParams pins::pin_write
-#' @inheritDotParams pins::pin_write  title description metadata tags urls
+#' Save an R object to a versioned artifact using {stamp}
+#'
+#' @description
+#' `pip_write()` saves an R object to disk using {stamp} versioned artifacts.
+#' It is a thin wrapper around [stamp::st_save()] that provides:
+#' * a simplified interface for storing objects in a directory
+#' * optional "force write even if identical" behavior
+#' * automatic creation of the directory if it doesn't exist
+#'
+#' @param x The R object to save.
+#' @param id Character. The artifact identifier (used as the file name stem).
+#' @param dir Character. Directory where the artifact will be saved. Defaults to `"."`.
+#' @param format Character, optional. Format for serialization (`"qs2"`, `"rds"`, `"csv"`, `"fst"`, `"json"`).
+#'   If `NULL`, the format is inferred from the file extension or `stamp` defaults.
+#' @param metadata Named list of additional metadata to store with the artifact.
+#' @param code Optional function, expression, or character. Its hash is stored with the artifact.
+#' @param force_identical_write Logical. If `TRUE`, always write a new version even if content is unchanged.
+#'   If `FALSE` (default), a new version is written only when the content or code has changed.
+#' @param ... Additional arguments forwarded to [stamp::st_save()].
+#'
+#' @returns Invisibly, a list returned by [stamp::st_save()] containing:
+#'   - `path`: full path to the artifact
+#'   - `metadata`: merged metadata including content hashes, file size, etc.
+#'   - `version_id`: internal version identifier created by {stamp}
+#'
+#' @details
+#'
+#' Versioning policy is controlled via `force_identical_write`:
+#' - `FALSE` → uses `st_opts("versioning") = "content"` (default stamp behavior)
+#'   A new version is only written if the content or code has changed.
+#' - `TRUE` → temporarily sets `st_opts("versioning") = "timestamp"`
+#'   Always creates a new version even if the object is unchanged.
+#'
+#' @examples
+#' # Save a simple vector
+#' pip_write(1:5, id = "example_vector", dir = tempdir())
+#'
+#' # Force a new version even if identical
+#' pip_write(1:5, id = "example_vector", dir = tempdir(), force_identical_write = TRUE)
 #'
 #' @export
-#' @rdname pip_read
-pip_write <- function(board,
-                      x,
-                      pin_name = NULL,
-                      force_identical_write = FALSE,
-                      ...) {
+pip_write <- function(
+    x,
+    id,
+    dir = ".",
+    format = NULL,
+    metadata = list(),
+    code = NULL,
+    force_identical_write = FALSE,
+    ...
+) {
+  # determine path
+  if (!fs::dir_exists(dir)) fs::dir_create(dir)
 
-  pins::pin_write(board                 = board,
-                  x                     = x,
-                  name                  = pin_name,
-                  force_identical_write = force_identical_write,
-                  type                  = "qs",
-                  versioned             = TRUE,
-                  ...)
+  file <- fs::path(dir, id)
 
+  # enforce file extension or let stamp choose
+  sp <- stamp::st_path(file, format = format)
 
+  # choose stamp versioning policy
+  versioning_mode <- if (isTRUE(force_identical_write)) {
+    "timestamp"   # always write a new version
+  } else {
+    "content"     # write only if content changed
+  }
+
+  # temporarily override stamp options
+  out <- withr::with_options(
+    list(stamp.versioning = versioning_mode),
+    stamp::st_save(
+      x       = x,
+      file    = sp,
+      metadata = metadata,
+      code     = code,
+      ...
+    )
+  )
+
+  invisible(out)
 }
+
 
 #' get pins_versions slightly modified
 #'

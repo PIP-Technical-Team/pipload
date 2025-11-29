@@ -2,12 +2,9 @@
 % Please edit documentation in R/pip_read-write.R
 \name{pip_read}
 \alias{pip_read}
-\alias{pip_write}
 \title{Read and write objects in the PIP ecosystem using \code{pins}}
 \usage{
 pip_read(board, pin_name, version = NULL, hash = NULL, verbose = TRUE, ...)
-
-pip_write(board, x, pin_name = NULL, force_identical_write = FALSE, ...)
 }
 \arguments{
 \item{board}{A pin board, created by \code{\link[pins:board_folder]{board_folder()}}, \code{\link[pins:board_connect]{board_connect()}},
@@ -27,27 +24,7 @@ you expect. You can find the hash of an existing pin by looking for
 
 \item{verbose}{logical:  display information}
 
-\item{...}{
-  Arguments passed on to \code{\link[pins:pin_read]{pins::pin_write}}
-  \describe{
-    \item{\code{title}}{A title for the pin; most important for shared boards so that
-others can understand what the pin contains. If omitted, a brief
-description of the contents will be automatically generated.}
-    \item{\code{description}}{A detailed description of the pin contents.}
-    \item{\code{metadata}}{A list containing additional metadata to store with the pin.
-When retrieving the pin, this will be stored in the \code{user} key, to
-avoid potential clashes with the metadata that pins itself uses.}
-    \item{\code{tags}}{A character vector of tags for the pin; most important for
-discoverability on shared boards.}
-    \item{\code{urls}}{A character vector of URLs for more info on the pin, such as a
-link to a wiki or other documentation.}
-  }}
-
-\item{x}{An object (typically a data frame) to pin.}
-
-\item{force_identical_write}{Store the pin even if the pin contents are
-identical to the last version (compared using the hash). Only the pin
-contents are compared, not the pin metadata. Defaults to \code{FALSE}.}
+\item{...}{Additional arguments passed on to methods for a specific board.}
 }
 \value{
 pip_read() returns an R object in the pip board; pip_write() returns
