@@ -1,180 +1,131 @@
-#' Read and write objects in the PIP ecosystem using `pins`
+#' Read a versioned artifact saved with {stamp}
 #'
-#' @description A short description...
+#' @description
+#' `pip_read()` loads an artifact written by `pip_write()`.
+#' It is a thin wrapper around `stamp::st_load()` and preserves
+#' all version semantics (negative versions, "select", etc.)
 #'
-#'   `pip_write()` and `pip_read()` are just wrappers of `pins_write()` and
-#'   `pins_read()`, respectively, with predefined arguments.
+#' @param id Character. Artifact name (file name stem).
+#' @param dir Directory where artifact is stored.
+#' @param version Version selector:
+#'   * NULL or 0 → latest version
+#'   * negative integer → N versions back
+#'   * "select" / "pick" / "choose" → interactive menu
+#'   * "available" → list available versions (extension provided below)
+#'   * version-id character → load specific version
+#' @param verbose Whether to print status messages.
 #'
-#' @inheritParams pins::pin_read
-#' @param version An integer or a quoted directive. Retrieve a specific version
-#'   of a pin. This argument is more powerful than the one in [pins::pin_read].
-#'   See details.
-#' @param pin_name character: pin name. It is the same as `name` argument in
-#'   [pins::pin_read]. The reason it is is different is to make it clear in
-#'   higher-level functions.
-#' @param verbose logical:  display information
-#'
-#' @returns pip_read() returns an R object in the pip board; pip_write() returns
-#'   the fully qualified name of the new pin, invisibly.
-#'
-#' @details The **version** argument supports several options
-#'   * NULL: loads most recent version
-#'   * "available": displays list of available versions for `name`.
-#'   * "select", "pick", or "choose": allows user to select the pins version of `name`.
-#'   * Negative integer (e.g., `-1`) or zero (0): loads that number of versions
-#'   before the most recent version available. So, if `0`, it loads the current
-#'   version, which is equivalent to NULL. If `-1`, it will load the version
-#'   right before the current one, `-2` loads two versions before the current
-#'   one, and so on.
-#'   * Positive numbers: Error.
-#'   * Any other character will be treated as a `pins` version, which is usual a
-#'   string of the form "20250801T162739Z-d86e8", where the part to the left of
-#'   the hyphen refers to the date and time, and the part to the right is a
-#'   short hash of `name`.
+#' @return The loaded R object.
 #'
 #' @export
+pip_read <- function(
+    id,
+    dir = ".",
+    version = NULL,
+    format = "qs2",
+    verbose = TRUE
+) {
+
+  # Construct artifact path
+  file <- fs::path(dir, id, ext = format)
+
+  if (!fs::dir_exists(dir)) {
+    cli::cli_abort("Artifact folder {.path {file}} does not exist.")
+  }
+
+  # List available versions
+  if (identical(version, "available")) {
+    vr <- stamp::st_versions(file)
+    if (nrow(vr) == 0)
+      cli::cli_abort("No versions found in {.path {file}}.")
+    vr[, vintage := (.I - 1) * -1]
+    return(vr[])
+  }
+
+  if (verbose)
+    cli::cli_alert_info("Loading {.path {file}} (version = {.strong {version}})")
+
+  # Protect against empty artifact
+  vr <- stamp::st_versions(file)
+
+  if (nrow(vr) == 0)
+    cli::cli_abort("No version files found in {.path {file}}.")
+
+  # Delegate loading to stamp
+  stamp::st_load(file, version = version)
+}
+
+
+#' Save an R object to a versioned artifact using {stamp}
+#'
+#' @description
+#' `pip_write()` saves an R object to disk using {stamp} versioned artifacts.
+#' It is a thin wrapper around [stamp::st_save()] that provides:
+#' * a simplified interface for storing objects in a directory
+#' * optional "force write even if identical" behavior
+#' * automatic creation of the directory if it doesn't exist
+#'
+#' @param x The R object to save.
+#' @param id Character. The artifact identifier (used as the file name).
+#' @param dir Character. Directory where the artifact will be saved. Defaults to `"."`.
+#' @param format Character, optional. Format for serialization (`"qs2"`, `"rds"`, `"csv"`, `"fst"`, `"json"`).
+#'   If `NULL`, the format is inferred from the file extension or `stamp` defaults.
+#' @param metadata Named list of additional metadata to store with the artifact.
+#' @param code Optional function, expression, or character. Its hash is stored with the artifact.
+#'   If `FALSE` (default), a new version is written only when the content or code has changed.
+#' @param ... Additional arguments forwarded to [stamp::st_save()].
+#'
+#' @returns Invisibly, a list returned by [stamp::st_save()] containing:
+#'   - `path`: full path to the artifact
+#'   - `metadata`: merged metadata including content hashes, file size, etc.
+#'   - `version_id`: internal version identifier created by {stamp}
+#'
+#' @details
+#'
+#' Versioning policy is controlled via `force_identical_write`:
+#' - `FALSE` → uses `st_opts("versioning") = "content"` (default stamp behavior)
+#'   A new version is only written if the content or code has changed.
+#' - `TRUE` → temporarily sets `st_opts("versioning") = "timestamp"`
+#'   Always creates a new version even if the object is unchanged.
 #'
 #' @examples
-#' board <- pins::board_temp(versioned = TRUE)
-#' name <- "x"
+#' # Save a simple vector
+#' pip_write(1:5, id = "example_vector", dir = tempdir())
 #'
-#' # Writing pins
-#' pip_write(board, x =1:5,  name = name)
-#' Sys.sleep(3)
-#' pip_write(board, x =1:10, name = name)
-#' Sys.sleep(3)
-#' pip_write(board, x =4:9, name = name)
+#' # Force a new version even if identical
+#' pip_write(1:5, id = "example_vector", dir = tempdir(), force_identical_write = TRUE)
 #'
-#' # Reading pins
-#' pip_read(board, name)
-#' (vers <- pip_read(board, name, version = "available"))
-#' version <- vers[3, version]
-#' pip_read(board, name, version = -1)
-#' pip_read(board, name, version = -2)
-#' pip_read(board, name, version = version)
-#' \dontrun{
-#' pip_read(board, name, version = "select")
-#' }
-pip_read <- function(board,
-                     pin_name,
-                     version = NULL,
-                     hash = NULL,
-                     verbose = TRUE,
-                     ...) {
-  # defenses
-  stopifnot(exprs = {
-    length(version) == 1 || is.null(version)
-    })
-
-  if (is.numeric(version) && version > 0) {
-    cli::cli_abort("{.arg version} can't be a positive number")
+#' @export
+pip_write <- function(
+    x,
+    id,
+    dir = ".",
+    format = "NULL",
+    metadata = list(),
+    code = NULL,
+    ...
+) {
+  # ensure directory exists
+  if (!fs::dir_exists(dir))
+  {
+    cli::cli_abort("Provided directory path does not exist")
   }
 
+  # determine file path
+  file <- fs::path(dir, id, ext = format)
 
-  # get available versions for pin
-  vr <- get_pin_versions(board = board, pin_name = pin_name)
+  # declare st_path
+  sp <- stamp::st_path(file, format = format)
 
-  # NULL or 0 → load version where vintage == 0
-  if (is.null(version) || identical(version, 0)) {
-    version <- vr[vintage == 0, ver]
-
-     # return version metadata
-  } else if (identical(version, "available")) {
-    vr <- vr[, .(vintage, version = ver, created)]
-    return(vr[])
-
-    # If select version manually - (interactive menu)
-  } else if (version %in% c("select", "pick", "choose")) {
-    vr_dates <- vr[, created]
-    selection <- menu(choices = vr_dates,
-                      title = "select the version to load")
-    version <- vr[selection, vintage]
-
-    # resolve version - for all other case
-  } else {
-    version <- filter_version(vr = vr, version = version)
-  }
-
-  # read pin
-  if (verbose)  cli::cli_alert_info("Reading pin {.val {pin_name}} with version {.val {version}}")
-  pins::pin_read(
-    board   = board,
-    name    = pin_name,
-    version = version,
-    hash    = hash,
+  # save with stamp
+  out <- stamp::st_save(
+    x        = x,
+    file     = sp,
+    metadata = metadata,
+    code     = code,
+    format   = format,
     ...
   )
 
-}
-
-#' @inheritParams pins::pin_write
-#' @inheritDotParams pins::pin_write  title description metadata tags urls
-#'
-#' @export
-#' @rdname pip_read
-pip_write <- function(board,
-                      x,
-                      pin_name = NULL,
-                      force_identical_write = FALSE,
-                      ...) {
-
-  pins::pin_write(board                 = board,
-                  x                     = x,
-                  name                  = pin_name,
-                  force_identical_write = force_identical_write,
-                  type                  = "qs",
-                  versioned             = TRUE,
-                  ...)
-
-
-}
-
-#' get pins_versions slightly modified
-#'
-#' @inheritParams pip_read
-#'
-#'
-#' @returns pins_version modified invisible
-#' @keywords internal
-get_pin_versions <- function(board, pin_name) {
-  ver <- pins::pin_versions(board = board,
-                            name = pin_name) |>
-    setDT()
-
-  setorder(ver, -created)
-
-  ver[, vintage := (.I-1)*(-1)]
-  setnames(ver, "version", "ver")
-
-}
-
-
-#' Filter version according to user selection
-#'
-#' @param vr data,table from [get_pin_versions]
-#' @param version provided by the user
-#'
-#' @returns character vector of length 1 with pins version
-#' @keywords internal
-filter_version <- function(vr, version) {
-  if (is.character(version)) {
-    VER <- vr[ver == version]
-
-  } else if (is.numeric(version) && version < 0) {
-    VER <- vr[vintage == version]
-
-  } else {
-    cli::cli_abort("{.arg version} does not meet the correct specifications")
-  }
-
-  if (nrow(VER) == 0) {
-    cli::cli_abort("{.arg version} selected ({.field version}) is not available in {name}")
-  }
-
-  if (nrow(VER) > 1) {
-    cli::cli_abort("{.arg version} selected ({.field {version}}) returns more than one version.
-                     inspect with `pins::pin_versions()`")
-  }
-
-  VER[, ver]
+  invisible(out)
 }
