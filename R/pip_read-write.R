@@ -27,15 +27,9 @@ pip_read <- function(
   file <- fs::path(dir,
                    id)
 
-  # "available" special case
-  if (identical(version,
-                "available")) {
+  if (identical(version, "available")) {
     vr <- stamp::st_versions(file)
-
-    vr <- vr[order(vr$created_at,
-                   decreasing = TRUE), ]
-    vr$vintage <- -seq_len(nrow(vr)) + 1
-    data.table::setDT(vr)
+    vr[, vintage := (.I - 1) * -1]
     return(vr[])
   }
 
@@ -129,25 +123,6 @@ pip_write <- function(
   invisible(out)
 }
 
-
-#' get pins_versions slightly modified
-#'
-#' @inheritParams pip_read
-#'
-#'
-#' @returns pins_version modified invisible
-#' @keywords internal
-get_pin_versions <- function(board, pin_name) {
-  ver <- pins::pin_versions(board = board,
-                            name = pin_name) |>
-    setDT()
-
-  setorder(ver, -created)
-
-  ver[, vintage := (.I-1)*(-1)]
-  setnames(ver, "version", "ver")
-
-}
 
 
 #' Filter version according to user selection
