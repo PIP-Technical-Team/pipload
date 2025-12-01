@@ -22,15 +22,16 @@ pip_read <- function(
     id,
     dir = ".",
     version = NULL,
+    format = "qs2",
     verbose = TRUE
 ) {
 
   # Construct artifact path
-  file <- fs::path(dir, id)
+  file <- fs::path(dir, id, ext = format)
 
-  # if (!fs::dir_exists(file)) {
-  #   cli::cli_abort("Artifact folder {.path {file}} does not exist.")
-  # }
+  if (!fs::dir_exists(dir)) {
+    cli::cli_abort("Artifact folder {.path {file}} does not exist.")
+  }
 
   # List available versions
   if (identical(version, "available")) {
@@ -42,10 +43,11 @@ pip_read <- function(
   }
 
   if (verbose)
-    cli::cli_alert_info("Loading {.path {file}} (version = {.val {version}})")
+    cli::cli_alert_info("Loading {.path {file}} (version = {.strong {version}})")
 
   # Protect against empty artifact
   vr <- stamp::st_versions(file)
+
   if (nrow(vr) == 0)
     cli::cli_abort("No version files found in {.path {file}}.")
 
