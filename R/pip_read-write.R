@@ -24,21 +24,33 @@ pip_read <- function(
     version = NULL,
     verbose = TRUE
 ) {
-  file <- fs::path(dir,
-                   id)
 
+  # Construct artifact path
+  file <- fs::path(dir, id)
+
+  # if (!fs::dir_exists(file)) {
+  #   cli::cli_abort("Artifact folder {.path {file}} does not exist.")
+  # }
+
+  # List available versions
   if (identical(version, "available")) {
     vr <- stamp::st_versions(file)
+    if (nrow(vr) == 0)
+      cli::cli_abort("No versions found in {.path {file}}.")
     vr[, vintage := (.I - 1) * -1]
     return(vr[])
   }
 
   if (verbose)
-    cli::cli_alert_info("Loading {.file {file}} (version = {.val {version}})")
+    cli::cli_alert_info("Loading {.path {file}} (version = {.val {version}})")
 
-  # Delegate everything else to stamp
-  stamp::st_load(file,
-                 version = version)
+  # Protect against empty artifact
+  vr <- stamp::st_versions(file)
+  if (nrow(vr) == 0)
+    cli::cli_abort("No version files found in {.path {file}}.")
+
+  # Delegate loading to stamp
+  stamp::st_load(file, version = version)
 }
 
 
@@ -52,13 +64,12 @@ pip_read <- function(
 #' * automatic creation of the directory if it doesn't exist
 #'
 #' @param x The R object to save.
-#' @param id Character. The artifact identifier (used as the file name stem).
+#' @param id Character. The artifact identifier (used as the file name).
 #' @param dir Character. Directory where the artifact will be saved. Defaults to `"."`.
 #' @param format Character, optional. Format for serialization (`"qs2"`, `"rds"`, `"csv"`, `"fst"`, `"json"`).
 #'   If `NULL`, the format is inferred from the file extension or `stamp` defaults.
 #' @param metadata Named list of additional metadata to store with the artifact.
 #' @param code Optional function, expression, or character. Its hash is stored with the artifact.
-#' @param force_identical_write Logical. If `TRUE`, always write a new version even if content is unchanged.
 #'   If `FALSE` (default), a new version is written only when the content or code has changed.
 #' @param ... Additional arguments forwarded to [stamp::st_save()].
 #'
@@ -87,16 +98,19 @@ pip_write <- function(
     x,
     id,
     dir = ".",
-    format = NULL,
+    format = "NULL",
     metadata = list(),
     code = NULL,
     ...
 ) {
   # ensure directory exists
-  if (!fs::dir_exists(dir)) fs::dir_create(dir)
+  if (!fs::dir_exists(dir))
+  {
+    cli::cli_abort("Provided directory path does not exist")
+  }
 
   # determine file path
-  file <- fs::path(dir, id)
+  file <- fs::path(dir, id, ext = format)
 
   # declare st_path
   sp <- stamp::st_path(file, format = format)
@@ -107,6 +121,7 @@ pip_write <- function(
     file     = sp,
     metadata = metadata,
     code     = code,
+    format   = format,
     ...
   )
 

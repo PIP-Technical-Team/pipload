@@ -1,70 +1,57 @@
-#' Load any auxiliary data
+#' Load auxiliary data from the PIP aux_data folder
 #'
-#' Load auxiliary data files available in aux_repository
+#' Loads auxiliary datasets stored in the `aux_data` folder of the active PIP
+#' working environment (as defined by setup_working_release()).
 #'
-#' @param measure character: name of measure to load e.g., "cpi" or "ppp"
-#' @inheritParams pip_read
+#' @param measure Character. The name of the auxiliary dataset to load
+#'   (e.g., "cpi", "ppp", "pop").
+#' @param version Optional version string or negative index passed to pip_read().
+#' @param hash Optional artifact hash passed to pip_read().
+#' @param ppp_defaults Logical. If TRUE, keeps only PPP default years (PPP only).
+#' @param verbose Logical. Whether to show informational messages.
 #'
-#' @param ppp_defaults logical: If TRUE, wider format ppp data will be returned
+#' @return A data.table containing the auxiliary data.
+#' @export
+#' Load auxiliary data stored in aux_repository via {stamp}
 #'
+#' @param measure character: name of the auxiliary dataset, e.g. "cpi", "ppp"
+#' @param version integer or character: version to load (see stamp::st_load)
+#' @param ppp_defaults logical: If TRUE and measure == "ppp", return only default PPP years
+#' @param hash ignored — backward compatibility
+#' @param verbose logical
 #'
-#'
-#' @param apply_label logical: if TRUE, predefined labels will apply to data
-#'   loaded using `file_to_load` argument. Default TRUE. Tip: change to FALSE if
-#'   the main structure of data has changed and labels have not been updated
-#' @param verbose logical: whether to display message. Default is TRUE
-#'
-#' @return data.table with aux data
+#' @return data.table
 #' @export
 load_aux_data <- function(measure  = NULL,
                           version  = NULL,
-                          #pin_name = measure,  #to check how to use it, depending on how it's saved
-                          #apply_label = FALSE,
                           ppp_defaults = TRUE,
-                          hash      = NULL,
                           verbose  = getOption("pipload.verbose")) {
 
-  # Defenses
-  stopifnot(exprs = {
-    !is.null(measure) || !is.null(pin_name)
-  })
+  stopifnot(!is.null(measure))
 
-
-  # Get release
+  # Ensure working release is loaded
   pipfun::get_wrk_release(verbose = FALSE)
 
-  # Get board
-  br <- pipfun::get_pins_boards(board = "aux_data")
+  # Get aux_data folder
+  pip_folders <- pipfun::get_pip_folders()
+  aux_path <- pip_folders$aux_data
 
-  pin_name <- measure
+  # Artifact ID corresponds to the measure name
+  artifact_id <- measure
 
-
-  # Read pin
-  dt <- pip_read(board    = br,
-                 pin_name = pin_name,
-                 version  = version,
-                 hash     = hash
+  # Load data via pip_read
+  dt <- pip_read(
+    id  = artifact_id,
+    dir = aux_path,
+    version = version,
+    verbose = verbose
   )
 
-  # Apply labels optionally
-  # if (apply_label) {
-  #   dt <- pip_add_aux_labels(df,
-  #                            measure = measure,
-  #                            verbose = verbose)
-  #
-  #   if (verbose) {cli::cli_alert_info("Labels applied to data")}
-  #
-  # }
-
-  # Keep only ppp default years
-  if (measure == "ppp" && ppp_defaults == TRUE) {
-
+  # Keep only default PPP years if needed
+  if (measure == "ppp" && ppp_defaults) {
     dt <- dt[ppp_default_by_year == TRUE]
-
   }
 
-
-  # Return
-  return(dt)
-
+  dt
 }
+
