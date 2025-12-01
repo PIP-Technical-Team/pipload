@@ -90,39 +90,28 @@ pip_write <- function(
     format = NULL,
     metadata = list(),
     code = NULL,
-    force_identical_write = FALSE,
     ...
 ) {
-  # determine path
+  # ensure directory exists
   if (!fs::dir_exists(dir)) fs::dir_create(dir)
 
+  # determine file path
   file <- fs::path(dir, id)
 
-  # enforce file extension or let stamp choose
+  # declare st_path
   sp <- stamp::st_path(file, format = format)
 
-  # choose stamp versioning policy
-  versioning_mode <- if (isTRUE(force_identical_write)) {
-    "timestamp"   # always write a new version
-  } else {
-    "content"     # write only if content changed
-  }
-
-  # temporarily override stamp options
-  out <- withr::with_options(
-    list(stamp.versioning = versioning_mode),
-    stamp::st_save(
-      x       = x,
-      file    = sp,
-      metadata = metadata,
-      code     = code,
-      ...
-    )
+  # save with stamp
+  out <- stamp::st_save(
+    x        = x,
+    file     = sp,
+    metadata = metadata,
+    code     = code,
+    ...
   )
 
   invisible(out)
 }
-
 
 
 #' Filter version according to user selection
