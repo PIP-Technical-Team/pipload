@@ -129,34 +129,3 @@ pip_write <- function(
 
   invisible(out)
 }
-
-
-#' Filter version according to user selection
-#'
-#' @param vr data,table from [get_pin_versions]
-#' @param version provided by the user
-#'
-#' @returns character vector of length 1 with pins version
-#' @keywords internal
-filter_version <- function(vr, version) {
-  if (is.character(version)) {
-    VER <- vr[ver == version]
-
-  } else if (is.numeric(version) && version < 0) {
-    VER <- vr[vintage == version]
-
-  } else {
-    cli::cli_abort("{.arg version} does not meet the correct specifications")
-  }
-
-  if (nrow(VER) == 0) {
-    cli::cli_abort("{.arg version} selected ({.field version}) is not available in {name}")
-  }
-
-  if (nrow(VER) > 1) {
-    cli::cli_abort("{.arg version} selected ({.field {version}}) returns more than one version.
-                     inspect with `pins::pin_versions()`")
-  }
-
-  VER[, ver]
-}

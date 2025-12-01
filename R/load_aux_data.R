@@ -1,57 +1,59 @@
-#' Load auxiliary data from the PIP aux_data folder
+#' Load auxiliary data from PIP aux_data folder
 #'
-#' Loads auxiliary datasets stored in the `aux_data` folder of the active PIP
-#' working environment (as defined by setup_working_release()).
-#'
-#' @param measure Character. The name of the auxiliary dataset to load
-#'   (e.g., "cpi", "ppp", "pop").
-#' @param version Optional version string or negative index passed to pip_read().
-#' @param hash Optional artifact hash passed to pip_read().
-#' @param ppp_defaults Logical. If TRUE, keeps only PPP default years (PPP only).
-#' @param verbose Logical. Whether to show informational messages.
-#'
-#' @return A data.table containing the auxiliary data.
+#' @param measure Character. Name of the measure to load, e.g., "cpi" or "ppp".
+#' @param version Version selector. See [pip_read()] for semantics.
+#' @param format Character. Format in which the artifact was saved (default "qs2").
+#' @param verbose Logical. Whether to print loading messages.
+#' @param ppp_defaults Logical. If TRUE and measure == "ppp", only default PPP years are returned.
+#' @return data.table or object saved as artifact.
 #' @export
-#' Load auxiliary data stored in aux_repository via {stamp}
-#'
-#' @param measure character: name of the auxiliary dataset, e.g. "cpi", "ppp"
-#' @param version integer or character: version to load (see stamp::st_load)
-#' @param ppp_defaults logical: If TRUE and measure == "ppp", return only default PPP years
-#' @param hash ignored — backward compatibility
-#' @param verbose logical
-#'
-#' @return data.table
-#' @export
-load_aux_data <- function(measure  = NULL,
-                          version  = NULL,
-                          ppp_defaults = TRUE,
-                          verbose  = getOption("pipload.verbose")) {
+load_aux_data <- function(
+    measure,
+    version       = NULL,
+    format        = "qs2",
+    verbose       = getOption("pipload.verbose", TRUE),
+    ppp_defaults  = TRUE
+) {
 
-  stopifnot(!is.null(measure))
+  # Defensive checks
+  if (missing(measure)) {
+    cli::cli_abort("You must provide a measure name, e.g., {.val 'cpi'} or {.val 'ppp'}.")
+  }
 
   # Ensure working release is loaded
   pipfun::get_wrk_release(verbose = FALSE)
 
-  # Get aux_data folder
-  pip_folders <- pipfun::get_pip_folders()
-  aux_path <- pip_folders$aux_data
+  # Get PIP folder paths
+  pip_folders <- pipfun::get_pip_folders("aux_data")
 
-  # Artifact ID corresponds to the measure name
-  artifact_id <- measure
+  if (is.null(pip_folders$aux_data)) {
+    cli::cli_abort("Auxiliary data folder not set in .pipenv. Run setup_working_release() first.")
+  }
 
-  # Load data via pip_read
+  # Construct full path to the measure artifact
+  artifact_dir <- fs::path(pip_folders, measure)
+
+  if (!fs::dir_exists(artifact_dir)) {
+    cli::cli_abort("Artifact folder {.path {artifact_dir}} does not exist.")
+  }
+
+  if (verbose) {
+    cli::cli_alert_info("Loading auxiliary data {.field {measure}} from {.path {artifact_dir}}")
+  }
+
+  # Read the artifact using pip_read
   dt <- pip_read(
-    id  = artifact_id,
-    dir = aux_path,
+    id      = measure,
+    dir     = artifact_dir,
     version = version,
+    format  = format,
     verbose = verbose
   )
 
-  # Keep only default PPP years if needed
-  if (measure == "ppp" && ppp_defaults) {
+  # Optionally filter PPP default years
+  if (measure == "ppp" && isTRUE(ppp_defaults)) {
     dt <- dt[ppp_default_by_year == TRUE]
   }
 
   dt
 }
-
