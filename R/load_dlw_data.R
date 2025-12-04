@@ -36,11 +36,11 @@
 #'                               identity = lr$identity,
 #'                               verbose = FALSE)
 #'
-#' # Using pin_name
-#' load_dlw_data(pin_name = "HRV_2011_EU-SILC_V01_M_V04_A_GMD_GPWG.qs")
+#' # Using id_name
+#' load_dlw_data(id_name = "HRV_2011_EU-SILC_V01_M_V04_A_GMD_GPWG.qs")
 #'
 #' # without ext also works
-#' load_dlw_data(pin_name = "HRV_2011_EU-SILC_V01_M_V04_A_GMD_GPWG")
+#' load_dlw_data(id_name = "HRV_2011_EU-SILC_V01_M_V04_A_GMD_GPWG")
 #'
 #' # country and year
 #' load_dlw_data(country_code = "HRV", year = 2011)
@@ -60,27 +60,26 @@ load_dlw_data <- function(country_code   = NULL,
                           module         = "GPWG",
                           latest_version = TRUE,
                           latest_year    = FALSE,
-                          pin_name       = NULL,
+                          id_name       = NULL,
                           version        = NULL,
-                          hash           = NULL,
                           verbose        =  getOption("pipload.verbose")) {
 
   # defenses   ---------
   stopifnot(exprs = {
-    !is.null(country_code) || !is.null(pin_name)
+    !is.null(country_code) || !is.null(id_name)
   })
 
-  # Get board
-  br <- pipfun::get_pins_boards(board = "dlw_data")
+  # Get dir
+  dir <- pipfun::get_pip_folders(folder = "dlw_data")
 
-  # When pin name is defined   ------
-  if (!is.null(pin_name)) {
-    pin_name <- check_dlw_pin_name(pin_name)
+  # When id name is defined   ------
+  if (!is.null(id_name)) {
+    id_name <- check_dlw_id_name(id_name)
 
   } else {
     # filter   ---------
 
-    fd <- find_dlw_data(board          = br,
+    fd <- find_dlw_data(dir            = dir,
                         latest_version = latest_version,
                         latest_year    = latest_year,
                         verbose        = verbose,
@@ -92,24 +91,23 @@ load_dlw_data <- function(country_code   = NULL,
                         collection     = collection,
                         module         = module)
 
-    pin_name <- fd[, pin_name]
+    id_name <- fd[, id_name]
   }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   # Return   ---------
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   if (verbose) {
-    cli::cli_alert_info("Loading {.field {pin_name}}")
+    cli::cli_alert_info("Loading {.field {id_name}}")
   }
-  return(pip_read(board = br,
-                  pin_name = pin_name,
-                  version = version,
-                  hash    = hash))
+  return(pip_read(id = id_name,
+                  dir = dir,
+                  version = version))
 
 }
 
 
-#' @param board board from `pipfun::get_pins_boards(board = "dlw_data")`
+#' @param dir dir from `pipfun::get_pip_folders(folder = "dlw_data")`
 #' @inheritParams load_dlw_data
 #' @param ... Just the following: country_code, year, module, survey, vermast,
 #'   veralt, collection, module. They work exactly the same as the ones in
@@ -118,7 +116,7 @@ load_dlw_data <- function(country_code   = NULL,
 #' @returns data from with filter data
 #' @rdname load_dlw_data
 #' @export
-find_dlw_data <- function(board = NULL,
+find_dlw_data <- function(dir = NULL,
                           latest_version = TRUE,
                           latest_year    = FALSE,
                           verbose        =  getOption("pipload.verbose"),
@@ -147,13 +145,15 @@ find_dlw_data <- function(board = NULL,
     rlang::parse_expr()
 
 
-  if (is.null(board)) {
-    board <- pipfun::get_pins_boards(board = "dlw_data")
+  if (is.null(dir)) {
+    dir <- pipfun::get_pip_folders(folder = "dlw_data")
   }
-  bl <- pins::pin_list(board)
+  # PATCH -> Need to create function
+  bl <- setdiff(list.files(pipfun::get_pip_folders()$pip_data),
+                list.files(pipfun::get_pip_folders()$pip_data, pattern = "\\.lock$"))
 
   # Build catalog
-  ctl <- data.table(pin_name = bl)
+  ctl <- data.table(id_name = bl)
 
   vars <- c(
     "Country_code",
@@ -168,7 +168,7 @@ find_dlw_data <- function(board = NULL,
     "ext"
   )
 
-  ctl[, (vars) := tstrsplit(pin_name, split = "_|[.]", fill = NA)
+  ctl[, (vars) := tstrsplit(id_name, split = "_|[.]", fill = NA)
   ][,
     c("M", "A") := NULL]
 
@@ -178,7 +178,7 @@ find_dlw_data <- function(board = NULL,
 
   if (latest_year == TRUE && !("year" %in% args_info)) {
     ctl <- ctl[,
-               #  for each collectiona and module, the row(s) with the maximum Year
+               #  for each collection and module, the row(s) with the maximum Year
                .SD[Year == max(Year, na.rm = TRUE)],
                by = .(Collection, Module)
     ]
@@ -202,30 +202,30 @@ find_dlw_data <- function(board = NULL,
 
 
 
-#' check that dlw pin_name is correct
+#' check that dlw id_name is correct
 #'
-#' @param pin_name pin name of dlw data
+#' @param id_name id name of dlw data
 #'
-#' @returns character with pin_name
+#' @returns character with id_name
 #' @keywords internal
 #' @rdname load_dlw_data
 #'
 #' @examples
-#' check_dlw_pin_name("HRV_2011_EU-SILC_V01_M_V04_A_GMD_GPWG.qs")
-#' check_dlw_pin_name("HRV_2011_EU-SILC_V01_M_V04_A_GMD_GPWG")
-check_dlw_pin_name <- \(pin_name) {
-  pin_name <- pin_name |>
+#' check_dlw_id_name("HRV_2011_EU-SILC_V01_M_V04_A_GMD_GPWG.qs")
+#' check_dlw_id_name("HRV_2011_EU-SILC_V01_M_V04_A_GMD_GPWG")
+check_dlw_id_name <- \(id_name) {
+  id_name <- id_name |>
     fs::path_ext_remove() |>
     fs::path(ext = "qs")
 
   ptt <- get_from_piploadenv("dlw_name_pattern")
 
-  if (!grepl(ptt, pin_name)) {
-    cli::cli_abort(c(x = "Wrong {.arg pin_name} specification",
+  if (!grepl(ptt, id_name)) {
+    cli::cli_abort(c(x = "Wrong {.arg id_name} specification",
                      i = "it should follow the pattern {.field {ptt}}",
                      i = "like in {.file HRV_2011_EU-SILC_V01_M_V04_A_GMD_GPWG.qs}"))
   }
-  invisible(pin_name)
+  invisible(id_name)
 }
 
 
@@ -240,8 +240,8 @@ check_dlw_pin_name <- \(pin_name) {
 #' @examples
 #' load_dlw_gmd_inventory()
 load_dlw_gmd_inventory <- \() {
-  binv <- pipfun::get_pins_boards(board = "dlw_inventory")
-  pip_read(binv, "dlw_gmd_inv")
+  binv <- pipfun::get_pip_folders(folder = "dlw_inventory")
+  pip_read("dlw_gmd_inv",dir = binv)
 }
 
 
@@ -252,8 +252,8 @@ load_dlw_gmd_inventory <- \() {
 #' @examples
 #' load_dlw_gmd_log()
 load_dlw_gmd_log <- \() {
-  binv <- pipfun::get_pins_boards(board = "dlw_inventory")
-  pip_read(binv, "dlw_gmd_log")
+  binv <- pipfun::get_pip_folders(folder = "dlw_inventory")
+  pip_read("dlw_gmd_log", dir = binv)
 }
 
 #' @returns [load_gmd_valid_inv] data.table with inventory of validated GMD data
@@ -263,8 +263,8 @@ load_dlw_gmd_log <- \() {
 #' @examples
 #' load_gmd_valid_inv()
 load_gmd_valid_inv <- \() {
-  binv <- pipfun::get_pins_boards(board = "dlw_metadata")
-  pip_read(binv, "gmd_valid_inv")
+  binv <- pipfun::get_pip_folders(folder = "dlw_metadata")
+  pip_read("gmd_valid_inv", dir = binv)
 }
 
 #' @returns [load_gmd_valid_log] data.table with log of GMD validated workflow
@@ -274,8 +274,8 @@ load_gmd_valid_inv <- \() {
 #' @examples
 #' load_gmd_valid_log()
 load_gmd_valid_log <- \() {
-  binv <- pipfun::get_pins_boards(board = "dlw_metadata")
-  pip_read(binv, "dlw_validation_log")
+  binv <- pipfun::get_pip_folders(folder = "dlw_metadata")
+  pip_read("dlw_validation_log", dir = binv)
 }
 
 #' @returns [load_gmd_valid_report] data.table with validation report data
@@ -285,6 +285,6 @@ load_gmd_valid_log <- \() {
 #' @examples
 #' load_gmd_valid_report()
 load_gmd_valid_report <- \() {
-  binv <- pipfun::get_pins_boards(board = "dlw_metadata")
-  pip_read(binv, "validation_report")
+  binv <- pipfun::get_pip_folders(folder = "dlw_metadata")
+  pip_read("validation_report", dir = binv)
 }
