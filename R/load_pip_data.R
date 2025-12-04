@@ -1,9 +1,9 @@
 #' Set of functions to interact with PIP data.
 #'
 #' [load_pip_data] Load data from pip repository. [find_pip_data] Finds data
-#' available in pin board. [load_pip_inventory_release] Loads pip inventory for
+#' available. [load_pip_inventory_release] Loads pip inventory for
 #' corresponding release. [load_pip_master_inventory] Loads pip master inventory
-#' for corresponding release. [check_pip_pin_name] checks that pip pin_name is
+#' for corresponding release. [check_pip_id_name] checks that pip id_name is
 #' correct (INTERNAL)
 #'
 #' @param country_code Character: country ISO 3 code.
@@ -14,15 +14,15 @@
 #'   same year for the same country
 #' @param module character: module of GMD collection (e.g., ALL, GPWG, L).
 #'   Default is GPWG
-#' @param pin_name character: File name
-#' @param pin_version character: version given by pins
+#' @param id_name character: File name
+#' @param version character: version given by stamp
 #' @param vermast  character: Version of the master data in the form "vXX" where
 #'   X is a number of two digits like "01" or "02".
 #' @param veralt character: Version of the alternative  data in the form "vXX"
 #'   where X is a number of two digits like "01" or "02".
 #' @param collection character: It should always be "GMD"
 #' @param latest_version logical: If TRUE and  `vermast` and `veralt` are NULL,
-#'   it will use the most recent version of the data given pins.
+#'   it will use the most recent version of the data given by stamp.
 #' @param latest_year logical: If `TRUE` and  `year` is NULL, it retrieves the
 #'   most recent year. Otherwise, it will return the calls for all the years
 #'   available. This is the default.
@@ -40,8 +40,8 @@
 #'                               identity = lr$identity,
 #'                               verbose = FALSE)
 #'
-#' # Using pin_name
-#' load_pip_data(pin_name = "LCA_2015_SLCHBS_INC_GPWG")
+#' # Using id_name
+#' load_pip_data(id_name = "LCA_2015_SLCHBS_INC_GPWG")
 #'
 #' }
 load_pip_data <- function(country_code   = NULL,
@@ -49,7 +49,7 @@ load_pip_data <- function(country_code   = NULL,
                           survey_acronym = NULL,
                           welfare_type   = NULL,
                           module         = "GPWG",
-                          pin_name       = NULL,
+                          id_name       = NULL,
                           vermast        = NULL,
                           veralt         = NULL,
                           collection     = "GMD",
@@ -57,28 +57,27 @@ load_pip_data <- function(country_code   = NULL,
                           latest_year    = FALSE,
                           where          = c("release", "master"),
                           version        = NULL,
-                          hash           = NULL,
                           verbose        =  getOption("pipload.verbose")) {
 
   # Defenses
   stopifnot(exprs = {
-    !is.null(country_code) || !is.null(pin_name)
+    !is.null(country_code) || !is.null(id_name)
   })
 
   # computations   --------
   where <- match.arg(where)
 
-  # Get board
-  br <- pipfun::get_pins_boards(board = "pip_data")
+  # Get folder path
+  br <- pipfun::get_pip_folders(folder = "pip_data")
 
-  # When pin name is defined   ------
-  if (!is.null(pin_name)) {
-    pin_name <- check_pip_pin_name(pin_name)
+  # When id name is defined   ------
+  if (!is.null(id_name)) {
+    id_name <- check_pip_id_name(id_name)
 
   } else {
   # filter   ---------
 
-    inv <- find_pip_data(board          = br,
+    inv <- find_pip_data(dir          = br,
                         latest_version = latest_version,
                         latest_year    = latest_year,
                         where          = where,
@@ -93,29 +92,28 @@ load_pip_data <- function(country_code   = NULL,
                         collection     = collection,
                         )
 
-    pin_name <- inv[, pip_id]
+    id_name <- inv[, pip_id]
   }
 
-  if (length(pin_name) != 1) {
+  if (length(id_name) != 1) {
     cli::cli_abort(c(x = "Wrong numer of data to load.",
                      i = "It should be only 1. You attempt to load
-                     {.field {length(pin_name)}}:",
-                     "{.field {pin_name}}"))
+                     {.field {length(id_name)}}:",
+                     "{.field {id_name}}"))
   }
 
   # Return   ---------
   if (verbose) {
-    cli::cli_alert_info("Loading {.field {pin_name}}")
+    cli::cli_alert_info("Loading {.field {id_name}}")
   }
-  return(pip_read(board = br,
-                  pin_name = pin_name,
-                  version = version,
-                  hash    = hash))
+  return(pip_read(id = id_name,
+                  dir = br,
+                  version = version))
 
 }
 
 
-#' @param board pin board
+#' @param dir path
 #' @inheritParams load_pip_data
 #' @param where character: Either "release" or "master". Se details.
 #' @param ... Just the following: country_code, year, survey, welfare_type,and
@@ -136,15 +134,15 @@ load_pip_data <- function(country_code   = NULL,
 #'                               identity = lr$identity,
 #'                               verbose = FALSE)
 #'
-#' board_pip <- pipfun::get_pins_boards(board = "pip_data")
+#' dir_pip <- pipfun::get_pip_folders(folder = "pip_data")
 #'
 #' # Find data
-#' find_pip_data(board = board_pip, country_code = "HRV")
+#' find_pip_data(dir = dir_pip, country_code = "HRV")
 #'
 #' # Latest year in EACH module
-#' find_pip_data(board = board_pip, country_code = "HRV", latest_year = TRUE)
+#' find_pip_data(dir = dir_pip, country_code = "HRV", latest_year = TRUE)
 #' }
-find_pip_data <- function(board = pipfun::get_pins_boards(board = "pip_data"),
+find_pip_data <- function(dir = pipfun::get_pip_folders(folder = "pip_data"),
                           latest_year    = FALSE,
                           where          = c("release", "master"),
                           verbose        =  getOption("pipload.verbose"),
@@ -209,8 +207,8 @@ find_pip_data <- function(board = pipfun::get_pins_boards(board = "pip_data"),
 #' @examples
 #' load_pip_inventory()
 load_pip_inventory_release <- \() {
-  binv <- pipfun::get_pins_boards(board = "pip_inventory")
-  pip_read(binv, "pip_inventory")
+  binv <- pipfun::get_pip_folders(folder = "pip_inventory")
+  pip_read("pip_inventory", dir = binv)
 }
 
 
@@ -221,32 +219,32 @@ load_pip_inventory_release <- \() {
 #' @examples
 #' load_pip_master_inventory()
 load_pip_master_inventory <- \() {
-  binv <- pipfun::get_pins_boards(board = "pip_master_inventory")
-  pip_read(binv, "pip_master_inventory")
+  binv <- pipfun::get_pip_folders(folder = "pip_master_inventory")
+  pip_read("pip_master_inventory", dir = binv)
 }
 
 
 
-#' @param pin_name pin name of dlw data
+#' @param id_name id name of pip data
 #'
-#' @returns character with pin_name
+#' @returns character with id_name
 #' @rdname load_pip_data
 #' @keywords internal
 #'
 #' @examples
-#' check_dlw_pin_name("HRV_2011_EU-SILC_V01_M_V04_A_GMD_GPWG.qs")
-#' check_dlw_pin_name("HRV_2011_EU-SILC_V01_M_V04_A_GMD_GPWG")
-check_pip_pin_name <- \(pin_name) {
-  pin_name <- pin_name |>
+#' check_pip_id_name("AGO_2000_HBS_CON_GPWG.qs")
+#' check_pip_id_name("AGO_2000_HBS_CON_GPWG")
+check_pip_id_name <- \(id_name) {
+  id_name <- id_name |>
     fs::path_ext_remove() |>
     fs::path(ext = "qs")
 
   ptt <- get_from_piploadenv("pip_name_pattern")
 
-  if (!grepl(ptt, pin_name)) {
-    cli::cli_abort(c(x = "Wrong {.arg pin_name} specification",
+  if (!grepl(ptt, id_name)) {
+    cli::cli_abort(c(x = "Wrong {.arg id_name} specification",
                      i = "it should follow the pattern {.field {ptt}}",
                      i = "like in {.file LCA_2015_SLCHBS_INC_GPWG}"))
   }
-  invisible(pin_name)
+  invisible(id_name)
 }
