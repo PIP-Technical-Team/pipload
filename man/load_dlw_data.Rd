@@ -3,7 +3,7 @@
 \name{load_dlw_data}
 \alias{load_dlw_data}
 \alias{find_dlw_data}
-\alias{check_dlw_pin_name}
+\alias{check_dlw_id_name}
 \alias{load_dlw_gmd_inventory}
 \alias{load_dlw_gmd_log}
 \alias{load_gmd_valid_inv}
@@ -21,21 +21,21 @@ load_dlw_data(
   module = "GPWG",
   latest_version = TRUE,
   latest_year = FALSE,
-  pin_name = NULL,
+  id_name = NULL,
   version = NULL,
-  hash = NULL,
+  format = "qs2",
   verbose = getOption("pipload.verbose")
 )
 
 find_dlw_data(
-  board = NULL,
+  dir = NULL,
   latest_version = TRUE,
   latest_year = FALSE,
   verbose = getOption("pipload.verbose"),
   ...
 )
 
-check_dlw_pin_name(pin_name)
+check_dlw_id_name(id_name)
 
 load_dlw_gmd_inventory()
 
@@ -68,20 +68,21 @@ it will use the most recent version of the data for a particular year.}
 most recent year. Otherwise, it will return the calls for all the years
 available. This is the default.}
 
-\item{pin_name}{pin name of dlw data}
+\item{id_name}{id name of dlw data}
 
-\item{version}{An integer or a quoted directive. Retrieve a specific version
-of a pin. This argument is more powerful than the one in \link[pins:pin_read]{pins::pin_read}.
-See details.}
-
-\item{hash}{Specify a hash to verify that you get exactly the dataset that
-you expect. You can find the hash of an existing pin by looking for
-\code{pin_hash} in \code{\link[pins:pin_meta]{pin_meta()}}.}
+\item{version}{Version selector:
+\itemize{
+\item NULL or 0 → latest version
+\item negative integer → N versions back
+\item "select" / "pick" / "choose" → interactive menu
+\item "available" → list available versions (extension provided below)
+\item version-id character → load specific version
+}}
 
 \item{verbose}{logical. If TRUE display information. Default is option
 "pipload.verbose"}
 
-\item{board}{board from \code{pipfun::get_pins_boards(board = "dlw_data")}}
+\item{dir}{dir from \code{pipfun::get_pip_folders(folder = "dlw_data")}}
 
 \item{...}{Just the following: country_code, year, module, survey, vermast,
 veralt, collection, module. They work exactly the same as the ones in
@@ -98,7 +99,7 @@ data table with dlw data
 
 data from with filter data
 
-character with pin_name
+character with id_name
 
 \link{load_dlw_gmd_inventory} data.table with inventory of GMD data from
 DLW
@@ -125,11 +126,11 @@ pipfun::setup_working_release(release = lr$release,
                               identity = lr$identity,
                               verbose = FALSE)
 
-# Using pin_name
-load_dlw_data(pin_name = "HRV_2011_EU-SILC_V01_M_V04_A_GMD_GPWG.qs")
+# Using id_name
+load_dlw_data(id_name = "HRV_2011_EU-SILC_V01_M_V04_A_GMD_GPWG.qs")
 
 # without ext also works
-load_dlw_data(pin_name = "HRV_2011_EU-SILC_V01_M_V04_A_GMD_GPWG")
+load_dlw_data(id_name = "HRV_2011_EU-SILC_V01_M_V04_A_GMD_GPWG")
 
 # country and year
 load_dlw_data(country_code = "HRV", year = 2011)
@@ -140,8 +141,8 @@ find_dlw_data(country_code = "HRV")
 # Latest year in EACH module
 find_dlw_data(country_code = "HRV", latest_year = TRUE)
 }
-check_dlw_pin_name("HRV_2011_EU-SILC_V01_M_V04_A_GMD_GPWG.qs")
-check_dlw_pin_name("HRV_2011_EU-SILC_V01_M_V04_A_GMD_GPWG")
+check_dlw_id_name("HRV_2011_EU-SILC_V01_M_V04_A_GMD_GPWG.qs")
+check_dlw_id_name("HRV_2011_EU-SILC_V01_M_V04_A_GMD_GPWG")
 load_dlw_gmd_inventory()
 load_dlw_gmd_log()
 load_gmd_valid_inv()

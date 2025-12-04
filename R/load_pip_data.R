@@ -14,8 +14,7 @@
 #'   same year for the same country
 #' @param module character: module of GMD collection (e.g., ALL, GPWG, L).
 #'   Default is GPWG
-#' @param id_name character: File name
-#' @param version character: version given by stamp
+#' @param id_name character: id name
 #' @param vermast  character: Version of the master data in the form "vXX" where
 #'   X is a number of two digits like "01" or "02".
 #' @param veralt character: Version of the alternative  data in the form "vXX"
@@ -57,7 +56,8 @@ load_pip_data <- function(country_code   = NULL,
                           latest_year    = FALSE,
                           where          = c("release", "master"),
                           version        = NULL,
-                          verbose        =  getOption("pipload.verbose")) {
+                          verbose        =  getOption("pipload.verbose"),
+                          format         = "qs2") {
 
   # Defenses
   stopifnot(exprs = {
@@ -108,7 +108,9 @@ load_pip_data <- function(country_code   = NULL,
   }
   return(pip_read(id = id_name,
                   dir = br,
-                  version = version))
+                  version = version,
+                  format = format,
+                  verbose = verbose))
 
 }
 

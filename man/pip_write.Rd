@@ -8,17 +8,16 @@ pip_write(
   x,
   id,
   dir = ".",
-  format = NULL,
+  format = "NULL",
   metadata = list(),
   code = NULL,
-  force_identical_write = FALSE,
   ...
 )
 }
 \arguments{
 \item{x}{The R object to save.}
 
-\item{id}{Character. The artifact identifier (used as the file name stem).}
+\item{id}{Character. The artifact identifier (used as the file name).}
 
 \item{dir}{Character. Directory where the artifact will be saved. Defaults to \code{"."}.}
 
@@ -27,9 +26,7 @@ If \code{NULL}, the format is inferred from the file extension or \code{stamp} d
 
 \item{metadata}{Named list of additional metadata to store with the artifact.}
 
-\item{code}{Optional function, expression, or character. Its hash is stored with the artifact.}
-
-\item{force_identical_write}{Logical. If \code{TRUE}, always write a new version even if content is unchanged.
+\item{code}{Optional function, expression, or character. Its hash is stored with the artifact.
 If \code{FALSE} (default), a new version is written only when the content or code has changed.}
 
 \item{...}{Additional arguments forwarded to \code{\link[stamp:st_save]{stamp::st_save()}}.}

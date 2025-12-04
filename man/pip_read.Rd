@@ -2,77 +2,31 @@
 % Please edit documentation in R/pip_read-write.R
 \name{pip_read}
 \alias{pip_read}
-\title{Read and write objects in the PIP ecosystem using \code{pins}}
+\title{Read a versioned artifact saved with {stamp}}
 \usage{
-pip_read(board, pin_name, version = NULL, hash = NULL, verbose = TRUE, ...)
+pip_read(id, dir = ".", version = NULL, format = "qs2", verbose = TRUE)
 }
 \arguments{
-\item{board}{A pin board, created by \code{\link[pins:board_folder]{board_folder()}}, \code{\link[pins:board_connect]{board_connect()}},
-\code{\link[pins:board_url]{board_url()}} or another \code{board_} function.}
+\item{id}{Character. Artifact name (file name stem).}
 
-\item{pin_name}{character: pin name. It is the same as \code{name} argument in
-\link[pins:pin_read]{pins::pin_read}. The reason it is is different is to make it clear in
-higher-level functions.}
+\item{dir}{Directory where artifact is stored.}
 
-\item{version}{An integer or a quoted directive. Retrieve a specific version
-of a pin. This argument is more powerful than the one in \link[pins:pin_read]{pins::pin_read}.
-See details.}
+\item{version}{Version selector:
+\itemize{
+\item NULL or 0 → latest version
+\item negative integer → N versions back
+\item "select" / "pick" / "choose" → interactive menu
+\item "available" → list available versions (extension provided below)
+\item version-id character → load specific version
+}}
 
-\item{hash}{Specify a hash to verify that you get exactly the dataset that
-you expect. You can find the hash of an existing pin by looking for
-\code{pin_hash} in \code{\link[pins:pin_meta]{pin_meta()}}.}
-
-\item{verbose}{logical:  display information}
-
-\item{...}{Additional arguments passed on to methods for a specific board.}
+\item{verbose}{Whether to print status messages.}
 }
 \value{
-pip_read() returns an R object in the pip board; pip_write() returns
-the fully qualified name of the new pin, invisibly.
+The loaded R object.
 }
 \description{
-A short description...
-
-\code{pip_write()} and \code{pip_read()} are just wrappers of \code{pins_write()} and
-\code{pins_read()}, respectively, with predefined arguments.
-}
-\details{
-The \strong{version} argument supports several options
-\itemize{
-\item NULL: loads most recent version
-\item "available": displays list of available versions for \code{name}.
-\item "select", "pick", or "choose": allows user to select the pins version of \code{name}.
-\item Negative integer (e.g., \code{-1}) or zero (0): loads that number of versions
-before the most recent version available. So, if \code{0}, it loads the current
-version, which is equivalent to NULL. If \code{-1}, it will load the version
-right before the current one, \code{-2} loads two versions before the current
-one, and so on.
-\item Positive numbers: Error.
-\item Any other character will be treated as a \code{pins} version, which is usual a
-string of the form "20250801T162739Z-d86e8", where the part to the left of
-the hyphen refers to the date and time, and the part to the right is a
-short hash of \code{name}.
-}
-}
-\examples{
-board <- pins::board_temp(versioned = TRUE)
-name <- "x"
-
-# Writing pins
-pip_write(board, x =1:5,  name = name)
-Sys.sleep(3)
-pip_write(board, x =1:10, name = name)
-Sys.sleep(3)
-pip_write(board, x =4:9, name = name)
-
-# Reading pins
-pip_read(board, name)
-(vers <- pip_read(board, name, version = "available"))
-version <- vers[3, version]
-pip_read(board, name, version = -1)
-pip_read(board, name, version = -2)
-pip_read(board, name, version = version)
-\dontrun{
-pip_read(board, name, version = "select")
-}
+\code{pip_read()} loads an artifact written by \code{pip_write()}.
+It is a thin wrapper around \code{stamp::st_load()} and preserves
+all version semantics (negative versions, "select", etc.)
 }

@@ -62,6 +62,7 @@ load_dlw_data <- function(country_code   = NULL,
                           latest_year    = FALSE,
                           id_name       = NULL,
                           version        = NULL,
+                          format         = "qs2",
                           verbose        =  getOption("pipload.verbose")) {
 
   # defenses   ---------
@@ -102,7 +103,9 @@ load_dlw_data <- function(country_code   = NULL,
   }
   return(pip_read(id = id_name,
                   dir = dir,
-                  version = version))
+                  version = version,
+                  format = format,
+                  verbose = verbose))
 
 }
 
