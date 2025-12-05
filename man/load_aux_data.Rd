@@ -2,38 +2,30 @@
 % Please edit documentation in R/load_aux_data.R
 \name{load_aux_data}
 \alias{load_aux_data}
-\title{Load any auxiliary data}
+\title{Load auxiliary data from PIP aux_data folder}
 \usage{
 load_aux_data(
-  measure = NULL,
+  measure,
   version = NULL,
-  ppp_defaults = TRUE,
-  hash = NULL,
-  verbose = getOption("pipload.verbose")
+  format = "qs2",
+  verbose = getOption("pipload.verbose", TRUE),
+  ppp_defaults = TRUE
 )
 }
 \arguments{
-\item{measure}{character: name of measure to load e.g., "cpi" or "ppp"}
+\item{measure}{Character. Name of the measure to load, e.g., "cpi" or "ppp".}
 
-\item{version}{An integer or a quoted directive. Retrieve a specific version
-of a pin. This argument is more powerful than the one in \link[pins:pin_read]{pins::pin_read}.
-See details.}
+\item{version}{Version selector. See \code{\link[=pip_read]{pip_read()}} for semantics.}
 
-\item{ppp_defaults}{logical: If TRUE, wider format ppp data will be returned}
+\item{format}{Character. Format in which the artifact was saved (default "qs2").}
 
-\item{hash}{Specify a hash to verify that you get exactly the dataset that
-you expect. You can find the hash of an existing pin by looking for
-\code{pin_hash} in \code{\link[pins:pin_meta]{pin_meta()}}.}
+\item{verbose}{Logical. Whether to print loading messages.}
 
-\item{verbose}{logical: whether to display message. Default is TRUE}
-
-\item{apply_label}{logical: if TRUE, predefined labels will apply to data
-loaded using \code{file_to_load} argument. Default TRUE. Tip: change to FALSE if
-the main structure of data has changed and labels have not been updated}
+\item{ppp_defaults}{Logical. If TRUE and measure == "ppp", only default PPP years are returned.}
 }
 \value{
-data.table with aux data
+data.table or object saved as artifact.
 }
 \description{
-Load auxiliary data files available in aux_repository
+Load auxiliary data from PIP aux_data folder
 }

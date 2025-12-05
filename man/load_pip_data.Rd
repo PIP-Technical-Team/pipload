@@ -5,7 +5,7 @@
 \alias{find_pip_data}
 \alias{load_pip_inventory_release}
 \alias{load_pip_master_inventory}
-\alias{check_pip_pin_name}
+\alias{check_pip_id_name}
 \title{Set of functions to interact with PIP data.}
 \usage{
 load_pip_data(
@@ -14,7 +14,7 @@ load_pip_data(
   survey_acronym = NULL,
   welfare_type = NULL,
   module = "GPWG",
-  pin_name = NULL,
+  id_name = NULL,
   vermast = NULL,
   veralt = NULL,
   collection = "GMD",
@@ -22,12 +22,12 @@ load_pip_data(
   latest_year = FALSE,
   where = c("release", "master"),
   version = NULL,
-  hash = NULL,
-  verbose = getOption("pipload.verbose")
+  verbose = getOption("pipload.verbose"),
+  format = "qs2"
 )
 
 find_pip_data(
-  board = pipfun::get_pins_boards(board = "pip_data"),
+  dir = pipfun::get_pip_folders(folder = "pip_data"),
   latest_year = FALSE,
   where = c("release", "master"),
   verbose = getOption("pipload.verbose"),
@@ -38,7 +38,7 @@ load_pip_inventory_release()
 
 load_pip_master_inventory()
 
-check_pip_pin_name(pin_name)
+check_pip_id_name(id_name)
 }
 \arguments{
 \item{country_code}{Character: country ISO 3 code.}
@@ -54,7 +54,7 @@ same year for the same country}
 \item{module}{character: module of GMD collection (e.g., ALL, GPWG, L).
 Default is GPWG}
 
-\item{pin_name}{pin name of dlw data}
+\item{id_name}{id name of pip data}
 
 \item{vermast}{character: Version of the master data in the form "vXX" where
 X is a number of two digits like "01" or "02".}
@@ -65,7 +65,7 @@ where X is a number of two digits like "01" or "02".}
 \item{collection}{character: It should always be "GMD"}
 
 \item{latest_version}{logical: If TRUE and  \code{vermast} and \code{veralt} are NULL,
-it will use the most recent version of the data given pins.}
+it will use the most recent version of the data given by stamp.}
 
 \item{latest_year}{logical: If \code{TRUE} and  \code{year} is NULL, it retrieves the
 most recent year. Otherwise, it will return the calls for all the years
@@ -73,23 +73,22 @@ available. This is the default.}
 
 \item{where}{character: Either "release" or "master". Se details.}
 
-\item{version}{An integer or a quoted directive. Retrieve a specific version
-of a pin. This argument is more powerful than the one in \link[pins:pin_read]{pins::pin_read}.
-See details.}
-
-\item{hash}{Specify a hash to verify that you get exactly the dataset that
-you expect. You can find the hash of an existing pin by looking for
-\code{pin_hash} in \code{\link[pins:pin_meta]{pin_meta()}}.}
+\item{version}{Version selector:
+\itemize{
+\item NULL or 0 → latest version
+\item negative integer → N versions back
+\item "select" / "pick" / "choose" → interactive menu
+\item "available" → list available versions (extension provided below)
+\item version-id character → load specific version
+}}
 
 \item{verbose}{logical. If TRUE display information. Default is option
 "pipload.verbose"}
 
-\item{board}{pin board}
+\item{dir}{path}
 
 \item{...}{Just the following: country_code, year, survey, welfare_type,and
 module. They work exactly the same as the ones in \link{load_pip_data}}
-
-\item{pin_version}{character: version given by pins}
 }
 \value{
 data table with pip data
@@ -100,13 +99,13 @@ data.table with PIP inventory
 
 data.table with PIP inventory
 
-character with pin_name
+character with id_name
 }
 \description{
 \link{load_pip_data} Load data from pip repository. \link{find_pip_data} Finds data
-available in pin board. \link{load_pip_inventory_release} Loads pip inventory for
+available. \link{load_pip_inventory_release} Loads pip inventory for
 corresponding release. \link{load_pip_master_inventory} Loads pip master inventory
-for corresponding release. \link{check_pip_pin_name} checks that pip pin_name is
+for corresponding release. \link{check_pip_id_name} checks that pip id_name is
 correct (INTERNAL)
 }
 \details{
@@ -119,8 +118,8 @@ pipfun::setup_working_release(release = lr$release,
                               identity = lr$identity,
                               verbose = FALSE)
 
-# Using pin_name
-load_pip_data(pin_name = "LCA_2015_SLCHBS_INC_GPWG")
+# Using id_name
+load_pip_data(id_name = "LCA_2015_SLCHBS_INC_GPWG")
 
 }
 \dontrun{
@@ -129,17 +128,17 @@ pipfun::setup_working_release(release = lr$release,
                               identity = lr$identity,
                               verbose = FALSE)
 
-board_pip <- pipfun::get_pins_boards(board = "pip_data")
+dir_pip <- pipfun::get_pip_folders(folder = "pip_data")
 
 # Find data
-find_pip_data(board = board_pip, country_code = "HRV")
+find_pip_data(dir = dir_pip, country_code = "HRV")
 
 # Latest year in EACH module
-find_pip_data(board = board_pip, country_code = "HRV", latest_year = TRUE)
+find_pip_data(dir = dir_pip, country_code = "HRV", latest_year = TRUE)
 }
 load_pip_inventory()
 load_pip_master_inventory()
-check_dlw_pin_name("HRV_2011_EU-SILC_V01_M_V04_A_GMD_GPWG.qs")
-check_dlw_pin_name("HRV_2011_EU-SILC_V01_M_V04_A_GMD_GPWG")
+check_pip_id_name("AGO_2000_HBS_CON_GPWG.qs")
+check_pip_id_name("AGO_2000_HBS_CON_GPWG")
 }
 \keyword{internal}
