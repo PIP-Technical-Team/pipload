@@ -106,10 +106,12 @@ pip_write <- function(
     ...
 ) {
   # ensure directory exists
-  if (!fs::dir_exists(dir))
-  {
-    cli::cli_abort("Provided directory path does not exist")
-  }
+  # if (!fs::dir_exists(dir))
+  # {
+  #   cli::cli_abort("Provided directory path does not exist")
+  # }
+
+  fs::dir_create(dir, recurse = TRUE)
 
   # determine file path
   file <- fs::path(dir, id, ext = format)
