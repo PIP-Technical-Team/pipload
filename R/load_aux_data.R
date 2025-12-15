@@ -26,7 +26,7 @@ load_aux_data <- function(
   # Get PIP folder paths
   pip_folders <- pipfun::get_pip_folders("aux_data")
 
-  if (is.null(pip_folders$aux_data)) {
+  if (is.null(pip_folders)) {
     cli::cli_abort("Auxiliary data folder not set in .pipenv. Run setup_working_release() first.")
   }
 
