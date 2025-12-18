@@ -8,7 +8,7 @@
 #' @param id Character. Artifact name (file name stem).
 #' @param dir Directory where artifact is stored.
 #' @param version An integer or a quoted directive. Retrieve a specific version
-#' of an artifact. See details.
+#' of an artifact. See details in `pip_read`.
 #' @param verbose Whether to print status messages.
 #'
 #' @return The loaded R object.
@@ -59,7 +59,7 @@ pip_read <- function(
     paths_ext  <- tolower(fs::path_ext(files_tbl$path))
     all_paths  <- files_tbl$path[files_tbl$type == "file" & paths_ext %in% ext]
     paths_base <- fs::path_file(fs::path_ext_remove(all_paths))
-    id_base <- fs::path_file(fs::path_ext_remove(id)) 
+    id_base <- fs::path_file(fs::path_ext_remove(id))
     matched_paths <- all_paths[paths_base == id_base]
 
     if (length(matched_paths) == 0L) {
@@ -74,7 +74,7 @@ pip_read <- function(
     if(length(file_ext)==1){
       file <- fs::path_ext_set(path = file, ext = file_ext)
     }else{
-      cli::cli_abort(c(x = "Multiple formats found for artifact {.field {id}}: {.val {file_ext}}.", 
+      cli::cli_abort(c(x = "Multiple formats found for artifact {.field {id}}: {.val {file_ext}}.",
       i = "Specify which format to load using the {.arg format} argument."))
     }
   }else{
@@ -82,11 +82,10 @@ pip_read <- function(
     file <- fs::path_ext_set(path = file, ext = format)
   }
 
-   # Make sure file exists (use absolute path to be safe)
-  file_abs <- fs::path_abs(file)
-  if (!fs::file_exists(file_abs)) {
+  # Make sure file exists
+  if (!fs::file_exists(file)) {
     cli::cli_abort(c(
-      x = "File {.path {file_abs}} does not exist.",
+      x = "File {.path {file}} does not exist.",
       i = "Try {.code format = NULL} to list available formats or verify the {.arg id}/{.arg dir} combination."
     ))
   }
@@ -159,7 +158,7 @@ pip_write <- function(
     x,
     id,
     dir = ".",
-    format = "NULL",
+    format = "qs2",
     metadata = list(),
     code = NULL,
     ...
