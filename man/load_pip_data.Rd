@@ -73,14 +73,8 @@ available. This is the default.}
 
 \item{where}{character: Either "release" or "master". Se details.}
 
-\item{version}{Version selector:
-\itemize{
-\item NULL or 0 → latest version
-\item negative integer → N versions back
-\item "select" / "pick" / "choose" → interactive menu
-\item "available" → list available versions (extension provided below)
-\item version-id character → load specific version
-}}
+\item{version}{An integer or a quoted directive. Retrieve a specific version
+of an artifact. See details in \code{pip_read}.}
 
 \item{verbose}{logical. If TRUE display information. Default is option
 "pipload.verbose"}

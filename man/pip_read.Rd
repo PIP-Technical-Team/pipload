@@ -4,21 +4,15 @@
 \alias{pip_read}
 \title{Read a versioned artifact saved with {stamp}}
 \usage{
-pip_read(id, dir = ".", version = NULL, format = "qs2", verbose = TRUE)
+pip_read(id, dir = ".", format = NULL, version = NULL, verbose = TRUE)
 }
 \arguments{
 \item{id}{Character. Artifact name (file name stem).}
 
 \item{dir}{Directory where artifact is stored.}
 
-\item{version}{Version selector:
-\itemize{
-\item NULL or 0 → latest version
-\item negative integer → N versions back
-\item "select" / "pick" / "choose" → interactive menu
-\item "available" → list available versions (extension provided below)
-\item version-id character → load specific version
-}}
+\item{version}{An integer or a quoted directive. Retrieve a specific version
+of an artifact. See details in \code{pip_read}.}
 
 \item{verbose}{Whether to print status messages.}
 }
@@ -29,4 +23,20 @@ The loaded R object.
 \code{pip_read()} loads an artifact written by \code{pip_write()}.
 It is a thin wrapper around \code{stamp::st_load()} and preserves
 all version semantics (negative versions, "select", etc.)
+}
+\details{
+The \code{version} argument allows you to load specific versions:
+\itemize{
+\item \code{NULL} (default): loads the most recent version available.
+\item Negative integer (e.g., \code{-1}) or zero (\code{0}): loads that number of versions
+before the most recent version. So, if \code{0}, it loads the current
+version, which is equivalent to \code{NULL}. If \code{-1}, it will load the version
+right before the current one, \code{-2} loads two versions before, and so on.
+\item Positive numbers: Error.
+\item Character: treated as a specific version ID (e.g., "20250801T162739Z-d86e8").
+\item \code{"select"}, \code{"pick"}, or \code{"choose"}: displays an interactive menu to select from
+available versions (only in interactive R sessions).
+\item \code{"available"}: loads a list of the versions availables product from \code{stamp::st_versions}
+but with an added variable called \code{vintage} that indicates the order of the versions.
+}
 }

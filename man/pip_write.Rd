@@ -8,7 +8,7 @@ pip_write(
   x,
   id,
   dir = ".",
-  format = "NULL",
+  format = "qs2",
   metadata = list(),
   code = NULL,
   ...
