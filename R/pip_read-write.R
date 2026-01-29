@@ -9,6 +9,8 @@
 #' @param dir Directory where artifact is stored.
 #' @param version An integer or a quoted directive. Retrieve a specific version
 #' of an artifact. See details in `pip_read`.
+#' @param alias Optional character. Passed to `stamp` functions (`st_versions`,
+#'   `st_load`) and forwarded as-is. `NULL` (default) means no alias.
 #' @param verbose Whether to print status messages.
 #'
 #' @return The loaded R object.
@@ -29,35 +31,33 @@
 #'
 #' @export
 pip_read <- function(
-    id,
-    dir = ".",
-    format = NULL,
-    version = NULL,
-    verbose = TRUE
+  id,
+  dir = ".",
+  format = NULL,
+  version = NULL,
+  alias = NULL,
+  verbose = TRUE
 ) {
-
   # Defenses
   if (!fs::dir_exists(dir)) {
     cli::cli_abort("Artifact folder {.path {dir}} does not exist.")
   }
 
-  # Initiate stamp
-  stamp::st_init(dir)
+  # NOTE: do not call stamp::st_init() here; caller should initialize stamp if needed in working release
 
   # Construct artifact path
   file <- fs::path(dir, id)
 
-  if(is.null(format)){
-    format  <- fs::path_ext(file)
+  if (is.null(format)) {
+    format <- fs::path_ext(file)
   }
 
   # Check if file exists when format is not attached
-  if(is.na(format) || identical(format, "")){
-
-    ext        <- tolower(stamp::st_formats())
-    files_tbl  <- fs::dir_info(dir, recurse = FALSE)
-    paths_ext  <- tolower(fs::path_ext(files_tbl$path))
-    all_paths  <- files_tbl$path[files_tbl$type == "file" & paths_ext %in% ext]
+  if (is.na(format) || identical(format, "")) {
+    ext <- tolower(stamp::st_formats())
+    files_tbl <- fs::dir_info(dir, recurse = FALSE)
+    paths_ext <- tolower(fs::path_ext(files_tbl$path))
+    all_paths <- files_tbl$path[files_tbl$type == "file" & paths_ext %in% ext]
     paths_base <- fs::path_file(fs::path_ext_remove(all_paths))
     id_base <- fs::path_file(fs::path_ext_remove(id))
     matched_paths <- all_paths[paths_base == id_base]
@@ -69,15 +69,17 @@ pip_read <- function(
       ))
     }
 
-    file_ext <- fs::path_ext(matched_paths)|> tolower()|> collapse::funique()
+    file_ext <- fs::path_ext(matched_paths) |> tolower() |> collapse::funique()
 
-    if(length(file_ext)==1){
+    if (length(file_ext) == 1) {
       file <- fs::path_ext_set(path = file, ext = file_ext)
-    }else{
-      cli::cli_abort(c(x = "Multiple formats found for artifact {.field {id}}: {.val {file_ext}}.",
-      i = "Specify which format to load using the {.arg format} argument."))
+    } else {
+      cli::cli_abort(c(
+        x = "Multiple formats found for artifact {.field {id}}: {.val {file_ext}}.",
+        i = "Specify which format to load using the {.arg format} argument."
+      ))
     }
-  }else{
+  } else {
     # Change format to the one requested
     file <- fs::path_ext_set(path = file, ext = format)
   }
@@ -91,26 +93,30 @@ pip_read <- function(
   }
   # List available versions
   if (identical(version, "available")) {
-    vr <- stamp::st_versions(file)
-    if (nrow(vr) == 0)
+    vr <- stamp::st_versions(file, alias = alias)
+    if (nrow(vr) == 0) {
       cli::cli_abort("No versions found in {.path {file}}.")
+    }
     vr[, vintage := (.I - 1) * -1]
     return(vr[])
   }
 
   # Protect against empty artifact
-  vr <- stamp::st_versions(file)
+  vr <- stamp::st_versions(file, alias = alias)
 
-  if (nrow(vr) == 0)
+  if (nrow(vr) == 0) {
     cli::cli_abort("No version files found in {.path {file}}.")
+  }
 
   if (verbose) {
     ver_label <- if (is.null(version)) "latest" else as.character(version)
-    cli::cli_alert_info("Loading {.path {file}} (version = {.strong {ver_label}})")
+    cli::cli_alert_info(
+      "Loading {.path {file}} (version = {.strong {ver_label}})"
+    )
   }
 
   # Delegate loading to stamp
-  stamp::st_load(file, version = version)
+  stamp::st_load(file, version = version, alias = alias)
 }
 
 
@@ -131,6 +137,8 @@ pip_read <- function(
 #' @param metadata Named list of additional metadata to store with the artifact.
 #' @param code Optional function, expression, or character. Its hash is stored with the artifact.
 #'   If `FALSE` (default), a new version is written only when the content or code has changed.
+#' @param alias Optional character. Passed to `stamp::st_save()` to set an
+#'   artifact alias when saving; forwarded as-is. `NULL` (default) means no alias.
 #' @param ... Additional arguments forwarded to [stamp::st_save()].
 #'
 #' @returns Invisibly, a list returned by [stamp::st_save()] containing:
@@ -155,13 +163,14 @@ pip_read <- function(
 #'
 #' @export
 pip_write <- function(
-    x,
-    id,
-    dir = ".",
-    format = "qs2",
-    metadata = list(),
-    code = NULL,
-    ...
+  x,
+  id,
+  dir = ".",
+  format = "qs2",
+  metadata = list(),
+  code = NULL,
+  alias = NULL,
+  ...
 ) {
   # ensure directory exists
   # if (!fs::dir_exists(dir))
@@ -174,19 +183,19 @@ pip_write <- function(
   # determine file path
   file <- fs::path(dir, id, ext = format)
 
-  # Initiate stamp
-  stamp::st_init(dir)
+  # NOTE: do not call stamp::st_init() here; caller should initialize stamp if needed with working release
 
   # declare st_path
   sp <- stamp::st_path(file, format = format)
 
   # save with stamp
   out <- stamp::st_save(
-    x        = x,
-    file     = sp,
+    x = x,
+    file = sp,
     metadata = metadata,
-    code     = code,
-    format   = format,
+    code = code,
+    format = format,
+    alias = alias,
     ...
   )
 
