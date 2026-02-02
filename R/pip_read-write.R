@@ -5,12 +5,12 @@
 #' It is a thin wrapper around `stamp::st_load()` and preserves
 #' all version semantics (negative versions, "select", etc.)
 #'
-#' @param id Character. Artifact name (file name stem).
-#' @param dir Directory where artifact is stored.
+#' @param id Character. Artifact name or path (e.g., "myfile" or "data/myfile.qs2").
+#'   Can include directory structure; format extension is optional.
 #' @param version An integer or a quoted directive. Retrieve a specific version
 #' of an artifact. See details in `pip_read`.
 #' @param alias Optional character. Passed to `stamp` functions (`st_versions`,
-#'   `st_load`) and forwarded as-is. `NULL` (default) means no alias.
+#'   `st_load`) to specify the stamp root; forwarded as-is. `NULL` (default) means no alias.
 #' @param verbose Whether to print status messages.
 #'
 #' @return The loaded R object.
@@ -32,65 +32,36 @@
 #' @export
 pip_read <- function(
   id,
-  dir = ".",
-  format = NULL,
+  format = "qs2",
   version = NULL,
   alias = NULL,
   verbose = TRUE
 ) {
-  # Defenses
-  if (!fs::dir_exists(dir)) {
-    cli::cli_abort("Artifact folder {.path {dir}} does not exist.")
-  }
+  # NOTE: do not call stamp::st_init() here; caller should initialize stamp if needed via alias
 
-  # NOTE: do not call stamp::st_init() here; caller should initialize stamp if needed in working release
+  # Use id as file path (can include directory structure)
+  file <- id
 
-  # Construct artifact path
-  file <- fs::path(dir, id)
+  # Handle format parameter
+  file_ext <- fs::path_ext(file)
+  has_ext <- !is.na(file_ext) && !identical(file_ext, "")
 
-  if (is.null(format)) {
-    format <- fs::path_ext(file)
-  }
-
-  # Check if file exists when format is not attached
-  if (is.na(format) || identical(format, "")) {
-    ext <- tolower(stamp::st_formats())
-    files_tbl <- fs::dir_info(dir, recurse = FALSE)
-    paths_ext <- tolower(fs::path_ext(files_tbl$path))
-    all_paths <- files_tbl$path[files_tbl$type == "file" & paths_ext %in% ext]
-    paths_base <- fs::path_file(fs::path_ext_remove(all_paths))
-    id_base <- fs::path_file(fs::path_ext_remove(id))
-    matched_paths <- all_paths[paths_base == id_base]
-
-    if (length(matched_paths) == 0L) {
-      cli::cli_abort(c(
-        x = "Artifact {.field {id}} not found in {.path {dir}}.",
-        i = "If the artifact is stored under a different name or format, pass the correct {.arg id} or use {.code format = NULL} to inspect available files."
-      ))
-    }
-
-    file_ext <- fs::path_ext(matched_paths) |> tolower() |> collapse::funique()
-
-    if (length(file_ext) == 1) {
-      file <- fs::path_ext_set(path = file, ext = file_ext)
+  if (!is.null(format)) {
+    if (has_ext) {
+      # If file has extension and format is specified, they must match
+      if (!identical(tolower(file_ext), tolower(format))) {
+        cli::cli_abort(c(
+          x = "Mismatch between file extension {.val {file_ext}} and requested format {.val {format}}.",
+          i = "Either remove the extension from {.arg id} or set {.code format = NULL}."
+        ))
+      }
+      # Extension already present and matches, use as-is
     } else {
-      cli::cli_abort(c(
-        x = "Multiple formats found for artifact {.field {id}}: {.val {file_ext}}.",
-        i = "Specify which format to load using the {.arg format} argument."
-      ))
+      # No extension, add the format
+      file <- fs::path_ext_set(path = file, ext = format)
     }
-  } else {
-    # Change format to the one requested
-    file <- fs::path_ext_set(path = file, ext = format)
   }
 
-  # Make sure file exists
-  if (!fs::file_exists(file)) {
-    cli::cli_abort(c(
-      x = "File {.path {file}} does not exist.",
-      i = "Try {.code format = NULL} to list available formats or verify the {.arg id}/{.arg dir} combination."
-    ))
-  }
   # List available versions
   if (identical(version, "available")) {
     vr <- stamp::st_versions(file, alias = alias)
@@ -130,15 +101,15 @@ pip_read <- function(
 #' * automatic creation of the directory if it doesn't exist
 #'
 #' @param x The R object to save.
-#' @param id Character. The artifact identifier (used as the file name).
-#' @param dir Character. Directory where the artifact will be saved. Defaults to `"."`.
+#' @param id Character. The artifact identifier or path (e.g., "myfile" or "data/myfile.qs2").
+#'   Can include directory structure; format extension is optional.
 #' @param format Character, optional. Format for serialization (`"qs2"`, `"rds"`, `"csv"`, `"fst"`, `"json"`).
 #'   If `NULL`, the format is inferred from the file extension or `stamp` defaults.
 #' @param metadata Named list of additional metadata to store with the artifact.
 #' @param code Optional function, expression, or character. Its hash is stored with the artifact.
 #'   If `FALSE` (default), a new version is written only when the content or code has changed.
-#' @param alias Optional character. Passed to `stamp::st_save()` to set an
-#'   artifact alias when saving; forwarded as-is. `NULL` (default) means no alias.
+#' @param alias Optional character. Passed to `stamp::st_save()` to specify the stamp root
+#'   when saving; forwarded as-is. `NULL` (default) means no alias.
 #' @param ... Additional arguments forwarded to [stamp::st_save()].
 #'
 #' @returns Invisibly, a list returned by [stamp::st_save()] containing:
@@ -156,46 +127,46 @@ pip_read <- function(
 #'
 #' @examples
 #' # Save a simple vector
-#' pip_write(1:5, id = "example_vector", dir = tempdir())
+#' pip_write(1:5, id = "example_vector.qs2", alias = "my_project")
 #'
-#' # Force a new version even if identical
-#' pip_write(1:5, id = "example_vector", dir = tempdir(), force_identical_write = TRUE)
+#' # Save with directory structure
+#' pip_write(mtcars, id = "data/cars.qs2", alias = "my_project")
 #'
 #' @export
 pip_write <- function(
   x,
   id,
-  dir = ".",
   format = "qs2",
   metadata = list(),
   code = NULL,
   alias = NULL,
+  pk = NULL,
+  verbose = TRUE,
   ...
 ) {
-  # ensure directory exists
-  # if (!fs::dir_exists(dir))
-  # {
-  #   cli::cli_abort("Provided directory path does not exist")
-  # }
+  # Set extension if not present
+  if (is.null(fs::path_ext(id)) || identical(fs::path_ext(id), "")) {
+    id <- fs::path_ext_set(path = id, ext = format)
+  }
 
-  fs::dir_create(dir, recurse = TRUE)
+  # Use id as file path (can include directory structure)
+  file <- id
 
-  # determine file path
-  file <- fs::path(dir, id, ext = format)
-
-  # NOTE: do not call stamp::st_init() here; caller should initialize stamp if needed with working release
+  # NOTE: do not call stamp::st_init() here; caller should initialize stamp via alias if needed
 
   # declare st_path
-  sp <- stamp::st_path(file, format = format)
+  # sp <- stamp::st_path(file, alias = alias)
 
   # save with stamp
   out <- stamp::st_save(
     x = x,
-    file = sp,
+    file = file,
     metadata = metadata,
     code = code,
     format = format,
     alias = alias,
+    pk = pk,
+    verbose = verbose,
     ...
   )
 
