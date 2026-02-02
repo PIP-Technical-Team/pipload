@@ -71,7 +71,7 @@ available. This is the default.}
 \item{id_name}{id name of dlw data}
 
 \item{version}{An integer or a quoted directive. Retrieve a specific version
-of an artifact. See details in \code{pip_read}.}
+of an artifact. See details in the function body for supported directives.}
 
 \item{verbose}{logical. If TRUE display information. Default is option
 "pipload.verbose"}

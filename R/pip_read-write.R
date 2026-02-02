@@ -1,33 +1,45 @@
-#' Read a versioned artifact saved with {stamp}
+#' @title Read a versioned artifact (wrapper around {stamp})
 #'
 #' @description
-#' `pip_read()` loads an artifact written by `pip_write()`.
-#' It is a thin wrapper around `stamp::st_load()` and preserves
-#' all version semantics (negative versions, "select", etc.)
+#' Load a versioned artifact previously saved with `pip_write()`.
+#' This function delegates to the {stamp} package for version discovery and
+#' loading, while providing a small convenient API for the package.
 #'
 #' @param id Character. Artifact name or path (e.g., "myfile" or "data/myfile.qs2").
 #'   Can include directory structure; format extension is optional.
 #' @param version An integer or a quoted directive. Retrieve a specific version
-#' of an artifact. See details in `pip_read`.
-#' @param alias Optional character. Passed to `stamp` functions (`st_versions`,
-#'   `st_load`) to specify the stamp root; forwarded as-is. `NULL` (default) means no alias.
-#' @param verbose Whether to print status messages.
+#'   of an artifact. See details in the function body for supported directives.
+#' @param alias Optional character. Passed to {stamp} functions (`st_versions`,
+#'   `st_load`) to specify the stamp root; forwarded as-is. `NULL` (default)
+#'   means use the default stamp root.
+#' @param verbose Logical. Whether to print status messages (informational only).
 #'
-#' @return The loaded R object.
+#' @return The loaded R object (the artifact content), or a `data.table` of
+#'   available versions when `version = "available"`.
 #'
 #' @details
-#' The `version` argument allows you to load specific versions:
-#'   * `NULL` (default): loads the most recent version available.
-#'   * Negative integer (e.g., `-1`) or zero (`0`): loads that number of versions
-#'     before the most recent version. So, if `0`, it loads the current
-#'     version, which is equivalent to `NULL`. If `-1`, it will load the version
-#'     right before the current one, `-2` loads two versions before, and so on.
-#'   * Positive numbers: Error.
-#'   * Character: treated as a specific version ID (e.g., "20250801T162739Z-d86e8").
-#'   * `"select"`, `"pick"`, or `"choose"`: displays an interactive menu to select from
-#'     available versions (only in interactive R sessions).
-#'   * `"available"`: loads a list of the versions availables product from `stamp::st_versions`
-#'     but with an added variable called `vintage` that indicates the order of the versions.
+#' The `version` argument supports the following behaviours:
+#' - `NULL` (default): loads the most recent version available.
+#' - negative integers (e.g., `-1`): load older versions relative to latest.
+#' - a specific version ID (character): load that version directly.
+#' - `"select"` / `"pick"` / `"choose"`: interactive selection (interactive
+#'   sessions only).
+#' - `"available"`: return a `data.table` with version metadata and a
+#'   computed `vintage` column describing relative age.
+#'
+#' This function intentionally does not call `stamp::st_init()`; callers
+#' should initialize the stamp root (optionally with an `alias`) before
+#' calling `pip_read()` so that storage is deterministic and testable.
+#'
+#' @examples
+#' if (interactive()) {
+#'   # Initialize a local root and use pip_write/pip_read normally
+#'   tmp <- fs::path_temp("my_project")
+#'   fs::dir_create(tmp)
+#'   stamp::st_init(tmp, alias = "my_project")
+#'   pip_write(1:3, id = "example", alias = "my_project")
+#'   pip_read("example", alias = "my_project")
+#' }
 #'
 #' @export
 pip_read <- function(
@@ -42,7 +54,9 @@ pip_read <- function(
   # Use id as file path (can include directory structure)
   file <- id
 
-  # Handle format parameter
+  # Handle format parameter: if a format is explicitly requested and the
+  # id contains an extension, ensure they match; otherwise set the
+  # extension on the id so stamp will use the requested format.
   file_ext <- fs::path_ext(file)
   has_ext <- !is.na(file_ext) && !identical(file_ext, "")
 
@@ -91,46 +105,43 @@ pip_read <- function(
 }
 
 
-#' Save an R object to a versioned artifact using {stamp}
+#' @title Save an R object as a versioned artifact (wrapper around {stamp})
 #'
 #' @description
-#' `pip_write()` saves an R object to disk using {stamp} versioned artifacts.
-#' It is a thin wrapper around [stamp::st_save()] that provides:
-#' * a simplified interface for storing objects in a directory
-#' * optional "force write even if identical" behavior
-#' * automatic creation of the directory if it doesn't exist
+#' Save an R object to a versioned artifact using the {stamp} package.
+#' This wrapper provides a minimal, package-consistent API while forwarding
+#' the heavy lifting (file layout, metadata, version ids) to {stamp}.
 #'
 #' @param x The R object to save.
 #' @param id Character. The artifact identifier or path (e.g., "myfile" or "data/myfile.qs2").
 #'   Can include directory structure; format extension is optional.
-#' @param format Character, optional. Format for serialization (`"qs2"`, `"rds"`, `"csv"`, `"fst"`, `"json"`).
-#'   If `NULL`, the format is inferred from the file extension or `stamp` defaults.
+#' @param format Character. Format for serialization (`"qs2"`, `"rds"`, `"csv"`, `"fst"`, `"json"`).
+#'   If `NULL`, the format is inferred from the file extension or {stamp}'s defaults.
 #' @param metadata Named list of additional metadata to store with the artifact.
 #' @param code Optional function, expression, or character. Its hash is stored with the artifact.
 #'   If `FALSE` (default), a new version is written only when the content or code has changed.
 #' @param alias Optional character. Passed to `stamp::st_save()` to specify the stamp root
-#'   when saving; forwarded as-is. `NULL` (default) means no alias.
+#'   when saving; forwarded as-is. `NULL` (default) means use the default stamp root.
+#' @param pk Optional primary key (passed to `stamp::st_save()` when storing data frames).
+#' @param verbose Logical. Whether to print status messages.
 #' @param ... Additional arguments forwarded to [stamp::st_save()].
 #'
-#' @returns Invisibly, a list returned by [stamp::st_save()] containing:
-#'   - `path`: full path to the artifact
-#'   - `metadata`: merged metadata including content hashes, file size, etc.
-#'   - `version_id`: internal version identifier created by {stamp}
+#' @return Invisibly, the list returned by [stamp::st_save()] including `path`, `metadata`,
+#' and `version_id`.
 #'
 #' @details
-#'
-#' Versioning policy is controlled via `force_identical_write`:
-#' - `FALSE` → uses `st_opts("versioning") = "content"` (default stamp behavior)
-#'   A new version is only written if the content or code has changed.
-#' - `TRUE` → temporarily sets `st_opts("versioning") = "timestamp"`
-#'   Always creates a new version even if the object is unchanged.
+#' `pip_write()` intentionally does not initialize stamp roots. Callers should
+#' call `stamp::st_init(dir, alias = ...)` prior to saving if they wish to use
+#' a specific alias root. This keeps initialization explicit and avoids
+#' surprising side effects during package function calls or tests.
 #'
 #' @examples
-#' # Save a simple vector
-#' pip_write(1:5, id = "example_vector.qs2", alias = "my_project")
-#'
-#' # Save with directory structure
-#' pip_write(mtcars, id = "data/cars.qs2", alias = "my_project")
+#' if (interactive()) {
+#'   tmp <- fs::path_temp("my_project_write")
+#'   fs::dir_create(tmp)
+#'   stamp::st_init(tmp, alias = "my_project_write")
+#'   pip_write(mtcars[1:3, ], id = "data/cars.qs2", alias = "my_project_write")
+#' }
 #'
 #' @export
 pip_write <- function(
@@ -154,10 +165,9 @@ pip_write <- function(
 
   # NOTE: do not call stamp::st_init() here; caller should initialize stamp via alias if needed
 
-  # declare st_path
-  # sp <- stamp::st_path(file, alias = alias)
-
-  # save with stamp
+  # Delegate to stamp::st_save which handles file creation, metadata and
+  # version_id generation. We forward `alias` so stamp can place the file
+  # in the correct alias root.
   out <- stamp::st_save(
     x = x,
     file = file,
