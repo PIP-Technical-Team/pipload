@@ -43,22 +43,23 @@
 #' load_pip_data(id_name = "LCA_2015_SLCHBS_INC_GPWG")
 #'
 #' }
-load_pip_data <- function(country_code   = NULL,
-                          surveyid_year  = NULL,
-                          survey_acronym = NULL,
-                          welfare_type   = NULL,
-                          module         = "GPWG",
-                          id_name       = NULL,
-                          vermast        = NULL,
-                          veralt         = NULL,
-                          collection     = "GMD",
-                          latest_version = TRUE,
-                          latest_year    = FALSE,
-                          where          = c("release", "master"),
-                          version        = NULL,
-                          verbose        =  getOption("pipload.verbose"),
-                          format         = "qs2") {
-
+load_pip_data <- function(
+  country_code = NULL,
+  surveyid_year = NULL,
+  survey_acronym = NULL,
+  welfare_type = NULL,
+  module = "GPWG",
+  id_name = NULL,
+  vermast = NULL,
+  veralt = NULL,
+  collection = "GMD",
+  latest_version = TRUE,
+  latest_year = FALSE,
+  where = c("release", "master"),
+  version = NULL,
+  verbose = getOption("pipload.verbose"),
+  format = "qs2"
+) {
   # Defenses
   stopifnot(exprs = {
     !is.null(country_code) || !is.null(id_name)
@@ -73,45 +74,60 @@ load_pip_data <- function(country_code   = NULL,
   # When id name is defined   ------
   if (!is.null(id_name)) {
     id_name <- check_pip_id_name(id_name)
-
   } else {
-  # filter   ---------
+    # filter   ---------
 
-    inv <- find_pip_data(dir          = br,
-                        latest_version = latest_version,
-                        latest_year    = latest_year,
-                        where          = where,
-                        verbose        = verbose,
-                        country_code   = country_code,
-                        surveyid_year  = surveyid_year,
-                        survey_acronym = survey_acronym,
-                        welfare_type   = welfare_type,
-                        module         = module,
-                        vermast        = vermast,
-                        veralt         = veralt,
-                        collection     = collection,
-                        )
+    inv <- find_pip_data(
+      dir = br,
+      latest_version = latest_version,
+      latest_year = latest_year,
+      where = where,
+      verbose = verbose,
+      country_code = country_code,
+      surveyid_year = surveyid_year,
+      survey_acronym = survey_acronym,
+      welfare_type = welfare_type,
+      module = module,
+      vermast = vermast,
+      veralt = veralt,
+      collection = collection,
+    )
 
     id_name <- inv[, pip_id]
   }
 
   if (length(id_name) != 1) {
-    cli::cli_abort(c(x = "Wrong numer of data to load.",
-                     i = "It should be only 1. You attempt to load
+    cli::cli_abort(c(
+      x = "Wrong numer of data to load.",
+      i = "It should be only 1. You attempt to load
                      {.field {length(id_name)}}:",
-                     "{.field {id_name}}"))
+      "{.field {id_name}}"
+    ))
   }
 
   # Return   ---------
   if (verbose) {
     cli::cli_alert_info("Loading {.field {id_name}}")
   }
-  return(pip_read(id = id_name,
-                  dir = br,
-                  version = version,
-                  format = format,
-                  verbose = verbose))
 
+  # Look up alias for pip_data folder
+  alias_list <- stamp::st_alias_list()
+  alias <- alias_list[alias_list$root == br, "alias"]
+
+  if (length(alias) == 0) {
+    cli::cli_abort(c(
+      x = "PIP data folder not initialized in stamp.",
+      i = "Run {.code pipfun::setup_working_release()} first and make sure the pip_data folder is set."
+    ))
+  }
+
+  return(pip_read(
+    id = id_name,
+    alias = alias,
+    version = version,
+    format = format,
+    verbose = verbose
+  ))
 }
 
 
@@ -144,11 +160,13 @@ load_pip_data <- function(country_code   = NULL,
 #' # Latest year in EACH module
 #' find_pip_data(dir = dir_pip, country_code = "HRV", latest_year = TRUE)
 #' }
-find_pip_data <- function(dir = pipfun::get_pip_folders(folder = "pip_data"),
-                          latest_year    = FALSE,
-                          where          = c("release", "master"),
-                          verbose        =  getOption("pipload.verbose"),
-                          ...) {
+find_pip_data <- function(
+  dir = pipfun::get_pip_folders(folder = "pip_data"),
+  latest_year = FALSE,
+  where = c("release", "master"),
+  verbose = getOption("pipload.verbose"),
+  ...
+) {
   where <- match.arg(where)
   # Capture ... arguments as a list
   dots <- list(...)
@@ -170,7 +188,7 @@ find_pip_data <- function(dir = pipfun::get_pip_folders(folder = "pip_data"),
     if (is.null(args[[.]])) {
       "[^_]+" # anything but _
     } else {
-      paste0("(", paste(args[[.]],collapse = "|"), ")")
+      paste0("(", paste(args[[.]], collapse = "|"), ")")
     }
   }) |>
     # append them together
@@ -187,13 +205,12 @@ find_pip_data <- function(dir = pipfun::get_pip_folders(folder = "pip_data"),
 
   if (latest_year == TRUE && !("surveyid_year" %in% args_info)) {
     ctl <- ctl[,
-               #  for each collection and module,
-               # the row(s) with the maximum Year
-               .SD[surveyid_year == max(surveyid_year, na.rm = TRUE)],
-               by = .(module)
+      #  for each collection and module,
+      # the row(s) with the maximum Year
+      .SD[surveyid_year == max(surveyid_year, na.rm = TRUE)],
+      by = .(module)
     ]
   }
-
 
   ## This part is to refine filter and print it pretty.
   # this should also depend on argument `where`
@@ -210,7 +227,18 @@ find_pip_data <- function(dir = pipfun::get_pip_folders(folder = "pip_data"),
 #' load_pip_inventory()
 load_pip_inventory_release <- \() {
   binv <- pipfun::get_pip_folders(folder = "pip_inventory")
-  pip_read("pip_inventory", dir = binv)
+
+  alias_list <- stamp::st_alias_list()
+  alias <- alias_list[alias_list$root == binv, "alias"]
+
+  if (length(alias) == 0) {
+    cli::cli_abort(c(
+      x = "PIP inventory folder not initialized in stamp.",
+      i = "Run {.code pipfun::setup_working_release()} first."
+    ))
+  }
+
+  pip_read("pip_inventory", alias = alias)
 }
 
 
@@ -222,9 +250,19 @@ load_pip_inventory_release <- \() {
 #' load_pip_master_inventory()
 load_pip_master_inventory <- \() {
   binv <- pipfun::get_pip_folders(folder = "pip_master_inventory")
-  pip_read("pip_master_inventory", dir = binv)
-}
 
+  alias_list <- stamp::st_alias_list()
+  alias <- alias_list[alias_list$root == binv, "alias"]
+
+  if (length(alias) == 0) {
+    cli::cli_abort(c(
+      x = "PIP master inventory folder not initialized in stamp.",
+      i = "Run {.code pipfun::setup_working_release()} first."
+    ))
+  }
+
+  pip_read("pip_master_inventory", alias = alias)
+}
 
 
 #' @param id_name id name of pip data
@@ -244,9 +282,11 @@ check_pip_id_name <- \(id_name) {
   ptt <- get_from_piploadenv("pip_name_pattern")
 
   if (!grepl(ptt, id_name)) {
-    cli::cli_abort(c(x = "Wrong {.arg id_name} specification",
-                     i = "it should follow the pattern {.field {ptt}}",
-                     i = "like in {.file LCA_2015_SLCHBS_INC_GPWG}"))
+    cli::cli_abort(c(
+      x = "Wrong {.arg id_name} specification",
+      i = "it should follow the pattern {.field {ptt}}",
+      i = "like in {.file LCA_2015_SLCHBS_INC_GPWG}"
+    ))
   }
   invisible(id_name)
 }
