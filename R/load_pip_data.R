@@ -78,7 +78,6 @@ load_pip_data <- function(
     # filter   ---------
 
     inv <- find_pip_data(
-      dir = br,
       latest_version = latest_version,
       latest_year = latest_year,
       where = where,
@@ -131,7 +130,6 @@ load_pip_data <- function(
 }
 
 
-#' @param dir path
 #' @inheritParams load_pip_data
 #' @param where character: Either "release" or "master". Se details.
 #' @param ... Just the following: country_code, year, survey, welfare_type,and
@@ -152,16 +150,13 @@ load_pip_data <- function(
 #'                               identity = lr$identity,
 #'                               verbose = FALSE)
 #'
-#' dir_pip <- pipfun::get_pip_folders(folder = "pip_data")
-#'
 #' # Find data
-#' find_pip_data(dir = dir_pip, country_code = "HRV")
+#' find_pip_data(country_code = "HRV")
 #'
 #' # Latest year in EACH module
-#' find_pip_data(dir = dir_pip, country_code = "HRV", latest_year = TRUE)
+#' find_pip_data(country_code = "HRV", latest_year = TRUE)
 #' }
 find_pip_data <- function(
-  dir = pipfun::get_pip_folders(folder = "pip_data"),
   latest_year = FALSE,
   where = c("release", "master"),
   verbose = getOption("pipload.verbose"),
@@ -203,7 +198,8 @@ find_pip_data <- function(
   }
   ctl <- ctl[grepl(pattern, pip_id)]
 
-  if (latest_year == TRUE && !("surveyid_year" %in% args_info)) {
+  if (latest_year == TRUE && !("surveyid_year" %in% names(args))) {
+    #need to check because it was args_info before instead of names(args)
     ctl <- ctl[,
       #  for each collection and module,
       # the row(s) with the maximum Year
