@@ -2,41 +2,56 @@
 % Please edit documentation in R/pip_read-write.R
 \name{pip_read}
 \alias{pip_read}
-\title{Read a versioned artifact saved with {stamp}}
+\title{Read a versioned artifact (wrapper around {stamp})}
 \usage{
-pip_read(id, dir = ".", format = NULL, version = NULL, verbose = TRUE)
+pip_read(id, format = "qs2", version = NULL, alias = NULL, verbose = TRUE)
 }
 \arguments{
-\item{id}{Character. Artifact name (file name stem).}
-
-\item{dir}{Directory where artifact is stored.}
+\item{id}{Character. Artifact name or path (e.g., "myfile" or "data/myfile.qs2").
+Can include directory structure; format extension is optional.}
 
 \item{version}{An integer or a quoted directive. Retrieve a specific version
-of an artifact. See details in \code{pip_read}.}
+of an artifact. See details in the function body for supported directives.}
 
-\item{verbose}{Whether to print status messages.}
+\item{alias}{Optional character. Passed to {stamp} functions (\code{st_versions},
+\code{st_load}) to specify the stamp root; forwarded as-is. \code{NULL} (default)
+means use the default stamp root.}
+
+\item{verbose}{Logical. Whether to print status messages (informational only).}
 }
 \value{
-The loaded R object.
+The loaded R object (the artifact content), or a \code{data.table} of
+available versions when \code{version = "available"}.
 }
 \description{
-\code{pip_read()} loads an artifact written by \code{pip_write()}.
-It is a thin wrapper around \code{stamp::st_load()} and preserves
-all version semantics (negative versions, "select", etc.)
+Load a versioned artifact previously saved with \code{pip_write()}.
+This function delegates to the {stamp} package for version discovery and
+loading, while providing a small convenient API for the package.
 }
 \details{
-The \code{version} argument allows you to load specific versions:
+The \code{version} argument supports the following behaviours:
 \itemize{
 \item \code{NULL} (default): loads the most recent version available.
-\item Negative integer (e.g., \code{-1}) or zero (\code{0}): loads that number of versions
-before the most recent version. So, if \code{0}, it loads the current
-version, which is equivalent to \code{NULL}. If \code{-1}, it will load the version
-right before the current one, \code{-2} loads two versions before, and so on.
-\item Positive numbers: Error.
-\item Character: treated as a specific version ID (e.g., "20250801T162739Z-d86e8").
-\item \code{"select"}, \code{"pick"}, or \code{"choose"}: displays an interactive menu to select from
-available versions (only in interactive R sessions).
-\item \code{"available"}: loads a list of the versions availables product from \code{stamp::st_versions}
-but with an added variable called \code{vintage} that indicates the order of the versions.
+\item negative integers (e.g., \code{-1}): load older versions relative to latest.
+\item a specific version ID (character): load that version directly.
+\item \code{"select"} / \code{"pick"} / \code{"choose"}: interactive selection (interactive
+sessions only).
+\item \code{"available"}: return a \code{data.table} with version metadata and a
+computed \code{vintage} column describing relative age.
 }
+
+This function intentionally does not call \code{stamp::st_init()}; callers
+should initialize the stamp root (optionally with an \code{alias}) before
+calling \code{pip_read()} so that storage is deterministic and testable.
+}
+\examples{
+if (interactive()) {
+  # Initialize a local root and use pip_write/pip_read normally
+  tmp <- fs::path_temp("my_project")
+  fs::dir_create(tmp)
+  stamp::st_init(tmp, alias = "my_project")
+  pip_write(1:3, id = "example", alias = "my_project")
+  pip_read("example", alias = "my_project")
+}
+
 }

@@ -2,66 +2,64 @@
 % Please edit documentation in R/pip_read-write.R
 \name{pip_write}
 \alias{pip_write}
-\title{Save an R object to a versioned artifact using {stamp}}
+\title{Save an R object as a versioned artifact (wrapper around {stamp})}
 \usage{
 pip_write(
   x,
   id,
-  dir = ".",
   format = "qs2",
   metadata = list(),
   code = NULL,
+  alias = NULL,
+  pk = NULL,
+  verbose = TRUE,
   ...
 )
 }
 \arguments{
 \item{x}{The R object to save.}
 
-\item{id}{Character. The artifact identifier (used as the file name).}
+\item{id}{Character. The artifact identifier or path (e.g., "myfile" or "data/myfile.qs2").
+Can include directory structure; format extension is optional.}
 
-\item{dir}{Character. Directory where the artifact will be saved. Defaults to \code{"."}.}
-
-\item{format}{Character, optional. Format for serialization (\code{"qs2"}, \code{"rds"}, \code{"csv"}, \code{"fst"}, \code{"json"}).
-If \code{NULL}, the format is inferred from the file extension or \code{stamp} defaults.}
+\item{format}{Character. Format for serialization (\code{"qs2"}, \code{"rds"}, \code{"csv"}, \code{"fst"}, \code{"json"}).
+If \code{NULL}, the format is inferred from the file extension or {stamp}'s defaults.}
 
 \item{metadata}{Named list of additional metadata to store with the artifact.}
 
 \item{code}{Optional function, expression, or character. Its hash is stored with the artifact.
 If \code{FALSE} (default), a new version is written only when the content or code has changed.}
 
+\item{alias}{Optional character. Passed to \code{stamp::st_save()} to specify the stamp root
+when saving; forwarded as-is. \code{NULL} (default) means use the default stamp root.}
+
+\item{pk}{Optional primary key (passed to \code{stamp::st_save()} when storing data frames).}
+
+\item{verbose}{Logical. Whether to print status messages.}
+
 \item{...}{Additional arguments forwarded to \code{\link[stamp:st_save]{stamp::st_save()}}.}
 }
 \value{
-Invisibly, a list returned by \code{\link[stamp:st_save]{stamp::st_save()}} containing:
-\itemize{
-\item \code{path}: full path to the artifact
-\item \code{metadata}: merged metadata including content hashes, file size, etc.
-\item \code{version_id}: internal version identifier created by {stamp}
-}
+Invisibly, the list returned by \code{\link[stamp:st_save]{stamp::st_save()}} including \code{path}, \code{metadata},
+and \code{version_id}.
 }
 \description{
-\code{pip_write()} saves an R object to disk using {stamp} versioned artifacts.
-It is a thin wrapper around \code{\link[stamp:st_save]{stamp::st_save()}} that provides:
-\itemize{
-\item a simplified interface for storing objects in a directory
-\item optional "force write even if identical" behavior
-\item automatic creation of the directory if it doesn't exist
-}
+Save an R object to a versioned artifact using the {stamp} package.
+This wrapper provides a minimal, package-consistent API while forwarding
+the heavy lifting (file layout, metadata, version ids) to {stamp}.
 }
 \details{
-Versioning policy is controlled via \code{force_identical_write}:
-\itemize{
-\item \code{FALSE} → uses \code{st_opts("versioning") = "content"} (default stamp behavior)
-A new version is only written if the content or code has changed.
-\item \code{TRUE} → temporarily sets \code{st_opts("versioning") = "timestamp"}
-Always creates a new version even if the object is unchanged.
-}
+\code{pip_write()} intentionally does not initialize stamp roots. Callers should
+call \code{stamp::st_init(dir, alias = ...)} prior to saving if they wish to use
+a specific alias root. This keeps initialization explicit and avoids
+surprising side effects during package function calls or tests.
 }
 \examples{
-# Save a simple vector
-pip_write(1:5, id = "example_vector", dir = tempdir())
-
-# Force a new version even if identical
-pip_write(1:5, id = "example_vector", dir = tempdir(), force_identical_write = TRUE)
+if (interactive()) {
+  tmp <- fs::path_temp("my_project_write")
+  fs::dir_create(tmp)
+  stamp::st_init(tmp, alias = "my_project_write")
+  pip_write(mtcars[1:3, ], id = "data/cars.qs2", alias = "my_project_write")
+}
 
 }

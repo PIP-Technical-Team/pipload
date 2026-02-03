@@ -1,192 +1,182 @@
-#' Read a versioned artifact saved with {stamp}
+#' @title Read a versioned artifact (wrapper around {stamp})
 #'
 #' @description
-#' `pip_read()` loads an artifact written by `pip_write()`.
-#' It is a thin wrapper around `stamp::st_load()` and preserves
-#' all version semantics (negative versions, "select", etc.)
+#' Load a versioned artifact previously saved with `pip_write()`.
+#' This function delegates to the {stamp} package for version discovery and
+#' loading, while providing a small convenient API for the package.
 #'
-#' @param id Character. Artifact name (file name stem).
-#' @param dir Directory where artifact is stored.
+#' @param id Character. Artifact name or path (e.g., "myfile" or "data/myfile.qs2").
+#'   Can include directory structure; format extension is optional.
 #' @param version An integer or a quoted directive. Retrieve a specific version
-#' of an artifact. See details in `pip_read`.
-#' @param verbose Whether to print status messages.
+#'   of an artifact. See details in the function body for supported directives.
+#' @param alias Optional character. Passed to {stamp} functions (`st_versions`,
+#'   `st_load`) to specify the stamp root; forwarded as-is. `NULL` (default)
+#'   means use the default stamp root.
+#' @param verbose Logical. Whether to print status messages (informational only).
 #'
-#' @return The loaded R object.
+#' @return The loaded R object (the artifact content), or a `data.table` of
+#'   available versions when `version = "available"`.
 #'
 #' @details
-#' The `version` argument allows you to load specific versions:
-#'   * `NULL` (default): loads the most recent version available.
-#'   * Negative integer (e.g., `-1`) or zero (`0`): loads that number of versions
-#'     before the most recent version. So, if `0`, it loads the current
-#'     version, which is equivalent to `NULL`. If `-1`, it will load the version
-#'     right before the current one, `-2` loads two versions before, and so on.
-#'   * Positive numbers: Error.
-#'   * Character: treated as a specific version ID (e.g., "20250801T162739Z-d86e8").
-#'   * `"select"`, `"pick"`, or `"choose"`: displays an interactive menu to select from
-#'     available versions (only in interactive R sessions).
-#'   * `"available"`: loads a list of the versions availables product from `stamp::st_versions`
-#'     but with an added variable called `vintage` that indicates the order of the versions.
+#' The `version` argument supports the following behaviours:
+#' - `NULL` (default): loads the most recent version available.
+#' - negative integers (e.g., `-1`): load older versions relative to latest.
+#' - a specific version ID (character): load that version directly.
+#' - `"select"` / `"pick"` / `"choose"`: interactive selection (interactive
+#'   sessions only).
+#' - `"available"`: return a `data.table` with version metadata and a
+#'   computed `vintage` column describing relative age.
+#'
+#' This function intentionally does not call `stamp::st_init()`; callers
+#' should initialize the stamp root (optionally with an `alias`) before
+#' calling `pip_read()` so that storage is deterministic and testable.
+#'
+#' @examples
+#' if (interactive()) {
+#'   # Initialize a local root and use pip_write/pip_read normally
+#'   tmp <- fs::path_temp("my_project")
+#'   fs::dir_create(tmp)
+#'   stamp::st_init(tmp, alias = "my_project")
+#'   pip_write(1:3, id = "example", alias = "my_project")
+#'   pip_read("example", alias = "my_project")
+#' }
 #'
 #' @export
 pip_read <- function(
-    id,
-    dir = ".",
-    format = NULL,
-    version = NULL,
-    verbose = TRUE
+  id,
+  format = "qs2",
+  version = NULL,
+  alias = NULL,
+  verbose = TRUE
 ) {
+  # NOTE: do not call stamp::st_init() here; caller should initialize stamp if needed via alias
 
-  # Defenses
-  if (!fs::dir_exists(dir)) {
-    cli::cli_abort("Artifact folder {.path {dir}} does not exist.")
-  }
+  # Use id as file path (can include directory structure)
+  file <- id
 
-  # Initiate stamp
-  stamp::st_init(dir)
+  # Handle format parameter: if a format is explicitly requested and the
+  # id contains an extension, ensure they match; otherwise set the
+  # extension on the id so stamp will use the requested format.
+  file_ext <- fs::path_ext(file)
+  has_ext <- !is.na(file_ext) && !identical(file_ext, "")
 
-  # Construct artifact path
-  file <- fs::path(dir, id)
-
-  if(is.null(format)){
-    format  <- fs::path_ext(file)
-  }
-
-  # Check if file exists when format is not attached
-  if(is.na(format) || identical(format, "")){
-
-    ext        <- tolower(stamp::st_formats())
-    files_tbl  <- fs::dir_info(dir, recurse = FALSE)
-    paths_ext  <- tolower(fs::path_ext(files_tbl$path))
-    all_paths  <- files_tbl$path[files_tbl$type == "file" & paths_ext %in% ext]
-    paths_base <- fs::path_file(fs::path_ext_remove(all_paths))
-    id_base <- fs::path_file(fs::path_ext_remove(id))
-    matched_paths <- all_paths[paths_base == id_base]
-
-    if (length(matched_paths) == 0L) {
-      cli::cli_abort(c(
-        x = "Artifact {.field {id}} not found in {.path {dir}}.",
-        i = "If the artifact is stored under a different name or format, pass the correct {.arg id} or use {.code format = NULL} to inspect available files."
-      ))
+  if (!is.null(format)) {
+    if (has_ext) {
+      # If file has extension and format is specified, they must match
+      if (!identical(tolower(file_ext), tolower(format))) {
+        cli::cli_abort(c(
+          x = "Mismatch between file extension {.val {file_ext}} and requested format {.val {format}}.",
+          i = "Either remove the extension from {.arg id} or set {.code format = NULL}."
+        ))
+      }
+      # Extension already present and matches, use as-is
+    } else {
+      # No extension, add the format
+      file <- fs::path_ext_set(path = file, ext = format)
     }
-
-    file_ext <- fs::path_ext(matched_paths)|> tolower()|> collapse::funique()
-
-    if(length(file_ext)==1){
-      file <- fs::path_ext_set(path = file, ext = file_ext)
-    }else{
-      cli::cli_abort(c(x = "Multiple formats found for artifact {.field {id}}: {.val {file_ext}}.",
-      i = "Specify which format to load using the {.arg format} argument."))
-    }
-  }else{
-    # Change format to the one requested
-    file <- fs::path_ext_set(path = file, ext = format)
   }
 
-  # Make sure file exists
-  if (!fs::file_exists(file)) {
-    cli::cli_abort(c(
-      x = "File {.path {file}} does not exist.",
-      i = "Try {.code format = NULL} to list available formats or verify the {.arg id}/{.arg dir} combination."
-    ))
-  }
   # List available versions
   if (identical(version, "available")) {
-    vr <- stamp::st_versions(file)
-    if (nrow(vr) == 0)
+    vr <- stamp::st_versions(file, alias = alias)
+    if (nrow(vr) == 0) {
       cli::cli_abort("No versions found in {.path {file}}.")
+    }
     vr[, vintage := (.I - 1) * -1]
     return(vr[])
   }
 
   # Protect against empty artifact
-  vr <- stamp::st_versions(file)
+  vr <- stamp::st_versions(file, alias = alias)
 
-  if (nrow(vr) == 0)
+  if (nrow(vr) == 0) {
     cli::cli_abort("No version files found in {.path {file}}.")
+  }
 
   if (verbose) {
     ver_label <- if (is.null(version)) "latest" else as.character(version)
-    cli::cli_alert_info("Loading {.path {file}} (version = {.strong {ver_label}})")
+    cli::cli_alert_info(
+      "Loading {.path {file}} (version = {.strong {ver_label}})"
+    )
   }
 
   # Delegate loading to stamp
-  stamp::st_load(file, version = version)
+  stamp::st_load(file, version = version, alias = alias)
 }
 
 
-#' Save an R object to a versioned artifact using {stamp}
+#' @title Save an R object as a versioned artifact (wrapper around {stamp})
 #'
 #' @description
-#' `pip_write()` saves an R object to disk using {stamp} versioned artifacts.
-#' It is a thin wrapper around [stamp::st_save()] that provides:
-#' * a simplified interface for storing objects in a directory
-#' * optional "force write even if identical" behavior
-#' * automatic creation of the directory if it doesn't exist
+#' Save an R object to a versioned artifact using the {stamp} package.
+#' This wrapper provides a minimal, package-consistent API while forwarding
+#' the heavy lifting (file layout, metadata, version ids) to {stamp}.
 #'
 #' @param x The R object to save.
-#' @param id Character. The artifact identifier (used as the file name).
-#' @param dir Character. Directory where the artifact will be saved. Defaults to `"."`.
-#' @param format Character, optional. Format for serialization (`"qs2"`, `"rds"`, `"csv"`, `"fst"`, `"json"`).
-#'   If `NULL`, the format is inferred from the file extension or `stamp` defaults.
+#' @param id Character. The artifact identifier or path (e.g., "myfile" or "data/myfile.qs2").
+#'   Can include directory structure; format extension is optional.
+#' @param format Character. Format for serialization (`"qs2"`, `"rds"`, `"csv"`, `"fst"`, `"json"`).
+#'   If `NULL`, the format is inferred from the file extension or {stamp}'s defaults.
 #' @param metadata Named list of additional metadata to store with the artifact.
 #' @param code Optional function, expression, or character. Its hash is stored with the artifact.
 #'   If `FALSE` (default), a new version is written only when the content or code has changed.
+#' @param alias Optional character. Passed to `stamp::st_save()` to specify the stamp root
+#'   when saving; forwarded as-is. `NULL` (default) means use the default stamp root.
+#' @param pk Optional primary key (passed to `stamp::st_save()` when storing data frames).
+#' @param verbose Logical. Whether to print status messages.
 #' @param ... Additional arguments forwarded to [stamp::st_save()].
 #'
-#' @returns Invisibly, a list returned by [stamp::st_save()] containing:
-#'   - `path`: full path to the artifact
-#'   - `metadata`: merged metadata including content hashes, file size, etc.
-#'   - `version_id`: internal version identifier created by {stamp}
+#' @return Invisibly, the list returned by [stamp::st_save()] including `path`, `metadata`,
+#' and `version_id`.
 #'
 #' @details
-#'
-#' Versioning policy is controlled via `force_identical_write`:
-#' - `FALSE` → uses `st_opts("versioning") = "content"` (default stamp behavior)
-#'   A new version is only written if the content or code has changed.
-#' - `TRUE` → temporarily sets `st_opts("versioning") = "timestamp"`
-#'   Always creates a new version even if the object is unchanged.
+#' `pip_write()` intentionally does not initialize stamp roots. Callers should
+#' call `stamp::st_init(dir, alias = ...)` prior to saving if they wish to use
+#' a specific alias root. This keeps initialization explicit and avoids
+#' surprising side effects during package function calls or tests.
 #'
 #' @examples
-#' # Save a simple vector
-#' pip_write(1:5, id = "example_vector", dir = tempdir())
-#'
-#' # Force a new version even if identical
-#' pip_write(1:5, id = "example_vector", dir = tempdir(), force_identical_write = TRUE)
+#' if (interactive()) {
+#'   tmp <- fs::path_temp("my_project_write")
+#'   fs::dir_create(tmp)
+#'   stamp::st_init(tmp, alias = "my_project_write")
+#'   pip_write(mtcars[1:3, ], id = "data/cars.qs2", alias = "my_project_write")
+#' }
 #'
 #' @export
 pip_write <- function(
-    x,
-    id,
-    dir = ".",
-    format = "qs2",
-    metadata = list(),
-    code = NULL,
-    ...
+  x,
+  id,
+  format = "qs2",
+  metadata = list(),
+  code = NULL,
+  alias = NULL,
+  pk = NULL,
+  verbose = TRUE,
+  ...
 ) {
-  # ensure directory exists
-  # if (!fs::dir_exists(dir))
-  # {
-  #   cli::cli_abort("Provided directory path does not exist")
-  # }
+  # Set extension if not present
+  if (is.null(fs::path_ext(id)) || identical(fs::path_ext(id), "")) {
+    id <- fs::path_ext_set(path = id, ext = format)
+  }
 
-  fs::dir_create(dir, recurse = TRUE)
+  # Use id as file path (can include directory structure)
+  file <- id
 
-  # determine file path
-  file <- fs::path(dir, id, ext = format)
+  # NOTE: do not call stamp::st_init() here; caller should initialize stamp via alias if needed
 
-  # Initiate stamp
-  stamp::st_init(dir)
-
-  # declare st_path
-  sp <- stamp::st_path(file, format = format)
-
-  # save with stamp
+  # Delegate to stamp::st_save which handles file creation, metadata and
+  # version_id generation. We forward `alias` so stamp can place the file
+  # in the correct alias root.
   out <- stamp::st_save(
-    x        = x,
-    file     = sp,
+    x = x,
+    file = file,
     metadata = metadata,
-    code     = code,
-    format   = format,
+    code = code,
+    format = format,
+    alias = alias,
+    pk = pk,
+    verbose = verbose,
     ...
   )
 

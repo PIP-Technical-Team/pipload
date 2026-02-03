@@ -8,16 +8,17 @@
 #' @return data.table or object saved as artifact.
 #' @export
 load_aux_data <- function(
-    measure,
-    version       = NULL,
-    format        = "qs2",
-    verbose       = getOption("pipload.verbose", TRUE),
-    ppp_defaults  = TRUE
+  measure,
+  version = NULL,
+  format = "qs2",
+  verbose = getOption("pipload.verbose", TRUE),
+  ppp_defaults = TRUE
 ) {
-
   # Defensive checks
   if (missing(measure)) {
-    cli::cli_abort("You must provide a measure name, e.g., {.val 'cpi'} or {.val 'ppp'}.")
+    cli::cli_abort(
+      "You must provide a measure name, e.g., {.val 'cpi'} or {.val 'ppp'}."
+    )
   }
 
   # Ensure working release is loaded
@@ -27,7 +28,9 @@ load_aux_data <- function(
   pip_folders <- pipfun::get_pip_folders("aux_data")
 
   if (is.null(pip_folders)) {
-    cli::cli_abort("Auxiliary data folder not set in .pipenv. Run setup_working_release() first.")
+    cli::cli_abort(
+      "Auxiliary data folder not set in .pipenv. Run setup_working_release() first."
+    )
   }
 
   # Construct full path to the measure artifact
@@ -38,15 +41,28 @@ load_aux_data <- function(
   }
 
   if (verbose) {
-    cli::cli_alert_info("Loading auxiliary data {.field {measure}} from {.path {artifact_dir}}")
+    cli::cli_alert_info(
+      "Loading auxiliary data {.field {measure}} from {.path {artifact_dir}}"
+    )
+  }
+
+  # Look up alias for this directory
+  alias_list <- stamp::st_alias_list()
+  alias <- alias_list[alias_list$root == pip_folders, "alias"]
+
+  if (length(alias) == 0) {
+    cli::cli_abort(c(
+      x = "Auxiliary data folder not initialized in stamp.",
+      i = "Run {.code pipfun::setup_working_release()} first and make sure the aux_data folder is set."
+    ))
   }
 
   # Read the artifact using pip_read
   dt <- pip_read(
-    id      = measure,
-    dir     = artifact_dir,
+    id = artifact_dir,
+    alias = alias,
     version = version,
-    format  = format,
+    format = format,
     verbose = verbose
   )
 
