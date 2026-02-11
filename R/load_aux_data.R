@@ -34,7 +34,7 @@ load_aux_data <- function(
   }
 
   # Construct full path to the measure artifact
-  artifact_dir <- fs::path(pip_folders, measure)
+  artifact_dir <- fs::path(pip_folders, measure, ext = format)
 
   if (!fs::dir_exists(artifact_dir)) {
     cli::cli_abort("Artifact folder {.path {artifact_dir}} does not exist.")
@@ -62,7 +62,6 @@ load_aux_data <- function(
     id = artifact_dir,
     alias = alias,
     version = version,
-    format = format,
     verbose = verbose
   )
 
