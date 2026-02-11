@@ -27,7 +27,6 @@ load_pip_data(
 )
 
 find_pip_data(
-  dir = pipfun::get_pip_folders(folder = "pip_data"),
   latest_year = FALSE,
   where = c("release", "master"),
   verbose = getOption("pipload.verbose"),
@@ -79,8 +78,6 @@ of an artifact. See details in the function body for supported directives.}
 \item{verbose}{logical. If TRUE display information. Default is option
 "pipload.verbose"}
 
-\item{dir}{path}
-
 \item{...}{Just the following: country_code, year, survey, welfare_type,and
 module. They work exactly the same as the ones in \link{load_pip_data}}
 }
@@ -122,13 +119,11 @@ pipfun::setup_working_release(release = lr$release,
                               identity = lr$identity,
                               verbose = FALSE)
 
-dir_pip <- pipfun::get_pip_folders(folder = "pip_data")
-
 # Find data
-find_pip_data(dir = dir_pip, country_code = "HRV")
+find_pip_data(country_code = "HRV")
 
 # Latest year in EACH module
-find_pip_data(dir = dir_pip, country_code = "HRV", latest_year = TRUE)
+find_pip_data(country_code = "HRV", latest_year = TRUE)
 }
 load_pip_inventory()
 load_pip_master_inventory()
