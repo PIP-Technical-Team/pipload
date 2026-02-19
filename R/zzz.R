@@ -16,7 +16,7 @@ pipuax_default_options <- list(
 
 ## DLW -------------
 set_in_piploadenv(key = "dlw_name_pattern",
-                  value = "^[A-Za-z]+_[0-9]{4}_[^_]+_[Vv][0-9]{2}_M_[Vv][0-9]{2}_A_[^_]+_[^_]+\\.[A-Za-z]+$")
+                  value = "^[A-Za-z]+_[0-9]{4}_[^_]+_[Vv][0-9]{2}_[Mm]_[Vv][0-9]{2}_[Aa]_[^_]+_[^_]+\\.[A-Za-z0-9]+$")
 
 set_in_piploadenv(key = "dlw_id_vars",
                   value = c(
