@@ -42,6 +42,7 @@
 #' }
 #'
 #' @export
+#' @importFrom stamp st_versions st_load st_save
 pip_read <- function(
   id,
   format = "qs2",
@@ -144,6 +145,7 @@ pip_read <- function(
 #' }
 #'
 #' @export
+#' @importFrom stamp st_save
 pip_write <- function(
   x,
   id,
