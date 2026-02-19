@@ -135,8 +135,8 @@ find_dlw_data(country_code = "HRV")
 # Latest year in EACH module
 find_dlw_data(country_code = "HRV", latest_year = TRUE)
 }
-check_dlw_id_name("HRV_2011_EU-SILC_V01_M_V04_A_GMD_GPWG.qs")
-check_dlw_id_name("HRV_2011_EU-SILC_V01_M_V04_A_GMD_GPWG")
+check_dlw_id_name("HRV_2011_EU-SILC_V01_M_V04_A_GMD_GPWG.qs2")
+check_dlw_id_name("HRV_2011_EU-SILC_V01_m_V04_a_GMD_GPWG.fst")
 load_dlw_gmd_inventory()
 load_dlw_gmd_log()
 load_gmd_valid_inv()

@@ -76,6 +76,14 @@ load_dlw_data <- function(
 
   # When id name is defined   ------
   if (!is.null(id_name)) {
+    # Handle extension: if id_name has extension, keep it; otherwise add format
+    file_ext <- fs::path_ext(id_name)
+    has_ext <- !is.na(file_ext) && !identical(file_ext, "")
+    
+    if (!has_ext) {
+      id_name <- fs::path(id_name, ext = format)
+    }
+    
     id_name <- check_dlw_id_name(id_name)
   } else {
     # filter   ---------
@@ -233,20 +241,16 @@ find_dlw_data <- function(
 #' @rdname load_dlw_data
 #'
 #' @examples
-#' check_dlw_id_name("HRV_2011_EU-SILC_V01_M_V04_A_GMD_GPWG.qs")
-#' check_dlw_id_name("HRV_2011_EU-SILC_V01_M_V04_A_GMD_GPWG")
+#' check_dlw_id_name("HRV_2011_EU-SILC_V01_M_V04_A_GMD_GPWG.qs2")
+#' check_dlw_id_name("HRV_2011_EU-SILC_V01_m_V04_a_GMD_GPWG.fst")
 check_dlw_id_name <- \(id_name) {
-  id_name <- id_name |>
-    fs::path_ext_remove() |>
-    fs::path(ext = "qs")
-
   ptt <- get_from_piploadenv("dlw_name_pattern")
 
   if (!grepl(ptt, id_name)) {
     cli::cli_abort(c(
       x = "Wrong {.arg id_name} specification",
       i = "it should follow the pattern {.field {ptt}}",
-      i = "like in {.file HRV_2011_EU-SILC_V01_M_V04_A_GMD_GPWG.qs}"
+      i = "like in {.file HRV_2011_EU-SILC_V01_M_V04_A_GMD_GPWG.qs2}"
     ))
   }
   invisible(id_name)

@@ -32,7 +32,8 @@ Imports:
     pipfun (>= 0.3.10),
     glue,
     qs,
-    pins
+    pins,
+    stamp
 Suggests: 
     withr,
     rmarkdown,
