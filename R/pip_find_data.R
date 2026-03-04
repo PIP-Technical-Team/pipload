@@ -258,21 +258,25 @@ pip_find_data <- function(country         = NULL,
       df[ # keep just the ones used in PC
         tool == "PC"
       ][,
-        # Get max master version and filter
-        maxmast := vermast == max(vermast),
-        by = .(country_code, surveyid_year, survey_acronym, module)
+        # Get max master version across all modules for each country-year-survey.
+        # module is intentionally excluded from by: versions must be compared
+        # globally, not per-module, to avoid duplicate rows when different
+        # modules exist under different versions (e.g. ZAF 2008 HIST V01 vs GPWG V02).
+        # toupper() ensures locale-independent comparison (max() is LC_COLLATE-sensitive).
+        maxmast := toupper(vermast) == max(toupper(vermast)),
+        by = .(country_code, surveyid_year, survey_acronym)
       ][
         maxmast == 1
       ][,
-        # Get max veralt version and filter
-        maxalt := veralt == max(veralt),
-        by = .(country_code, surveyid_year, survey_acronym, module)
+        # Get max veralt version, also excluding module from by for same reason
+        maxalt := toupper(veralt) == max(toupper(veralt)),
+        by = .(country_code, surveyid_year, survey_acronym)
       ][
         maxalt == 1
       ][,
         c("maxalt",  "maxmast") := NULL
       ][,
-        # Select right module (source) if more than one available
+        # Select right module (source) if more than one available at max version
         # Create grouping variable
         survey_id := paste(country_code, surveyid_year, survey_acronym, vermast, veralt,
                            sep = "_")
@@ -354,18 +358,20 @@ pip_find_data <- function(country         = NULL,
 
   if (filter_to_tb == TRUE) {
     df <-
-      df[ # keep just the ones used in PC
+      df[ # keep just the ones used in TB
         tool == "TB"
       ][,
-        # Get max master version and filter
-        maxmast := vermast == max(vermast),
-        by = .(country_code, surveyid_year, survey_acronym, module)
+        # Get max master version across all modules for each country-year-survey.
+        # module excluded from by for same reason as PC block (see above).
+        # toupper() ensures locale-independent comparison.
+        maxmast := toupper(vermast) == max(toupper(vermast)),
+        by = .(country_code, surveyid_year, survey_acronym)
       ][
         maxmast == 1
       ][,
-        # Get max veralt version and filter
-        maxalt := veralt == max(veralt),
-        by = .(country_code, surveyid_year, survey_acronym, module)
+        # Get max veralt version, also excluding module from by
+        maxalt := toupper(veralt) == max(toupper(veralt)),
+        by = .(country_code, surveyid_year, survey_acronym)
       ][,
         c("maxalt",  "maxmast") := NULL
       ][,
