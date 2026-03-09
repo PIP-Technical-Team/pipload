@@ -27,6 +27,7 @@
 #'   available. This is the default.
 #' @param verbose logical. If TRUE display information. Default is option
 #'   "pipload.verbose"
+#' @param metadata logical: If TRUE, it will load metadata instead of data. Default is FALSE
 #' @inheritParams pip_read
 #'
 #' @returns data table with pip data
@@ -48,17 +49,18 @@ load_pip_data <- function(
   surveyid_year = NULL,
   survey_acronym = NULL,
   welfare_type = NULL,
-  module = "GPWG",
+  module = NULL,
   id_name = NULL,
   vermast = NULL,
   veralt = NULL,
-  collection = "GMD",
+  collection = NULL,
   latest_version = TRUE,
   latest_year = FALSE,
   where = c("release", "master"),
   version = NULL,
   verbose = getOption("pipload.verbose"),
-  format = "qs2"
+  format = "qs2",
+  metadata = FALSE
 ) {
   # Defenses
   stopifnot(exprs = {
@@ -69,7 +71,11 @@ load_pip_data <- function(
   where <- match.arg(where)
 
   # Get folder path
-  br <- pipfun::get_pip_folders(folder = "pip_data")
+  if (metadata) {
+    dir <- pipfun::get_pip_folders(folder = "pip_metadata")
+  } else {
+    dir <- pipfun::get_pip_folders(folder = "pip_data")
+  }
 
   # When id name is defined   ------
   if (!is.null(id_name)) {
@@ -89,7 +95,7 @@ load_pip_data <- function(
       module = module,
       vermast = vermast,
       veralt = veralt,
-      collection = collection,
+      collection = collection
     )
 
     id_name <- inv[, pip_id]
@@ -111,7 +117,7 @@ load_pip_data <- function(
 
   # Look up alias for pip_data folder
   alias_list <- stamp::st_alias_list()
-  alias <- alias_list[alias_list$root == br, "alias"]
+  alias <- alias_list[alias_list$root == dir, "alias"]
 
   if (length(alias) == 0) {
     cli::cli_abort(c(
@@ -220,12 +226,12 @@ find_pip_data <- function(
 #' @export
 #'
 #' @examples
-#' load_pip_inventory()
+#' load_pip_inventory_release()
 load_pip_inventory_release <- \() {
-  binv <- pipfun::get_pip_folders(folder = "pip_inventory")
+  dir_inv <- pipfun::get_pip_folders(folder = "pip_inventory")
 
   alias_list <- stamp::st_alias_list()
-  alias <- alias_list[alias_list$root == binv, "alias"]
+  alias <- alias_list[alias_list$root == dir_inv, "alias"]
 
   if (length(alias) == 0) {
     cli::cli_abort(c(
@@ -234,7 +240,7 @@ load_pip_inventory_release <- \() {
     ))
   }
 
-  pip_read("pip_inventory", alias = alias)
+  pip_read("pip_release_inventory", alias = alias)
 }
 
 
@@ -245,10 +251,10 @@ load_pip_inventory_release <- \() {
 #' @examples
 #' load_pip_master_inventory()
 load_pip_master_inventory <- \() {
-  binv <- pipfun::get_pip_folders(folder = "pip_master_inventory")
+  dir_inv <- pipfun::get_pip_folders(folder = "pip_master_inventory")
 
   alias_list <- stamp::st_alias_list()
-  alias <- alias_list[alias_list$root == binv, "alias"]
+  alias <- alias_list[alias_list$root == dir_inv, "alias"]
 
   if (length(alias) == 0) {
     cli::cli_abort(c(
