@@ -221,13 +221,18 @@ find_pip_data <- function(
 }
 
 
-#' @returns data.table with PIP inventory
+#' @returns data.table with PIP inventory for the current release
 #' @rdname load_pip_data
+#' @inheritParams pip_read
 #' @export
 #'
 #' @examples
-#' load_pip_inventory_release()
-load_pip_inventory_release <- \() {
+#' load_pip_release_inventory()
+load_pip_release_inventory <- \(
+  version = NULL,
+  verbose = getOption("pipload.verbose"),
+  format = "qs2"
+) {
   dir_inv <- pipfun::get_pip_folders(folder = "pip_inventory")
 
   alias_list <- stamp::st_alias_list()
@@ -240,17 +245,28 @@ load_pip_inventory_release <- \() {
     ))
   }
 
-  pip_read("pip_release_inventory", alias = alias)
+  pip_read(
+    "pip_release_inventory",
+    alias = alias,
+    version = version,
+    verbose = verbose,
+    format = format
+  )
 }
 
 
-#' @returns data.table with PIP inventory
+#' @returns data.table with PIP master inventory
 #' @rdname load_pip_data
+#' @inheritParams pip_read
 #' @export
 #'
 #' @examples
 #' load_pip_master_inventory()
-load_pip_master_inventory <- \() {
+load_pip_master_inventory <- \(
+  format = "qs2",
+  version = NULL,
+  verbose = getOption("pipload.verbose")
+) {
   dir_inv <- pipfun::get_pip_folders(folder = "pip_master_inventory")
 
   alias_list <- stamp::st_alias_list()
@@ -263,7 +279,13 @@ load_pip_master_inventory <- \() {
     ))
   }
 
-  pip_read("pip_master_inventory", alias = alias)
+  pip_read(
+    "pip_master_inventory",
+    alias = alias,
+    version = version,
+    verbose = verbose,
+    format = format
+  )
 }
 
 
