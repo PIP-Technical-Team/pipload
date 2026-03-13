@@ -3,7 +3,7 @@
 \name{load_pip_data}
 \alias{load_pip_data}
 \alias{find_pip_data}
-\alias{load_pip_inventory_release}
+\alias{load_pip_release_inventory}
 \alias{load_pip_master_inventory}
 \alias{check_pip_id_name}
 \title{Set of functions to interact with PIP data.}
@@ -13,17 +13,18 @@ load_pip_data(
   surveyid_year = NULL,
   survey_acronym = NULL,
   welfare_type = NULL,
-  module = "GPWG",
+  module = NULL,
   id_name = NULL,
   vermast = NULL,
   veralt = NULL,
-  collection = "GMD",
+  collection = NULL,
   latest_version = TRUE,
   latest_year = FALSE,
   where = c("release", "master"),
   version = NULL,
   verbose = getOption("pipload.verbose"),
-  format = "qs2"
+  format = "qs2",
+  metadata = FALSE
 )
 
 find_pip_data(
@@ -33,9 +34,17 @@ find_pip_data(
   ...
 )
 
-load_pip_inventory_release()
+load_pip_release_inventory(
+  version = NULL,
+  verbose = getOption("pipload.verbose"),
+  format = "qs2"
+)
 
-load_pip_master_inventory()
+load_pip_master_inventory(
+  format = "qs2",
+  version = NULL,
+  verbose = getOption("pipload.verbose")
+)
 
 check_pip_id_name(id_name)
 }
@@ -78,6 +87,8 @@ of an artifact. See details in the function body for supported directives.}
 \item{verbose}{logical. If TRUE display information. Default is option
 "pipload.verbose"}
 
+\item{metadata}{logical: If TRUE, it will load metadata instead of data. Default is FALSE}
+
 \item{...}{Just the following: country_code, year, survey, welfare_type,and
 module. They work exactly the same as the ones in \link{load_pip_data}}
 }
@@ -86,9 +97,9 @@ data table with pip data
 
 filtered data table from inventory
 
-data.table with PIP inventory
+data.table with PIP inventory for the current release
 
-data.table with PIP inventory
+data.table with PIP master inventory
 
 character with id_name
 }
@@ -125,7 +136,7 @@ find_pip_data(country_code = "HRV")
 # Latest year in EACH module
 find_pip_data(country_code = "HRV", latest_year = TRUE)
 }
-load_pip_inventory()
+load_pip_release_inventory()
 load_pip_master_inventory()
 check_pip_id_name("AGO_2000_HBS_CON_GPWG.qs")
 check_pip_id_name("AGO_2000_HBS_CON_GPWG")
