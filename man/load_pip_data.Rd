@@ -81,11 +81,12 @@ available. This is the default.}
 
 \item{where}{character: Either "release" or "master". Se details.}
 
-\item{version}{An integer or a quoted directive. Retrieve a specific version
-of an artifact. See details in the function body for supported directives.}
+\item{version}{character: Specific data version to load; forwarded to \code{pip_read}. Default is \code{NULL} (latest if available).}
 
 \item{verbose}{logical. If TRUE display information. Default is option
 "pipload.verbose"}
+
+\item{format}{character: Data format to read (for example, \code{"qs2"}). Default is \code{"qs2"}.}
 
 \item{metadata}{logical: If TRUE, it will load metadata instead of data. Default is FALSE}
 
@@ -93,7 +94,7 @@ of an artifact. See details in the function body for supported directives.}
 module. They work exactly the same as the ones in \link{load_pip_data}}
 }
 \value{
-data table with pip data
+data.table with pip data. Note: one of \code{country_code} or \code{id_name} must be provided.
 
 filtered data table from inventory
 
