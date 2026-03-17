@@ -28,9 +28,11 @@
 #' @param verbose logical. If TRUE display information. Default is option
 #'   "pipload.verbose"
 #' @param metadata logical: If TRUE, it will load metadata instead of data. Default is FALSE
-#' @inheritParams pip_read
+#' @param where character: Either `"release"` or `"master"` indicating where to look for data. Default is `"release"`.
+#' @param version character: Specific data version to load; forwarded to `pip_read`. Default is `NULL` (latest if available).
+#' @param format character: Data format to read (for example, `"qs2"`). Default is `"qs2"`.
 #'
-#' @returns data table with pip data
+#' @return data.table with pip data. Note: one of `country_code` or `id_name` must be provided.
 #' @export
 #'
 #' @examples
@@ -63,9 +65,11 @@ load_pip_data <- function(
   metadata = FALSE
 ) {
   # Defenses
-  stopifnot(exprs = {
-    !is.null(country_code) || !is.null(id_name)
-  })
+  if (is.null(country_code) && is.null(id_name)) {
+    cli::cli_abort(c(
+      x = "One of {.arg country_code} or {.arg id_name} must be provided."
+    ))
+  }
 
   # computations   --------
   where <- match.arg(where)
@@ -103,9 +107,8 @@ load_pip_data <- function(
 
   if (length(id_name) != 1) {
     cli::cli_abort(c(
-      x = "Wrong numer of data to load.",
-      i = "It should be only 1. You attempt to load
-                     {.field {length(id_name)}}:",
+      x = "Wrong number of data to load.",
+      i = "It should be only 1. You attempt to load {.field {length(id_name)}}:",
       "{.field {id_name}}"
     ))
   }
@@ -136,12 +139,11 @@ load_pip_data <- function(
 }
 
 
-#' @inheritParams load_pip_data
 #' @param where character: Either "release" or "master". Se details.
 #' @param ... Just the following: country_code, year, survey, welfare_type,and
 #'   module. They work exactly the same as the ones in [load_pip_data]
 #'
-#' @returns filtered data table from inventory
+#' @return filtered data table from inventory
 #' @rdname load_pip_data
 #' @export
 #'
@@ -199,7 +201,7 @@ find_pip_data <- function(
     ctl <- load_pip_master_inventory() |>
       setDT()
   } else {
-    ctl <- load_pip_inventory_release() |>
+    ctl <- load_pip_release_inventory() |>
       setDT()
   }
   ctl <- ctl[grepl(pattern, pip_id)]
@@ -221,9 +223,8 @@ find_pip_data <- function(
 }
 
 
-#' @returns data.table with PIP inventory for the current release
+#' @return data.table with PIP inventory for the current release
 #' @rdname load_pip_data
-#' @inheritParams pip_read
 #' @export
 #'
 #' @examples
@@ -255,9 +256,8 @@ load_pip_release_inventory <- \(
 }
 
 
-#' @returns data.table with PIP master inventory
+#' @return data.table with PIP master inventory
 #' @rdname load_pip_data
-#' @inheritParams pip_read
 #' @export
 #'
 #' @examples
@@ -291,7 +291,7 @@ load_pip_master_inventory <- \(
 
 #' @param id_name id name of pip data
 #'
-#' @returns character with id_name
+#' @return character with id_name
 #' @rdname load_pip_data
 #' @keywords internal
 #'
