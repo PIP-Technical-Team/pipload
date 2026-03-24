@@ -198,10 +198,10 @@ find_pip_data <- function(
     paste(collapse = "_")
 
   if (where == "master") {
-    ctl <- load_pip_master_inventory() |>
+    ctl <- load_pip_master_inventory(verbose = verbose) |>
       setDT()
   } else {
-    ctl <- load_pip_release_inventory() |>
+    ctl <- load_pip_release_inventory(verbose = verbose) |>
       setDT()
   }
   ctl <- ctl[grepl(pattern, pip_id)]
