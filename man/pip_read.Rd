@@ -4,7 +4,13 @@
 \alias{pip_read}
 \title{Read a versioned artifact (wrapper around {stamp})}
 \usage{
-pip_read(id, format = "qs2", version = NULL, alias = NULL, verbose = TRUE)
+pip_read(
+  id,
+  format = "qs2",
+  version = NULL,
+  alias = NULL,
+  verbose = getOption("pipload.verbose")
+)
 }
 \arguments{
 \item{id}{Character. Artifact name or path (e.g., "myfile" or "data/myfile.qs2").
