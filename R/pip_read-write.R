@@ -48,7 +48,7 @@ pip_read <- function(
   format = "qs2",
   version = NULL,
   alias = NULL,
-  verbose = TRUE
+  verbose = getOption("pipload.verbose")
 ) {
   # NOTE: do not call stamp::st_init() here; caller should initialize stamp if needed via alias
 
@@ -102,7 +102,7 @@ pip_read <- function(
   }
 
   # Delegate loading to stamp
-  stamp::st_load(file, version = version, alias = alias)
+  stamp::st_load(file, version = version, alias = alias, verbose = verbose)
 }
 
 
@@ -154,7 +154,7 @@ pip_write <- function(
   code = NULL,
   alias = NULL,
   pk = NULL,
-  verbose = TRUE,
+  verbose = getOption("pipload.verbose"),
   ...
 ) {
   # Set extension if not present

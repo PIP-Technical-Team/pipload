@@ -72,7 +72,7 @@ load_dlw_data <- function(
   })
 
   # Get dir
-  dir <- pipfun::get_pip_folders(folder = "dlw_data")
+  dir <- pipfun::get_pip_folders(folder = "dlw_data", verbose = FALSE)
 
   # When id name is defined   ------
   if (!is.null(id_name)) {
@@ -173,12 +173,15 @@ find_dlw_data <- function(
     rlang::parse_expr()
 
   if (is.null(dir)) {
-    dir <- pipfun::get_pip_folders(folder = "dlw_data")
+    dir <- pipfun::get_pip_folders(folder = "dlw_data", verbose = FALSE)
   }
   # PATCH -> Need to create function
   bl <- setdiff(
-    list.files(pipfun::get_pip_folders()$pip_data),
-    list.files(pipfun::get_pip_folders()$pip_data, pattern = "\\.lock$")
+    list.files(pipfun::get_pip_folders(verbose = FALSE)$pip_data),
+    list.files(
+      pipfun::get_pip_folders(verbose = FALSE)$pip_data,
+      pattern = "\\.lock$"
+    )
   )
 
   # Build catalog
@@ -265,7 +268,7 @@ check_dlw_id_name <- \(id_name) {
 #' @examples
 #' load_dlw_gmd_inventory()
 load_dlw_gmd_inventory <- \() {
-  binv <- pipfun::get_pip_folders(folder = "dlw_inventory")
+  binv <- pipfun::get_pip_folders(folder = "dlw_inventory", verbose = FALSE)
 
   alias_list <- stamp::st_alias_list()
   alias <- alias_list[alias_list$root == binv, "alias"]
@@ -288,7 +291,7 @@ load_dlw_gmd_inventory <- \() {
 #' @examples
 #' load_dlw_gmd_log()
 load_dlw_gmd_log <- \() {
-  binv <- pipfun::get_pip_folders(folder = "dlw_inventory")
+  binv <- pipfun::get_pip_folders(folder = "dlw_inventory", verbose = FALSE)
 
   alias_list <- stamp::st_alias_list()
   alias <- alias_list[alias_list$root == binv, "alias"]
@@ -310,7 +313,7 @@ load_dlw_gmd_log <- \() {
 #' @examples
 #' load_gmd_valid_inv()
 load_gmd_valid_inv <- \() {
-  binv <- pipfun::get_pip_folders(folder = "dlw_metadata")
+  binv <- pipfun::get_pip_folders(folder = "dlw_metadata", verbose = FALSE)
 
   alias_list <- stamp::st_alias_list()
   alias <- alias_list[alias_list$root == binv, "alias"]
@@ -332,7 +335,7 @@ load_gmd_valid_inv <- \() {
 #' @examples
 #' load_gmd_valid_log()
 load_gmd_valid_log <- \() {
-  binv <- pipfun::get_pip_folders(folder = "dlw_metadata")
+  binv <- pipfun::get_pip_folders(folder = "dlw_metadata", verbose = FALSE)
 
   alias_list <- stamp::st_alias_list()
   alias <- alias_list[alias_list$root == binv, "alias"]
@@ -354,7 +357,7 @@ load_gmd_valid_log <- \() {
 #' @examples
 #' load_gmd_valid_report()
 load_gmd_valid_report <- \() {
-  binv <- pipfun::get_pip_folders(folder = "dlw_metadata")
+  binv <- pipfun::get_pip_folders(folder = "dlw_metadata", verbose = FALSE)
 
   alias_list <- stamp::st_alias_list()
   alias <- alias_list[alias_list$root == binv, "alias"]

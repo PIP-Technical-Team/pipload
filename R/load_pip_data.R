@@ -76,9 +76,9 @@ load_pip_data <- function(
 
   # Get folder path
   if (metadata) {
-    dir <- pipfun::get_pip_folders(folder = "pip_metadata")
+    dir <- pipfun::get_pip_folders(folder = "pip_metadata", verbose = FALSE)
   } else {
-    dir <- pipfun::get_pip_folders(folder = "pip_data")
+    dir <- pipfun::get_pip_folders(folder = "pip_data", verbose = FALSE)
   }
 
   # When id name is defined   ------
@@ -234,7 +234,7 @@ load_pip_release_inventory <- \(
   verbose = getOption("pipload.verbose"),
   format = "qs2"
 ) {
-  dir_inv <- pipfun::get_pip_folders(folder = "pip_inventory")
+  dir_inv <- pipfun::get_pip_folders(folder = "pip_inventory", verbose = FALSE)
 
   alias_list <- stamp::st_alias_list()
   alias <- alias_list[alias_list$root == dir_inv, "alias"]
@@ -267,7 +267,10 @@ load_pip_master_inventory <- \(
   version = NULL,
   verbose = getOption("pipload.verbose")
 ) {
-  dir_inv <- pipfun::get_pip_folders(folder = "pip_master_inventory")
+  dir_inv <- pipfun::get_pip_folders(
+    folder = "pip_master_inventory",
+    verbose = FALSE
+  )
 
   alias_list <- stamp::st_alias_list()
   alias <- alias_list[alias_list$root == dir_inv, "alias"]
