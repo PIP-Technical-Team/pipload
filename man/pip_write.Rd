@@ -12,7 +12,7 @@ pip_write(
   code = NULL,
   alias = NULL,
   pk = NULL,
-  verbose = TRUE,
+  verbose = getOption("pipload.verbose"),
   ...
 )
 }
