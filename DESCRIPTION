@@ -1,5 +1,5 @@
 Package: pipload
-Version: 0.1.18
+Version: 0.2.4
 Title: Loads PIP data into memory
 Description: provides a series of tools to load into memory the PIP microdata.
     You can load and update the inventory of PIP microdata, as well as find the
@@ -13,7 +13,7 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.1.2
+RoxygenNote: 7.3.2
 Imports: 
     rlang,
     data.table,
@@ -23,21 +23,27 @@ Imports:
     readr,
     fs,
     purrr,
-    dplyr,
     cli,
     magrittr,
     usethis,
     stringr,
     joyn,
-    lubridate,
     lifecycle,
-    withr
+    pipfun (>= 0.3.10),
+    glue,
+    qs,
+    pins,
+    stamp
 Suggests: 
+    withr,
     rmarkdown,
     knitr,
-    testthat,
+    testthat (>= 3.0.0),
     covr
 URL: https://pip-technical-team.github.io/pipload/
 VignetteBuilder: knitr
 Depends: 
     R (>= 2.10)
+Config/testthat/edition: 3
+Remotes: 
+    github::PIP-Technical-Team/pipfun@DEV_v2

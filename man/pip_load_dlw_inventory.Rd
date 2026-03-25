@@ -6,7 +6,7 @@
 \usage{
 pip_load_dlw_inventory(
   root_dir = Sys.getenv("PIP_ROOT_DIR"),
-  dlw_dir = pip_create_globals(root_dir)$DLW_RAW_DIR
+  dlw_dir = pipfun::pip_create_globals(root_dir)$DLW_RAW_DIR
 )
 }
 \arguments{

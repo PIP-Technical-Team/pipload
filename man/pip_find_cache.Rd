@@ -11,9 +11,10 @@ pip_find_cache(
   data_level = NULL,
   welfare_type = NULL,
   source = NULL,
-  tool = c("PC", "TB"),
+  version = NULL,
+  tool = c("PC", "pc", "tb", "TB"),
   root_dir = Sys.getenv("PIP_ROOT_DIR"),
-  pipedir = pip_create_globals(root_dir)$PIP_PIPE_DIR
+  pipedir = pipfun::pip_create_globals(root_dir)$PIP_PIPE_DIR
 )
 }
 \arguments{
@@ -32,13 +33,16 @@ income}
 \item{source}{character: Source of data. It could be \code{GPWG}, \code{HIST}, \code{GROUP},
 \code{synth}, \code{BIN}, and \code{ALL}. The latter is used only in Table Maker.}
 
+\item{version}{character: version of data in the form
+\code{yyyy_xx_xx_[PROD|INT|TEST]}. Default is the most recent PROD version}
+
 \item{tool}{character: PIP tool in which data will be used. It could be
 \code{PC} for Poverty Calculator or \code{TB} for Table Maker. Others will be added}
 
 \item{root_dir}{character: root directory of the PIP data}
 
 \item{pipedir}{charater: directory of pipeline. Default is
-\code{pip_create_globals(root_dir)$PIP_PIPE_DIR}}
+\code{pipfun::pip_create_globals(root_dir)$PIP_PIPE_DIR}}
 }
 \value{
 data.table

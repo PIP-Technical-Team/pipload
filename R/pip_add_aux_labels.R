@@ -12,19 +12,19 @@ pip_add_aux_labels <- function(x, measure, verbose) {
 
     # Label variables
     #attr(x$survey_year, "label") <- "Proportion of first year of survey"
-    attr(x$cpi_domain,     "label") <- "CPI domain to join with microdata"
-    attr(x$cpi_data_level, "label") <- "Values to use as keys to join with cpi_domain_var"
+    #attr(x$cpi_domain_value,     "label") <- "CPI domain to join with microdata"
+    #attr(x$cpi_data_level, "label") <- "Values to use as keys to join with cpi_domain_var"
     #attr(x$cpi_year,  "label") <- "Year of survey ID"
     attr(x$ccf,            "label") <- "Currency conversion factor"
-    attr(x$cpi,            "label") <- "Consumer Price Index (Based on 2011)."
+    #attr(x$cpi,            "label") <- "Consumer Price Index (Based on 2011)."
 
   }  else if (measure == "ppp") {
 
     ppp_year <- unique(x[x$ppp_default == TRUE, "ppp_year"])
 
     # Label variables
-    attr(x$ppp_domain,     "label")     <- "PPP domain to join with microdata"
-    attr(x$ppp_data_level, "label")     <- "Values to use as keys to join with ppp_domain_var"
+    #attr(x$ppp_domain,     "label")     <- "PPP domain to join with microdata"
+    #attr(x$ppp_data_level, "label")     <- "Values to use as keys to join with ppp_domain_var"
     attr(x$ppp,            "label")     <- paste0("Purchasing Power Parity (",
                                              ppp_year,"2011 ICP round)")
     attr(x$ppp_year,           "label") <- "ICP round year "
@@ -49,26 +49,26 @@ pip_add_aux_labels <- function(x, measure, verbose) {
     # Label Variables
     attr(x$country_code,   "label")  <- "Country code"
     attr(x$year,           "label")  <- "Year"
-    attr(x$gdp_data_level, "label")  <- "Values to use as keys to join with gdp_domain_var"
+    #attr(x$gdp_data_level, "label")  <- "Values to use as keys to join with gdp_domain_var"
     attr(x$gdp,            "label")  <- "GDP per capita (constant 2010 US$)"
-    attr(x$gdp_domain,     "label")  <- "GDP domain to join with microdata"
+    #attr(x$gdp_domain,     "label")  <- "GDP domain to join with microdata"
 
   } else if (measure == "pce") {
 
     attr(x$country_code,   "label")  <- "Country code"
     attr(x$year,           "label")  <- "Year"
-    attr(x$pce_data_level, "label")  <- "Values to use as keys to join with \n pce_domain_var in microdata"
+    #attr(x$pce_data_level, "label")  <- "Values to use as keys to join with \n pce_domain_var in microdata"
     attr(x$pce,            "label")  <- "Households and NPISHs Final consumption expenditure per capita (constant 2010 US$)"
-    attr(x$pce_domain,     "label")  <- "PCE domain to join with microdata"
+    #attr(x$pce_domain,     "label")  <- "PCE domain to join with microdata"
 
 
   } else if (measure == "pop") {
 
     attr(x$country_code,   "label")  <- "Country code"
     attr(x$year,           "label")  <- "Year"
-    attr(x$pop_data_level, "label")  <- "Values to use as keys to join with pop_domain_var"
+    #attr(x$pop_data_level, "label")  <- "Values to use as keys to join with pop_domain_var"
     attr(x$pop,            "label")  <- "Population"
-    attr(x$pop_domain,     "label")  <- "Population domain to join with microdata"
+    #attr(x$pop_domain,     "label")  <- "Population domain to join with microdata"
 
   } else {
     if (verbose)

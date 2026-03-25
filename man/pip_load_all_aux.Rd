@@ -7,12 +7,12 @@
 pip_load_all_aux(
   replace = NULL,
   aux = c("cpi", "ppp", "pfw", "pop", "gdm"),
+  branch = c("DEV", "PROD", "main"),
   aux_names = aux,
   envir = globalenv(),
   root_dir = Sys.getenv("PIP_ROOT_DIR"),
-  maindir = pip_create_globals(root_dir)$PIP_DATA_DIR,
+  maindir = pipfun::pip_create_globals(root_dir)$PIP_DATA_DIR,
   version = NULL,
-  file_to_load = NULL,
   apply_label = TRUE,
   verbose = FALSE,
   preferred_format = NULL
@@ -34,19 +34,22 @@ be loaded. default is \code{aux}}
 \item{root_dir}{character: root directory of the PIP data}
 
 \item{maindir}{character: main directory. By default it
-uses \code{pip_create_globals(root_dir)$PIP_DATA_DIR}}
+uses \code{pipfun::pip_create_globals(root_dir)$PIP_DATA_DIR}}
 
 \item{version}{An integer or a quoted directive. "available": displays list
 of available versions for \code{measure}. "select"|"pick"|"choose": allows user
 to select the vintage of \code{measure}. if the integer is a zero or a negative
 number (e.g., \code{-1}), \code{pip_load_aux} will load that number of versions
 before the most recent version available. So, if \code{0}, it loads the current
-version. If \code{-1}, it will load the version before the current, \code{-2} loads two
-versions before the current one, and so on. If it is a positive number, it
-must be quoted (as character) and in the form "\%Y\%m\%d\%H\%M\%S".}
-
-\item{file_to_load}{character: file path to load. Does not work with any
-other argument}
+version. If \code{-1}, it will load the version before the current, \code{-2} loads
+two versions before the current one, and so on. If it is a positive number,
+it must be quoted (as character) and in the form "\%Y\%m\%d\%H\%M\%S". If "00",
+it load the most recent version of the data (similar to \code{version = 0} or
+\code{version = NULL} or \code{version = "0"}). The difference is that \code{"00"} load
+the most recent version of the vintage folder, rather than the current
+version in the dynamic folder. Thus, attribute "version" in \code{attr(dd, "version")} is the actual version of the most recent vintage of the file
+rather that \code{attr(dd, "version")} equal to "current", which is the default.
+Option "00" is useful for vintage control}
 
 \item{apply_label}{logical: if TRUE, predefined labels will apply to data
 loaded using \code{file_to_load} argument. Default TRUE. Tip: change to FALSE if

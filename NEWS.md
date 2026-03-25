@@ -1,7 +1,59 @@
+# pipload 0.2.4
+
+* create [load_dlw_data] loads data from dlw. [find_dlw_data] Find data available in DLW data board. [load_dlw_gmd_inventory] loads inventory of GMD data from DLW. [load_dlw_gmd_log] loads GMD log of GMD from DLW. [load_gmd_valid_inv] loads GMD validated inventory. [load_gmd_valid_log] loads GMD validation
+
+* Fix issue with `pip_read()` loading the wrong version of the data. 
+
+# pipload 0.2.3
+* First version of `load_pip_data()` and `find_pip_data()`.
+
+# pipload 0.2.2
+
+* Add new functions to read and write data in the PIP ecosystem, `pip_read()` and `pip_write()`
+* Implement preliminary version of `load_dlw_data()` and `find_dlw_data()`, which are built over `pip_read()` and `pip_write()`. 
+* This version requires `{pipfun}` >= 0.3.6
+
+# pipload 0.2.1
+
+- `pip_load_aux()` now reads from branches folder and loading algorithm has been improved. 
+
+- parameter `file_to_load` from `pip_load_aux()` has been softly deprecated. Parameter `filename` is the new way to load files whose names are not the same as the main auxiliary files. 
+
+- make sure `pip_load_all_aux()` works with new structure
+
+# pipload 0.2.0
+
+- Use new folder structure split by DEV and PROD branches. 
+
+- Loads DEV version by default. 
+
+# pipload 0.1.24
+* change `attr` to `data.table::setattr`
+* add `identity` to name of cache folder (`CACHE_SVY_DIR_PC`) in `pip_create_globals()`
+
+# pipload 0.1.23
+* Add option "00" to argumetn `version` in `pip_load_aux` to get the most recent version from vintage folder.
+
+# pipload 0.1.22
+* Change output directory to new synced TFS dir
+
+# pipload 0.1.21
+* global `glbs$CACHE_SVY_DIR_PC` now uses sub-directories to account for PPP version
+
+* Remove creation of TB output folders. They will be brought back in the future
+
+# pipload 0.1.20
+* improve error messages and remove TB output folders for now
+
+# pipload 0.1.19
+* add parameter `suffix` to `pip_load_aux()` to retrieve complementary data of measures. For instance `pip_load_aux("ppp", suffix = "vintage")`
+
+* Add new way to create vintage folders in `pip_create_globals()` using the new function  `pip_create_vintage()`. **This is still work in progress**. 
+
+
 # pipload 0.1.18
 * Add code coverage `covr`
 
-* Add new way to create vintage folders in `pip_create_globals()`
 
 
 # pipload 0.1.17

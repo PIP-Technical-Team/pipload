@@ -4,7 +4,7 @@
 #' @param action character: Either `load` or `update`
 #' @param country character: vector with ISO3 country code to update
 #' @param maindir character: main directory. By default it
-#' uses `pip_create_globals(root_dir)$PIP_DATA_DIR`
+#' uses `pipfun::pip_create_globals(root_dir)$PIP_DATA_DIR`
 #' @param force  logical: If TRUE, forced update implemented
 #' @param inventory_version date: date of inventory version to load
 #' @inheritParams pip_find_cache
@@ -20,7 +20,7 @@
 pip_inventory <- function(action            = "load",
                           country           = NULL,
                           root_dir          = Sys.getenv("PIP_ROOT_DIR"),
-                          maindir           = pip_create_globals(root_dir)$PIP_DATA_DIR,
+                          maindir           = pipfun::pip_create_globals(root_dir)$PIP_DATA_DIR,
                           force             = FALSE,
                           inventory_version = NULL
                           ) {

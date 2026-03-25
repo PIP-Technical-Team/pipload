@@ -6,18 +6,21 @@
 \usage{
 pip_load_cache_inventory(
   root_dir = Sys.getenv("PIP_ROOT_DIR"),
-  pipedir = pip_create_globals(root_dir)$PIP_PIPE_DIR,
-  tool = c("PC", "TB")
+  pipedir = pipfun::pip_create_globals(root_dir)$PIP_PIPE_DIR,
+  tool = c("pc", "PC", "TB", "tb"),
+  version = NULL
 )
 }
 \arguments{
-\item{root_dir}{character: root directory of the PIP data}
+\item{root_dir}{character: root directory of the PIP project}
 
-\item{pipedir}{charater: directory of pipeline. Default is
-\code{pip_create_globals(root_dir)$PIP_PIPE_DIR}}
+\item{pipedir}{character: directory of the pipeline}
 
 \item{tool}{character: Either "PC" for Poverty calculator or "TB" for table
 maker}
+
+\item{version}{character: version of data in the form
+\code{yyyy_xx_xx_[PROD|INT|TEST]}. Default is the most recent PROD version}
 }
 \description{
 Load cache inventory

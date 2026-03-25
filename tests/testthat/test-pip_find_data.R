@@ -1,4 +1,3 @@
-context("Consistency conditions")
 
 test_that("main directory is reachable", {
   withr::local_options(lifecycle_verbosity = "quiet")

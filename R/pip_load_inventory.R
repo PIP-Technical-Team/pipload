@@ -21,7 +21,7 @@
 #' pip_load_inventory()
 #' }
 pip_load_inventory <- function(root_dir = Sys.getenv("PIP_ROOT_DIR"),
-                               maindir  = pip_create_globals(root_dir)$PIP_DATA_DIR,
+                               maindir  = pipfun::pip_create_globals(root_dir)$PIP_DATA_DIR,
                                inv_file = fs::path(maindir,
                                                  "_inventory/inventory.fst")
                                ) {
