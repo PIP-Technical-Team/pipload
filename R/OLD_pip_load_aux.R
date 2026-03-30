@@ -35,6 +35,7 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' # Load CPI
 #' cpi <- pip_load_aux("cpi")
 #'
@@ -49,7 +50,6 @@
 #' head(av)
 #' df      <- pip_load_aux(measure, version = av[1])
 #' head(df)
-#' \dontrun{
 #' df      <- pip_load_aux(measure, version = -1)
 #' head(df)
 #' df      <- pip_load_aux(measure, version = "pick")

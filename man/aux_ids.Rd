@@ -17,5 +17,7 @@ list of ids per table
 list of ID variables in auxiliary tables
 }
 \examples{
+\dontrun{
 aux_ids()
+}
 }

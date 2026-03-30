@@ -43,9 +43,8 @@
 #'                               verbose = FALSE)
 #'
 #' # Using id_name
-#' load_pip_data(id_name = "LCA_2015_SLCHBS_INC_GPWG")
-#'
-#' }
+#' load_pip_data(id_name = "BOL_2022_EH_INC_ALL")
+#'}
 load_pip_data <- function(
   country_code = NULL,
   surveyid_year = NULL,
@@ -159,10 +158,10 @@ load_pip_data <- function(
 #'                               verbose = FALSE)
 #'
 #' # Find data
-#' find_pip_data(country_code = "HRV")
+#' find_pip_data(country_code = "BOL")
 #'
 #' # Latest year in EACH module
-#' find_pip_data(country_code = "HRV", latest_year = TRUE)
+#' find_pip_data(country_code = "BOL", latest_year = TRUE)
 #' }
 find_pip_data <- function(
   latest_year = FALSE,
@@ -228,7 +227,13 @@ find_pip_data <- function(
 #' @export
 #'
 #' @examples
+#' \dontrun{
+#' lr <- pipfun::get_latest_pip_release()
+#' pipfun::setup_working_release(release = lr$release,
+#'                               identity = lr$identity,
+#'                               verbose = FALSE)
 #' load_pip_release_inventory()
+#' }
 load_pip_release_inventory <- \(
   version = NULL,
   verbose = getOption("pipload.verbose"),
@@ -261,7 +266,13 @@ load_pip_release_inventory <- \(
 #' @export
 #'
 #' @examples
+#' \dontrun{
+#' lr <- pipfun::get_latest_pip_release()
+#' pipfun::setup_working_release(release = lr$release,
+#'                               identity = lr$identity,
+#'                               verbose = FALSE)
 #' load_pip_master_inventory()
+#' }
 load_pip_master_inventory <- \(
   format = "qs2",
   version = NULL,
@@ -299,8 +310,10 @@ load_pip_master_inventory <- \(
 #' @keywords internal
 #'
 #' @examples
+#' \dontrun{
 #' check_pip_id_name("AGO_2000_HBS_CON_GPWG.qs2")
 #' check_pip_id_name("AGO_2000_HBS_CON_GPWG")
+#' }
 check_pip_id_name <- \(id_name) {
   id_name <- id_name |>
     fs::path_ext_remove() |>
