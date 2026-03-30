@@ -31,9 +31,8 @@ Imports:
     lifecycle,
     pipfun (>= 0.3.10),
     glue,
-    qs,
-    pins,
-    stamp
+    stamp,
+    qs2
 Suggests: 
     withr,
     rmarkdown,
