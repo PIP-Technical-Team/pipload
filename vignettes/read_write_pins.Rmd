@@ -83,24 +83,26 @@ Below are some real-world examples of how you might use these higher-level funct
 ```{r load_dlw_data}
 # Get the latest release and set up the working environment
 lr <- pipfun::get_latest_pip_release()
-pipfun::setup_working_release(release = lr$release,
-                              identity = lr$identity,
-                              verbose = FALSE)
+pipfun::setup_working_release(
+  release = lr$release,
+  identity = lr$identity,
+  verbose = FALSE
+)
 
 # Using pin_name (with extension)
-load_dlw_data(pin_name = "HRV_2011_EU-SILC_V01_M_V04_A_GMD_GPWG.qs") |> 
+load_dlw_data(pin_name = "HRV_2011_EU-SILC_V01_M_V04_A_GMD_GPWG.qs2") |>
   head()
 
 # Using pin_name (without extension also works)
-load_dlw_data(pin_name = "HRV_2011_EU-SILC_V01_M_V04_A_GMD_GPWG") |> 
+load_dlw_data(pin_name = "HRV_2011_EU-SILC_V01_M_V04_A_GMD_GPWG") |>
   head()
 
 # Using country and year
-load_dlw_data(country_code = "HRV", year = 2011) |> 
+load_dlw_data(country_code = "HRV", year = 2011) |>
   head()
 
 # Find all data for a country
-find_dlw_data(country_code = "HRV") |> 
+find_dlw_data(country_code = "HRV") |>
   head()
 
 # Find the latest year in EACH module for a country

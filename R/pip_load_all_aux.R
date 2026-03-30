@@ -53,11 +53,11 @@ pip_load_all_aux <- function(replace           = NULL,
     purrr::map2(.x = aux_dirs,
                 .y = aux_indicators,
                 .f = ~{
-                  fqs  <- fs::path(.x, .y, ext = "qs")
+                  fqs2 <- fs::path(.x, .y, ext = "qs2")
                   ffst <- fs::path(.x, .y, ext = "fst")
                   frds <- fs::path(.x, .y, ext = "rds")
 
-                  f_exists <- purrr::map_lgl(c(ffst, frds, fqs), fs::file_exists)
+                  f_exists <- purrr::map_lgl(c(ffst, frds, fqs2), fs::file_exists)
                   any(f_exists)
 
                 })

@@ -299,12 +299,12 @@ load_pip_master_inventory <- \(
 #' @keywords internal
 #'
 #' @examples
-#' check_pip_id_name("AGO_2000_HBS_CON_GPWG.qs")
+#' check_pip_id_name("AGO_2000_HBS_CON_GPWG.qs2")
 #' check_pip_id_name("AGO_2000_HBS_CON_GPWG")
 check_pip_id_name <- \(id_name) {
   id_name <- id_name |>
     fs::path_ext_remove() |>
-    fs::path(ext = "qs")
+    fs::path(ext = "qs2")
 
   ptt <- get_from_piploadenv("pip_name_pattern")
 

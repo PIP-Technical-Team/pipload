@@ -37,7 +37,7 @@
 #'                               verbose = FALSE)
 #'
 #' # Using id_name
-#' load_dlw_data(id_name = "HRV_2011_EU-SILC_V01_M_V04_A_GMD_GPWG.qs")
+#' load_dlw_data(id_name = "HRV_2011_EU-SILC_V01_M_V04_A_GMD_GPWG.qs2")
 #'
 #' # without ext also works
 #' load_dlw_data(id_name = "HRV_2011_EU-SILC_V01_M_V04_A_GMD_GPWG")
