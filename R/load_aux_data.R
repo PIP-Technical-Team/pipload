@@ -24,7 +24,7 @@ load_aux_data <- function(
   pipfun::get_wrk_release(verbose = FALSE)
 
   # Get PIP folder paths
-  pip_folders <- pipfun::get_pip_folders("aux_data")
+  pip_folders <- pipfun::get_pip_folders("aux_data", verbose = verbose)
 
   if (is.null(pip_folders)) {
     cli::cli_abort("Auxiliary data folder not set in .pipenv. Run setup_working_release() first.")
