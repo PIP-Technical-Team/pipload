@@ -51,46 +51,56 @@
 #' # Latest year in EACH module
 #' find_dlw_data(country_code = "HRV", latest_year = TRUE)
 #' }
-load_dlw_data <- function(country_code   = NULL,
-                          surveyid_year  = NULL,
-                          survey_acronym = NULL,
-                          vermast        = NULL,
-                          veralt         = NULL,
-                          collection     = "GMD",
-                          module         = "GPWG",
-                          latest_version = TRUE,
-                          latest_year    = FALSE,
-                          id_name       = NULL,
-                          version        = NULL,
-                          format         = "qs2",
-                          verbose        =  getOption("pipload.verbose")) {
-
+load_dlw_data <- function(
+  country_code = NULL,
+  surveyid_year = NULL,
+  survey_acronym = NULL,
+  vermast = NULL,
+  veralt = NULL,
+  collection = "GMD",
+  module = "GPWG",
+  latest_version = TRUE,
+  latest_year = FALSE,
+  id_name = NULL,
+  version = NULL,
+  format = "qs2",
+  verbose = getOption("pipload.verbose")
+) {
   # defenses   ---------
   stopifnot(exprs = {
     !is.null(country_code) || !is.null(id_name)
   })
 
   # Get dir
-  dir <- pipfun::get_pip_folders(folder = "dlw_data")
+  dir <- pipfun::get_pip_folders(folder = "dlw_data", verbose = FALSE)
 
   # When id name is defined   ------
   if (!is.null(id_name)) {
+    # Handle extension: if id_name has extension, keep it; otherwise add format
+    file_ext <- fs::path_ext(id_name)
+    has_ext <- !is.na(file_ext) && !identical(file_ext, "")
+    
+    if (!has_ext) {
+      id_name <- fs::path(id_name, ext = format)
+    }
+    
     id_name <- check_dlw_id_name(id_name)
-
   } else {
     # filter   ---------
 
-    fd <- find_dlw_data(dir            = dir,
-                        latest_version = latest_version,
-                        latest_year    = latest_year,
-                        verbose        = verbose,
-                        country_code   = country_code,
-                        surveyid_year  = surveyid_year,
-                        survey_acronym = survey_acronym,
-                        vermast        = vermast,
-                        veralt         = veralt,
-                        collection     = collection,
-                        module         = module)
+    fd <- find_dlw_data(
+      dir = dir,
+      latest_version = latest_version,
+      latest_year = latest_year,
+      verbose = verbose,
+      country_code = country_code,
+      surveyid_year = surveyid_year,
+      survey_acronym = survey_acronym,
+      vermast = vermast,
+      veralt = veralt,
+      collection = collection,
+      module = module
+    )
 
     id_name <- fd[, id_name]
   }
@@ -101,12 +111,25 @@ load_dlw_data <- function(country_code   = NULL,
   if (verbose) {
     cli::cli_alert_info("Loading {.field {id_name}}")
   }
-  return(pip_read(id = id_name,
-                  dir = dir,
-                  version = version,
-                  format = format,
-                  verbose = verbose))
 
+  # Look up alias from stamp
+  alias_list <- stamp::st_alias_list()
+  alias <- alias_list[alias_list$root == dir, "alias"]
+
+  if (length(alias) == 0) {
+    cli::cli_abort(c(
+      x = "DLW data folder not initialized in stamp.",
+      i = "Run {.code pipfun::setup_working_release()} first and make sure the dlw_data folder is set."
+    ))
+  }
+
+  return(pip_read(
+    id = id_name,
+    version = version,
+    format = format,
+    alias = alias,
+    verbose = verbose
+  ))
 }
 
 
@@ -119,11 +142,13 @@ load_dlw_data <- function(country_code   = NULL,
 #' @returns data from with filter data
 #' @rdname load_dlw_data
 #' @export
-find_dlw_data <- function(dir = NULL,
-                          latest_version = TRUE,
-                          latest_year    = FALSE,
-                          verbose        =  getOption("pipload.verbose"),
-                          ...) {
+find_dlw_data <- function(
+  dir = NULL,
+  latest_version = TRUE,
+  latest_year = FALSE,
+  verbose = getOption("pipload.verbose"),
+  ...
+) {
   # Capture ... arguments as a list
   dots <- list(...)
   # Combine country and ... into a single list of arguments
@@ -147,13 +172,17 @@ find_dlw_data <- function(dir = NULL,
     # convert to expression
     rlang::parse_expr()
 
-
   if (is.null(dir)) {
-    dir <- pipfun::get_pip_folders(folder = "dlw_data")
+    dir <- pipfun::get_pip_folders(folder = "dlw_data", verbose = FALSE)
   }
   # PATCH -> Need to create function
-  bl <- setdiff(list.files(pipfun::get_pip_folders()$pip_data),
-                list.files(pipfun::get_pip_folders()$pip_data, pattern = "\\.lock$"))
+  bl <- setdiff(
+    list.files(pipfun::get_pip_folders(verbose = FALSE)$pip_data),
+    list.files(
+      pipfun::get_pip_folders(verbose = FALSE)$pip_data,
+      pattern = "\\.lock$"
+    )
+  )
 
   # Build catalog
   ctl <- data.table(id_name = bl)
@@ -171,38 +200,39 @@ find_dlw_data <- function(dir = NULL,
     "ext"
   )
 
-  ctl[, (vars) := tstrsplit(id_name, split = "_|[.]", fill = NA)
-  ][,
-    c("M", "A") := NULL]
-
+  ctl[, (vars) := tstrsplit(id_name, split = "_|[.]", fill = NA)][,
+    c("M", "A") := NULL
+  ]
 
   ctl <- ctl[rlang::eval_tidy(cnds, data = args)] |>
     unique()
 
   if (latest_year == TRUE && !("year" %in% args_info)) {
     ctl <- ctl[,
-               #  for each collection and module, the row(s) with the maximum Year
-               .SD[Year == max(Year, na.rm = TRUE)],
-               by = .(Collection, Module)
+      #  for each collection and module, the row(s) with the maximum Year
+      .SD[Year == max(Year, na.rm = TRUE)],
+      by = .(Collection, Module)
     ]
   }
 
-  if (!("vermast" %in% args_info) &&
+  if (
+    !("vermast" %in% args_info) &&
       !("veralt" %in% args_info) &&
-      latest_version == TRUE) {
-    ctl <- ctl[ ,
-                #  for each year, the row(s) with the maximum Vermast.
-                .SD[Vermast == max(Vermast, na.rm = TRUE)],
-                by = .(Year, Collection, Module)
+      latest_version == TRUE
+  ) {
+    ctl <- ctl[,
+      #  for each year, the row(s) with the maximum Vermast.
+      .SD[Vermast == max(Vermast, na.rm = TRUE)],
+      by = .(Year, Collection, Module)
     ][,
       #It should return only one row per year (even if there are ties)
       .SD[Veralt == max(Veralt, na.rm = TRUE)],
-      by = .(Year, Collection, Module)]
+      by = .(Year, Collection, Module)
+    ]
   }
 
   return(ctl)
 }
-
 
 
 #' check that dlw id_name is correct
@@ -214,25 +244,20 @@ find_dlw_data <- function(dir = NULL,
 #' @rdname load_dlw_data
 #'
 #' @examples
-#' check_dlw_id_name("HRV_2011_EU-SILC_V01_M_V04_A_GMD_GPWG.qs")
-#' check_dlw_id_name("HRV_2011_EU-SILC_V01_M_V04_A_GMD_GPWG")
+#' check_dlw_id_name("HRV_2011_EU-SILC_V01_M_V04_A_GMD_GPWG.qs2")
+#' check_dlw_id_name("HRV_2011_EU-SILC_V01_m_V04_a_GMD_GPWG.fst")
 check_dlw_id_name <- \(id_name) {
-  id_name <- id_name |>
-    fs::path_ext_remove() |>
-    fs::path(ext = "qs")
-
   ptt <- get_from_piploadenv("dlw_name_pattern")
 
   if (!grepl(ptt, id_name)) {
-    cli::cli_abort(c(x = "Wrong {.arg id_name} specification",
-                     i = "it should follow the pattern {.field {ptt}}",
-                     i = "like in {.file HRV_2011_EU-SILC_V01_M_V04_A_GMD_GPWG.qs}"))
+    cli::cli_abort(c(
+      x = "Wrong {.arg id_name} specification",
+      i = "it should follow the pattern {.field {ptt}}",
+      i = "like in {.file HRV_2011_EU-SILC_V01_M_V04_A_GMD_GPWG.qs2}"
+    ))
   }
   invisible(id_name)
 }
-
-
-
 
 
 #' @returns [load_dlw_gmd_inventory] data.table with inventory of GMD data from
@@ -243,8 +268,19 @@ check_dlw_id_name <- \(id_name) {
 #' @examples
 #' load_dlw_gmd_inventory()
 load_dlw_gmd_inventory <- \() {
-  binv <- pipfun::get_pip_folders(folder = "dlw_inventory")
-  pip_read("dlw_gmd_inv",dir = binv)
+  binv <- pipfun::get_pip_folders(folder = "dlw_inventory", verbose = FALSE)
+
+  alias_list <- stamp::st_alias_list()
+  alias <- alias_list[alias_list$root == binv, "alias"]
+
+  if (length(alias) == 0) {
+    cli::cli_abort(c(
+      x = "DLW inventory folder not initialized in stamp.",
+      i = "Run {.code pipfun::setup_working_release()} first and make sure the dlw_inventory folder is set."
+    ))
+  }
+
+  pip_read("dlw_gmd_inv", alias = alias)
 }
 
 
@@ -255,8 +291,19 @@ load_dlw_gmd_inventory <- \() {
 #' @examples
 #' load_dlw_gmd_log()
 load_dlw_gmd_log <- \() {
-  binv <- pipfun::get_pip_folders(folder = "dlw_inventory")
-  pip_read("dlw_gmd_log", dir = binv)
+  binv <- pipfun::get_pip_folders(folder = "dlw_inventory", verbose = FALSE)
+
+  alias_list <- stamp::st_alias_list()
+  alias <- alias_list[alias_list$root == binv, "alias"]
+
+  if (length(alias) == 0) {
+    cli::cli_abort(c(
+      x = "DLW inventory folder not initialized in stamp.",
+      i = "Run {.code pipfun::setup_working_release()} first and make sure the dlw_inventory folder is set."
+    ))
+  }
+
+  pip_read("dlw_gmd_log", alias = alias)
 }
 
 #' @returns [load_gmd_valid_inv] data.table with inventory of validated GMD data
@@ -266,8 +313,19 @@ load_dlw_gmd_log <- \() {
 #' @examples
 #' load_gmd_valid_inv()
 load_gmd_valid_inv <- \() {
-  binv <- pipfun::get_pip_folders(folder = "dlw_metadata")
-  pip_read("gmd_valid_inv", dir = binv)
+  binv <- pipfun::get_pip_folders(folder = "dlw_metadata", verbose = FALSE)
+
+  alias_list <- stamp::st_alias_list()
+  alias <- alias_list[alias_list$root == binv, "alias"]
+
+  if (length(alias) == 0) {
+    cli::cli_abort(c(
+      x = "DLW metadata folder not initialized in stamp.",
+      i = "Run {.code pipfun::setup_working_release()} first and make sure the dlw_metadata folder is set."
+    ))
+  }
+
+  pip_read("gmd_valid_inv", alias = alias)
 }
 
 #' @returns [load_gmd_valid_log] data.table with log of GMD validated workflow
@@ -277,8 +335,19 @@ load_gmd_valid_inv <- \() {
 #' @examples
 #' load_gmd_valid_log()
 load_gmd_valid_log <- \() {
-  binv <- pipfun::get_pip_folders(folder = "dlw_metadata")
-  pip_read("dlw_validation_log", dir = binv)
+  binv <- pipfun::get_pip_folders(folder = "dlw_metadata", verbose = FALSE)
+
+  alias_list <- stamp::st_alias_list()
+  alias <- alias_list[alias_list$root == binv, "alias"]
+
+  if (length(alias) == 0) {
+    cli::cli_abort(c(
+      x = "DLW metadata folder not initialized in stamp.",
+      i = "Run {.code pipfun::setup_working_release()} first and make sure the dlw_metadata folder is set."
+    ))
+  }
+
+  pip_read("dlw_validation_log", alias = alias)
 }
 
 #' @returns [load_gmd_valid_report] data.table with validation report data
@@ -288,6 +357,17 @@ load_gmd_valid_log <- \() {
 #' @examples
 #' load_gmd_valid_report()
 load_gmd_valid_report <- \() {
-  binv <- pipfun::get_pip_folders(folder = "dlw_metadata")
-  pip_read("validation_report", dir = binv)
+  binv <- pipfun::get_pip_folders(folder = "dlw_metadata", verbose = FALSE)
+
+  alias_list <- stamp::st_alias_list()
+  alias <- alias_list[alias_list$root == binv, "alias"]
+
+  if (length(alias) == 0) {
+    cli::cli_abort(c(
+      x = "DLW metadata folder not initialized in stamp.",
+      i = "Run {.code pipfun::setup_working_release()} first and make sure the dlw_metadata folder is set."
+    ))
+  }
+
+  pip_read("validation_report", alias = alias)
 }

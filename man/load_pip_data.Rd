@@ -3,7 +3,7 @@
 \name{load_pip_data}
 \alias{load_pip_data}
 \alias{find_pip_data}
-\alias{load_pip_inventory_release}
+\alias{load_pip_release_inventory}
 \alias{load_pip_master_inventory}
 \alias{check_pip_id_name}
 \title{Set of functions to interact with PIP data.}
@@ -13,30 +13,38 @@ load_pip_data(
   surveyid_year = NULL,
   survey_acronym = NULL,
   welfare_type = NULL,
-  module = "GPWG",
+  module = NULL,
   id_name = NULL,
   vermast = NULL,
   veralt = NULL,
-  collection = "GMD",
+  collection = NULL,
   latest_version = TRUE,
   latest_year = FALSE,
   where = c("release", "master"),
   version = NULL,
   verbose = getOption("pipload.verbose"),
-  format = "qs2"
+  format = "qs2",
+  metadata = FALSE
 )
 
 find_pip_data(
-  dir = pipfun::get_pip_folders(folder = "pip_data"),
   latest_year = FALSE,
   where = c("release", "master"),
   verbose = getOption("pipload.verbose"),
   ...
 )
 
-load_pip_inventory_release()
+load_pip_release_inventory(
+  version = NULL,
+  verbose = getOption("pipload.verbose"),
+  format = "qs2"
+)
 
-load_pip_master_inventory()
+load_pip_master_inventory(
+  format = "qs2",
+  version = NULL,
+  verbose = getOption("pipload.verbose")
+)
 
 check_pip_id_name(id_name)
 }
@@ -73,31 +81,26 @@ available. This is the default.}
 
 \item{where}{character: Either "release" or "master". Se details.}
 
-\item{version}{Version selector:
-\itemize{
-\item NULL or 0 → latest version
-\item negative integer → N versions back
-\item "select" / "pick" / "choose" → interactive menu
-\item "available" → list available versions (extension provided below)
-\item version-id character → load specific version
-}}
+\item{version}{character: Specific data version to load; forwarded to \code{pip_read}. Default is \code{NULL} (latest if available).}
 
 \item{verbose}{logical. If TRUE display information. Default is option
 "pipload.verbose"}
 
-\item{dir}{path}
+\item{format}{character: Data format to read (for example, \code{"qs2"}). Default is \code{"qs2"}.}
+
+\item{metadata}{logical: If TRUE, it will load metadata instead of data. Default is FALSE}
 
 \item{...}{Just the following: country_code, year, survey, welfare_type,and
 module. They work exactly the same as the ones in \link{load_pip_data}}
 }
 \value{
-data table with pip data
+data.table with pip data. Note: one of \code{country_code} or \code{id_name} must be provided.
 
 filtered data table from inventory
 
-data.table with PIP inventory
+data.table with PIP inventory for the current release
 
-data.table with PIP inventory
+data.table with PIP master inventory
 
 character with id_name
 }
@@ -128,15 +131,13 @@ pipfun::setup_working_release(release = lr$release,
                               identity = lr$identity,
                               verbose = FALSE)
 
-dir_pip <- pipfun::get_pip_folders(folder = "pip_data")
-
 # Find data
-find_pip_data(dir = dir_pip, country_code = "HRV")
+find_pip_data(country_code = "HRV")
 
 # Latest year in EACH module
-find_pip_data(dir = dir_pip, country_code = "HRV", latest_year = TRUE)
+find_pip_data(country_code = "HRV", latest_year = TRUE)
 }
-load_pip_inventory()
+load_pip_release_inventory()
 load_pip_master_inventory()
 check_pip_id_name("AGO_2000_HBS_CON_GPWG.qs")
 check_pip_id_name("AGO_2000_HBS_CON_GPWG")

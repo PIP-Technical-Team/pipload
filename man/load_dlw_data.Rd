@@ -70,14 +70,8 @@ available. This is the default.}
 
 \item{id_name}{id name of dlw data}
 
-\item{version}{Version selector:
-\itemize{
-\item NULL or 0 → latest version
-\item negative integer → N versions back
-\item "select" / "pick" / "choose" → interactive menu
-\item "available" → list available versions (extension provided below)
-\item version-id character → load specific version
-}}
+\item{version}{An integer or a quoted directive. Retrieve a specific version
+of an artifact. See details in the function body for supported directives.}
 
 \item{verbose}{logical. If TRUE display information. Default is option
 "pipload.verbose"}
@@ -141,8 +135,8 @@ find_dlw_data(country_code = "HRV")
 # Latest year in EACH module
 find_dlw_data(country_code = "HRV", latest_year = TRUE)
 }
-check_dlw_id_name("HRV_2011_EU-SILC_V01_M_V04_A_GMD_GPWG.qs")
-check_dlw_id_name("HRV_2011_EU-SILC_V01_M_V04_A_GMD_GPWG")
+check_dlw_id_name("HRV_2011_EU-SILC_V01_M_V04_A_GMD_GPWG.qs2")
+check_dlw_id_name("HRV_2011_EU-SILC_V01_m_V04_a_GMD_GPWG.fst")
 load_dlw_gmd_inventory()
 load_dlw_gmd_log()
 load_gmd_valid_inv()
