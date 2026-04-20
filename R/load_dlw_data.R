@@ -37,7 +37,7 @@
 #'                               verbose = FALSE)
 #'
 #' # Using id_name
-#' load_dlw_data(id_name = "HRV_2011_EU-SILC_V01_M_V04_A_GMD_GPWG.qs")
+#' load_dlw_data(id_name = "HRV_2011_EU-SILC_V01_M_V04_A_GMD_GPWG.qs2")
 #'
 #' # without ext also works
 #' load_dlw_data(id_name = "HRV_2011_EU-SILC_V01_M_V04_A_GMD_GPWG")
@@ -240,7 +240,7 @@ find_dlw_data <- function(
 #' @param id_name id name of dlw data
 #'
 #' @returns character with id_name
-#' @keywords internal
+#' @export
 #' @rdname load_dlw_data
 #'
 #' @examples
@@ -266,7 +266,9 @@ check_dlw_id_name <- \(id_name) {
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' load_dlw_gmd_inventory()
+#' }
 load_dlw_gmd_inventory <- \() {
   binv <- pipfun::get_pip_folders(folder = "dlw_inventory", verbose = FALSE)
 
@@ -289,7 +291,9 @@ load_dlw_gmd_inventory <- \() {
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' load_dlw_gmd_log()
+#' }
 load_dlw_gmd_log <- \() {
   binv <- pipfun::get_pip_folders(folder = "dlw_inventory", verbose = FALSE)
 
@@ -311,7 +315,9 @@ load_dlw_gmd_log <- \() {
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' load_gmd_valid_inv()
+#' }
 load_gmd_valid_inv <- \() {
   binv <- pipfun::get_pip_folders(folder = "dlw_metadata", verbose = FALSE)
 
@@ -333,7 +339,9 @@ load_gmd_valid_inv <- \() {
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' load_gmd_valid_log()
+#' }
 load_gmd_valid_log <- \() {
   binv <- pipfun::get_pip_folders(folder = "dlw_metadata", verbose = FALSE)
 
@@ -355,7 +363,9 @@ load_gmd_valid_log <- \() {
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' load_gmd_valid_report()
+#' }
 load_gmd_valid_report <- \() {
   binv <- pipfun::get_pip_folders(folder = "dlw_metadata", verbose = FALSE)
 

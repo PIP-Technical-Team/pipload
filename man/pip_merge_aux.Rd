@@ -34,5 +34,7 @@ data.table
 Merge auxiliary PIP tables
 }
 \examples{
+\dontrun{
 pip_merge_aux()
+}
 }

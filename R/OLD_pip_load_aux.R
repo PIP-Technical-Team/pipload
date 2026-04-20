@@ -35,6 +35,7 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' # Load CPI
 #' cpi <- pip_load_aux("cpi")
 #'
@@ -49,7 +50,6 @@
 #' head(av)
 #' df      <- pip_load_aux(measure, version = av[1])
 #' head(df)
-#' \dontrun{
 #' df      <- pip_load_aux(measure, version = -1)
 #' head(df)
 #' df      <- pip_load_aux(measure, version = "pick")
@@ -332,20 +332,13 @@ read_by_format <- function(file_to_load) {
   pformat <- fs::path_ext(file_to_load)
 
   x <-
-    if (pformat == "qs") {
-
-      qs::qread(file_to_load)
-
-      } else if (pformat == "fst") {
-
+    if (pformat == "qs2") {
+      qs2::qs_read(file_to_load)
+    } else if (pformat == "fst") {
       fst::read_fst(file_to_load, as.data.table = TRUE)
-
     } else if (pformat == "rds") {
-
       readr::read_rds(file_to_load)
-
     } else if (pformat == "dta") {
-
       haven::read_dta(file_to_load)
     }
 
@@ -366,7 +359,7 @@ read_by_format <- function(file_to_load) {
 find_path <- function(file_paths) {
 
   extensions <- fs::path_ext(file_paths)
-  ext_order <- c("qs", "fst", "rds", "dta")
+  ext_order <- c("qs2", "fst", "rds", "dta")
 
   f <- FALSE
   i <- 1

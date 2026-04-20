@@ -121,7 +121,7 @@ pipfun::setup_working_release(release = lr$release,
                               verbose = FALSE)
 
 # Using id_name
-load_dlw_data(id_name = "HRV_2011_EU-SILC_V01_M_V04_A_GMD_GPWG.qs")
+load_dlw_data(id_name = "HRV_2011_EU-SILC_V01_M_V04_A_GMD_GPWG.qs2")
 
 # without ext also works
 load_dlw_data(id_name = "HRV_2011_EU-SILC_V01_M_V04_A_GMD_GPWG")
@@ -137,10 +137,19 @@ find_dlw_data(country_code = "HRV", latest_year = TRUE)
 }
 check_dlw_id_name("HRV_2011_EU-SILC_V01_M_V04_A_GMD_GPWG.qs2")
 check_dlw_id_name("HRV_2011_EU-SILC_V01_m_V04_a_GMD_GPWG.fst")
+\dontrun{
 load_dlw_gmd_inventory()
+}
+\dontrun{
 load_dlw_gmd_log()
+}
+\dontrun{
 load_gmd_valid_inv()
+}
+\dontrun{
 load_gmd_valid_log()
+}
+\dontrun{
 load_gmd_valid_report()
 }
-\keyword{internal}
+}

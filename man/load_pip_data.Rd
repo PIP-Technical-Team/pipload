@@ -122,8 +122,7 @@ pipfun::setup_working_release(release = lr$release,
                               verbose = FALSE)
 
 # Using id_name
-load_pip_data(id_name = "LCA_2015_SLCHBS_INC_GPWG")
-
+load_pip_data(id_name = "BOL_2022_EH_INC_ALL")
 }
 \dontrun{
 lr <- pipfun::get_latest_pip_release()
@@ -132,14 +131,28 @@ pipfun::setup_working_release(release = lr$release,
                               verbose = FALSE)
 
 # Find data
-find_pip_data(country_code = "HRV")
+find_pip_data(country_code = "BOL")
 
 # Latest year in EACH module
-find_pip_data(country_code = "HRV", latest_year = TRUE)
+find_pip_data(country_code = "BOL", latest_year = TRUE)
 }
+\dontrun{
+lr <- pipfun::get_latest_pip_release()
+pipfun::setup_working_release(release = lr$release,
+                              identity = lr$identity,
+                              verbose = FALSE)
 load_pip_release_inventory()
+}
+\dontrun{
+lr <- pipfun::get_latest_pip_release()
+pipfun::setup_working_release(release = lr$release,
+                              identity = lr$identity,
+                              verbose = FALSE)
 load_pip_master_inventory()
-check_pip_id_name("AGO_2000_HBS_CON_GPWG.qs")
+}
+\dontrun{
+check_pip_id_name("AGO_2000_HBS_CON_GPWG.qs2")
 check_pip_id_name("AGO_2000_HBS_CON_GPWG")
+}
 }
 \keyword{internal}

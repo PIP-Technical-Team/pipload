@@ -11,7 +11,9 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' pip_merge_aux()
+#' }
 pip_merge_aux <- function(tables            = c("cpi", "ppp"),
                           ppp_year          = 2017,
                           branch            = c("DEV", "PROD", "main"),
@@ -98,7 +100,9 @@ pip_merge_aux <- function(tables            = c("cpi", "ppp"),
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' aux_ids()
+#' }
 aux_ids <- function(tables = NULL) {
 
   l <- list()
