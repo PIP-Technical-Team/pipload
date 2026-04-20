@@ -31,7 +31,7 @@ Imports:
     lifecycle,
     pipfun (>= 0.3.10),
     glue,
-    stamp,
+    stamp (>= 0.0.10),
     qs2
 Suggests: 
     withr,
