@@ -1,7 +1,8 @@
 ---
 date: 2026-05-13
 title: "Create load_pip_deflated_data() wrapper in pipload"
-status: active
+status: completed
+completed-date: 2026-05-14
 scope: "Lightweight"
 brainstorm: null
 language: R
