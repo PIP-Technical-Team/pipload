@@ -17,8 +17,6 @@ test_that("load_pip_deflated_data() aborts with informative error when pipdata i
 })
 
 test_that("load_pip_deflated_data() calls load_pip_data() then pd_deflation()", {
-  skip_if_not_installed("pipdata")
-
   # No "module" col — simulates new pipeline survey structure
   fake_survey <- data.table::data.table(welfare = 1:3, weight = c(1, 1, 1))
   fake_deflated <- data.table::data.table(welfare_ppp = 1:3)
@@ -49,8 +47,6 @@ test_that("load_pip_deflated_data() calls load_pip_data() then pd_deflation()", 
 })
 
 test_that("load_pip_deflated_data() forwards cpi/ppp/pop to pd_deflation()", {
-  skip_if_not_installed("pipdata")
-
   fake_survey <- data.table::data.table(welfare = 1:3)
   fake_deflated <- data.table::data.table(welfare_ppp = 1:3)
   fake_cpi <- data.table::data.table(cpi = 1.1)
@@ -83,8 +79,6 @@ test_that("load_pip_deflated_data() forwards cpi/ppp/pop to pd_deflation()", {
 })
 
 test_that("load_pip_deflated_data() propagates load_pip_data() errors", {
-  skip_if_not_installed("pipdata")
-
   local_mocked_bindings(
     load_pip_data = function(...) {
       cli::cli_abort("Wrong number of data to load.")

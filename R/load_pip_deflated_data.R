@@ -65,6 +65,25 @@ load_pip_deflated_data <- function(
     reason = "to apply deflation via `pd_deflation()`"
   )
 
+  # Warn when id_name is supplied alongside filter args — the filter args
+  # are silently discarded and this can return unexpected data.
+  filter_args <- list(
+    country_code = country_code,
+    surveyid_year = surveyid_year,
+    survey_acronym = survey_acronym,
+    welfare_type = welfare_type,
+    module = module
+  )
+  if (!is.null(id_name) && !all(vapply(filter_args, is.null, logical(1L)))) {
+    active_filters <- names(Filter(Negate(is.null), filter_args))
+    cli::cli_warn(
+      c(
+        "{.arg id_name} was supplied alongside filter argument(s): {.field {active_filters}}.",
+        "i" = "Filter argument(s) are ignored; {.arg id_name} = {.val {id_name}} takes precedence."
+      )
+    )
+  }
+
   # Resolve pip_id (no file extension) for pd_deflation.
   # pd_deflation() needs pip_id explicitly when dt is provided without
   # pip_id attributes set — which is the case for data loaded via load_pip_data().
@@ -86,6 +105,23 @@ load_pip_deflated_data <- function(
       verbose = verbose
     )
     pip_id <- inv[, pip_id]
+    if (length(pip_id) == 0L) {
+      cli::cli_abort(
+        c(
+          "No matching survey found.",
+          "i" = "Check {.arg country_code}, {.arg surveyid_year}, and other filter arguments."
+        )
+      )
+    }
+    if (length(pip_id) > 1L) {
+      cli::cli_abort(
+        c(
+          "More than one survey matched the filter arguments ({length(pip_id)} found).",
+          "i" = "Matching IDs: {.val {pip_id}}.",
+          "i" = "Refine filters or supply {.arg id_name} directly."
+        )
+      )
+    }
   }
 
   survey <- load_pip_data(
@@ -105,7 +141,9 @@ load_pip_deflated_data <- function(
     survey <- assign_pipclass(survey)
   } else {
     pip_module <- utils::tail(strsplit(pip_id, "_", fixed = TRUE)[[1L]], 1L)
-    survey <- if (grepl("GROUP", pip_module, ignore.case = TRUE)) {
+    survey <- if ("sim" %in% names(survey)) {
+      as_pipid(survey)
+    } else if (grepl("GROUP", pip_module, ignore.case = TRUE)) {
       as_pipgd(survey)
     } else {
       as_pipmd(survey)
