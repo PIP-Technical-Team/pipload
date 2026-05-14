@@ -38,7 +38,8 @@ Suggests:
     rmarkdown,
     knitr,
     testthat (>= 3.0.0),
-    covr
+    covr,
+    pipdata (>= 0.0.0.9017)
 URL: https://pip-technical-team.github.io/pipload/
 VignetteBuilder: knitr
 Depends: 

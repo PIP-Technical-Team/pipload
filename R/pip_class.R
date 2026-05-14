@@ -80,7 +80,7 @@ as_pipmd <- function(x) {
   }
 
   data.table::setattr(x, "class", c("pipmd", class(x)))
-  return(invisible(data.table::copy(x)))
+  return(invisible(x))
 
 }
 
@@ -98,7 +98,7 @@ as_pipgd <- function(x) {
   }
 
   data.table::setattr(x, "class", c("pipgd", class(x)))
-  return(invisible(data.table::copy(x)))
+  return(invisible(x))
 
 }
 
@@ -115,8 +115,8 @@ as_pipid <- function(x) {
     x <- as.data.table(x)
   }
 
-  data.table::setattr(x, "class", c("pipid","pipmd", class(x)))
-  return(invisible(data.table::copy(x)))
+  data.table::setattr(x, "class", c("pipid", "pipmd", class(x)))
+  return(invisible(x))
 
 }
 
@@ -124,5 +124,38 @@ as_pipid <- function(x) {
 pipmd_class <- c("pipmd", "data.table", "data.frame")
 pipgd_class <- c("pipgd", "data.table", "data.frame")
 pipid_class <- c("pipid", "pipmd", "data.table", "data.frame")
+
+
+#' Assign pip S3 class from pip_id suffix (new-pipeline data)
+#'
+#' Internal helper for data loaded from the new pipeline that lacks a `module`
+#' column. Dispatches to [as_pipid()], [as_pipgd()], or [as_pipmd()] based on
+#' the suffix of \code{pip_id} and presence of a `sim` column.
+#'
+#' @param survey data.table. Survey data without a `module` column.
+#' @param pip_id character(1). Survey identifier (e.g. `"BOL_2022_EH_INC_ALL"`).
+#'
+#' @return The survey data.table with the correct pip S3 class.
+#' @keywords internal
+assign_pipclass_from_id <- function(survey, pip_id) {
+  known_modules <- c("ALL", "GPWG", "HIST", "BIN", "GROUP", "SYNTH")
+  pip_module <- sub(".*_", "", pip_id)
+  if (!toupper(pip_module) %in% known_modules) {
+    cli::cli_warn(
+      c(
+        "Unrecognised module token {.val {pip_module}} in pip_id {.val {pip_id}}.",
+        "i" = "Expected one of: {.val {known_modules}}.",
+        "i" = "Defaulting to {.cls pipmd} class."
+      )
+    )
+  }
+  if ("sim" %in% names(survey)) {
+    return(as_pipid(survey))
+  } else if (grepl("GROUP", pip_module, ignore.case = TRUE)) {
+    return(as_pipgd(survey))
+  } else {
+    return(as_pipmd(survey))
+  }
+}
 
 
