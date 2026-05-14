@@ -10,3 +10,4 @@
 ^data-raw$
 ^codecov\.yml$
 ^vignettes/read_write_pins\.Rmd$
+^\.cg-docs$

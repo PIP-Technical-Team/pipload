@@ -1,0 +1,19 @@
+{
+    "schemaVersion": "compound-gpid-roadmap-v1",
+    "milestones": [
+        {
+            "id": "update-functions-new-pipeline-structure",
+            "title": "Update load functions so they can work with new pipeline structure.",
+            "objective": "Update load functions so they can work with new pipeline structure.",
+            "status": "in-progress",
+            "features": [
+                {
+                    "id": "initial-focus",
+                    "title": "Update load functions so they can work with new pipeline structure.",
+                    "status": "in-progress",
+                    "plan": null
+                }
+            ]
+        }
+    ]
+}
