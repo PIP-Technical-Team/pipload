@@ -84,12 +84,6 @@ Convenience wrapper that chains \code{\link[=load_pip_data]{load_pip_data()}} an
 \code{\link[=load_pip_data]{load_pip_data()}}; the resulting survey data.table is then passed to
 \code{pipdata::pd_deflation()}.
 }
-\details{
-\code{pipdata} is a \strong{soft dependency} (\code{Suggests}). The function will abort
-with an informative error if \code{pipdata} is not installed. Do not add
-\code{pipdata} to \code{Imports} — that would create a circular dependency since
-\code{pipdata} imports \code{pipload}.
-}
 \examples{
 \dontrun{
 lr <- pipfun::get_latest_pip_release()
@@ -109,4 +103,3 @@ load_pip_deflated_data(country_code = "PRY", surveyid_year = 2018)
 \seealso{
 \code{\link[=load_pip_data]{load_pip_data()}}
 }
-\concept{load_pip_data}

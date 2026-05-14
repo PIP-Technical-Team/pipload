@@ -5,11 +5,6 @@
 #' [load_pip_data()]; the resulting survey data.table is then passed to
 #' `pipdata::pd_deflation()`.
 #'
-#' `pipdata` is a **soft dependency** (`Suggests`). The function will abort
-#' with an informative error if `pipdata` is not installed. Do not add
-#' `pipdata` to `Imports` — that would create a circular dependency since
-#' `pipdata` imports `pipload`.
-#'
 #' @inheritParams load_pip_data
 #' @param cpi data.table or NULL. CPI table to override the default resolved
 #'   by `pd_deflation()`. Passed directly to `pipdata::pd_deflation(cpi = )`.
@@ -22,7 +17,6 @@
 #'   `pipdata::pd_deflation()`.
 #'
 #' @seealso [load_pip_data()]
-#' @family load_pip_data
 #' @export
 #'
 #' @examples
@@ -40,6 +34,8 @@
 #' # Using country + year filters
 #' load_pip_deflated_data(country_code = "PRY", surveyid_year = 2018)
 #' }
+# NOTE: pipdata is a soft dependency (Suggests). Do not add it to Imports —
+# circular dependency: pipdata imports pipload.
 load_pip_deflated_data <- function(
   country_code = NULL,
   surveyid_year = NULL,
@@ -64,6 +60,23 @@ load_pip_deflated_data <- function(
     "pipdata",
     reason = "to apply deflation via `pd_deflation()`"
   )
+
+  # Validate aux override tables when supplied.
+  if (!is.null(cpi) && !data.table::is.data.table(cpi)) {
+    cli::cli_abort(
+      "{.arg cpi} must be a data.table or NULL, not {.obj_type_friendly {cpi}}."
+    )
+  }
+  if (!is.null(ppp) && !data.table::is.data.table(ppp)) {
+    cli::cli_abort(
+      "{.arg ppp} must be a data.table or NULL, not {.obj_type_friendly {ppp}}."
+    )
+  }
+  if (!is.null(pop) && !data.table::is.data.table(pop)) {
+    cli::cli_abort(
+      "{.arg pop} must be a data.table or NULL, not {.obj_type_friendly {pop}}."
+    )
+  }
 
   # Warn when id_name is supplied alongside filter args — the filter args
   # are silently discarded and this can return unexpected data.
@@ -140,21 +153,14 @@ load_pip_deflated_data <- function(
   if ("module" %in% names(survey)) {
     survey <- assign_pipclass(survey)
   } else {
-    pip_module <- utils::tail(strsplit(pip_id, "_", fixed = TRUE)[[1L]], 1L)
-    survey <- if ("sim" %in% names(survey)) {
-      as_pipid(survey)
-    } else if (grepl("GROUP", pip_module, ignore.case = TRUE)) {
-      as_pipgd(survey)
-    } else {
-      as_pipmd(survey)
-    }
+    survey <- assign_pipclass_from_id(survey, pip_id)
   }
 
-  pipdata::pd_deflation(
+  return(pipdata::pd_deflation(
     dt = survey,
     pip_id = pip_id,
     cpi = cpi,
     ppp = ppp,
     pop = pop
-  )
+  ))
 }

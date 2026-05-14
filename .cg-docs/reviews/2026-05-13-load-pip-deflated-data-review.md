@@ -7,16 +7,16 @@ findings:
   P1.4: fixed
   P1.5: fixed
   P1.6: fixed
-  P2.1: open
-  P2.2: open
-  P2.3: open
-  P2.4: open
-  P2.5: open
-  P2.6: open
-  P2.7: open
-  P2.8: open
-  P2.9: open
-  P2.10: open
+  P2.1: fixed
+  P2.2: fixed
+  P2.3: fixed
+  P2.4: fixed
+  P2.5: fixed
+  P2.6: fixed
+  P2.7: skipped
+  P2.8: fixed
+  P2.9: fixed
+  P2.10: fixed
   P3.1: open
   P3.2: open
   P3.3: open

@@ -126,3 +126,26 @@ pipgd_class <- c("pipgd", "data.table", "data.frame")
 pipid_class <- c("pipid", "pipmd", "data.table", "data.frame")
 
 
+#' Assign pip S3 class from pip_id suffix (new-pipeline data)
+#'
+#' Internal helper for data loaded from the new pipeline that lacks a `module`
+#' column. Dispatches to [as_pipid()], [as_pipgd()], or [as_pipmd()] based on
+#' the suffix of \code{pip_id} and presence of a `sim` column.
+#'
+#' @param survey data.table. Survey data without a `module` column.
+#' @param pip_id character(1). Survey identifier (e.g. `"BOL_2022_EH_INC_ALL"`).
+#'
+#' @return The survey data.table with the correct pip S3 class.
+#' @keywords internal
+assign_pipclass_from_id <- function(survey, pip_id) {
+  pip_module <- sub(".*_", "", pip_id)
+  if ("sim" %in% names(survey)) {
+    return(as_pipid(survey))
+  } else if (grepl("GROUP", pip_module, ignore.case = TRUE)) {
+    return(as_pipgd(survey))
+  } else {
+    return(as_pipmd(survey))
+  }
+}
+
+
