@@ -1,3 +1,11 @@
+test_that("load_pip_deflated_data() aborts when id_name is length > 1", {
+  expect_error(
+    load_pip_deflated_data(id_name = c("BOL_2022_EH_INC_ALL", "PRY_2018_EPH_INC_ALL")),
+    regexp = "single string",
+    class = "rlang_error"
+  )
+})
+
 test_that("load_pip_deflated_data() aborts with informative error when pipdata is not installed", {
   local_mocked_bindings(
     check_installed = function(pkg, reason = NULL, ...) {

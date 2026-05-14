@@ -102,6 +102,11 @@ load_pip_deflated_data <- function(
   # pd_deflation() needs pip_id explicitly when dt is provided without
   # pip_id attributes set — which is the case for data loaded via load_pip_data().
   if (!is.null(id_name)) {
+    if (length(id_name) != 1L) {
+      cli::cli_abort(
+        "{.arg id_name} must be a single string, not a length-{length(id_name)} vector."
+      )
+    }
     pip_id <- fs::path_ext_remove(id_name) |> toupper()
   } else {
     inv <- find_pip_data(
