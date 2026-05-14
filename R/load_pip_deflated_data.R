@@ -13,8 +13,9 @@
 #' @param pop data.table or NULL. Population table to override the default.
 #'   Passed directly to `pipdata::pd_deflation(pop = )`.
 #'
-#' @return A data.table — the deflated survey returned by
-#'   `pipdata::pd_deflation()`.
+#' @return A data.table with the same structure as [load_pip_data()] output,
+#'   with welfare variables deflated to real values. The S3 class (`pipmd` or
+#'   `pipgd`) is preserved.
 #'
 #' @seealso [load_pip_data()]
 #' @export

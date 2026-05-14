@@ -75,8 +75,9 @@ directly to \code{pipdata::pd_deflation(ppp = )}.}
 Passed directly to \code{pipdata::pd_deflation(pop = )}.}
 }
 \value{
-A data.table — the deflated survey returned by
-\code{pipdata::pd_deflation()}.
+A data.table with the same structure as \code{\link[=load_pip_data]{load_pip_data()}} output,
+with welfare variables deflated to real values. The S3 class (\code{pipmd} or
+\code{pipgd}) is preserved.
 }
 \description{
 Convenience wrapper that chains \code{\link[=load_pip_data]{load_pip_data()}} and

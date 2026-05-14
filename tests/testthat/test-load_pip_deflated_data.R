@@ -12,7 +12,7 @@ test_that("load_pip_deflated_data() aborts with informative error when pipdata i
   expect_error(
     load_pip_deflated_data(id_name = "BOL_2022_EH_INC_ALL"),
     regexp = "pipdata",
-    class = "error"
+    class = "rlang_error"
   )
 })
 
@@ -90,6 +90,50 @@ test_that("load_pip_deflated_data() propagates load_pip_data() errors", {
     load_pip_deflated_data(id_name = "INVALID"),
     regexp = "Wrong number"
   )
+})
+
+test_that("load_pip_deflated_data() assigns pipmd class when module column present (legacy pipeline)", {
+  # Survey with a module column — legacy pipeline; assign_pipclass() dispatches.
+  fake_survey <- data.table::data.table(welfare = 1:3, module = "PC")
+  fake_deflated <- data.table::data.table(welfare_ppp = 1:3)
+
+  local_mocked_bindings(
+    load_pip_data = function(...) fake_survey,
+    .package = "pipload"
+  )
+
+  local_mocked_bindings(
+    pd_deflation = function(dt, pip_id = NULL, ...) {
+      expect_s3_class(dt, "pipmd")
+      fake_deflated
+    },
+    .package = "pipdata"
+  )
+
+  result <- load_pip_deflated_data(id_name = "BOL_2022_EH_INC_ALL")
+  expect_identical(result, fake_deflated)
+})
+
+test_that("load_pip_deflated_data() strips file extension from id_name", {
+  fake_survey <- data.table::data.table(welfare = 1:3)
+  fake_deflated <- data.table::data.table(welfare_ppp = 1:3)
+  captured_pip_id <- NULL
+
+  local_mocked_bindings(
+    load_pip_data = function(...) fake_survey,
+    .package = "pipload"
+  )
+
+  local_mocked_bindings(
+    pd_deflation = function(dt, pip_id = NULL, ...) {
+      captured_pip_id <<- pip_id
+      fake_deflated
+    },
+    .package = "pipdata"
+  )
+
+  load_pip_deflated_data(id_name = "BOL_2022_EH_INC_ALL.qs2")
+  expect_equal(captured_pip_id, "BOL_2022_EH_INC_ALL")
 })
 
 test_that("load_pip_deflated_data() resolves pip_id via find_pip_data() when no id_name", {
