@@ -43,7 +43,8 @@ load_pip_release_inventory(
 load_pip_master_inventory(
   format = "qs2",
   version = NULL,
-  verbose = getOption("pipload.verbose")
+  verbose = getOption("pipload.verbose"),
+  fields = character(0)
 )
 
 check_pip_id_name(id_name)
@@ -92,6 +93,12 @@ available. This is the default.}
 
 \item{...}{Just the following: country_code, year, survey, welfare_type,and
 module. They work exactly the same as the ones in \link{load_pip_data}}
+
+\item{fields}{Character vector of metadata field names to extract from each
+survey's stored metadata artifact and add as columns. Passed to
+\code{\link[=pip_inv_enrich]{pip_inv_enrich()}}. Default is \code{character(0)} (no enrichment). Example:
+\code{fields = "reporting_level"} adds the reporting level from each survey's
+metadata.}
 }
 \value{
 data.table with pip data. Note: one of \code{country_code} or \code{id_name} must be provided.

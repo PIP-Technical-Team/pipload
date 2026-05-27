@@ -31,6 +31,11 @@
 #' @param where character: Either `"release"` or `"master"` indicating where to look for data. Default is `"release"`.
 #' @param version character: Specific data version to load; forwarded to `pip_read`. Default is `NULL` (latest if available).
 #' @param format character: Data format to read (for example, `"qs2"`). Default is `"qs2"`.
+#' @param fields Character vector of metadata field names to extract from each
+#'   survey's stored metadata artifact and add as columns. Passed to
+#'   [pip_inv_enrich()]. Default is `character(0)` (no enrichment). Example:
+#'   `fields = "reporting_level"` adds the reporting level from each survey's
+#'   metadata.
 #'
 #' @return data.table with pip data. Note: one of `country_code` or `id_name` must be provided.
 #' @export
@@ -127,6 +132,14 @@ load_pip_data <- function(
       i = "Run {.code pipfun::setup_working_release()} first and make sure the pip_data folder is set."
     ))
   }
+
+  # Suppress "No primary key recorded" stamp warning: pip survey data
+  # artifacts intentionally have no column pk (pk = NULL), so the warning
+  # fires on every load and is not actionable. Restore on exit to avoid
+  # affecting other stamp operations in the session.
+  old_pk_warn <- stamp::st_opts("warn_missing_pk_on_load", .get = TRUE)
+  on.exit(stamp::st_opts(warn_missing_pk_on_load = old_pk_warn), add = TRUE)
+  stamp::st_opts(warn_missing_pk_on_load = FALSE)
 
   return(pip_read(
     id = id_name,
@@ -237,7 +250,8 @@ find_pip_data <- function(
 load_pip_release_inventory <- \(
   version = NULL,
   verbose = getOption("pipload.verbose"),
-  format = "qs2"
+  format = "qs2",
+  fields = character(0)
 ) {
   dir_inv <- pipfun::get_pip_folders(folder = "pip_inventory", verbose = FALSE)
 
@@ -251,13 +265,19 @@ load_pip_release_inventory <- \(
     ))
   }
 
-  pip_read(
+  inv <- pip_read(
     "pip_release_inventory",
     alias = alias,
     version = version,
     verbose = verbose,
     format = format
   )
+
+  if (length(fields) > 0L) {
+    inv <- pip_inv_enrich(inv, fields = fields)
+  }
+
+  inv
 }
 
 
@@ -276,7 +296,8 @@ load_pip_release_inventory <- \(
 load_pip_master_inventory <- \(
   format = "qs2",
   version = NULL,
-  verbose = getOption("pipload.verbose")
+  verbose = getOption("pipload.verbose"),
+  fields = character(0)
 ) {
   dir_inv <- pipfun::get_pip_folders(
     folder = "pip_master_inventory",
@@ -293,13 +314,19 @@ load_pip_master_inventory <- \(
     ))
   }
 
-  pip_read(
+  inv <- pip_read(
     "pip_master_inventory",
     alias = alias,
     version = version,
     verbose = verbose,
     format = format
   )
+
+  if (length(fields) > 0L) {
+    inv <- pip_inv_enrich(inv, fields = fields)
+  }
+
+  inv
 }
 
 
