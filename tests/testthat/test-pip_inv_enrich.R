@@ -310,3 +310,38 @@ test_that("pce keeps full name and adds pce_year when year mismatches", {
   expect_equal(result$pce_year, "2018")
 })
 
+# ---------------------------------------------------------------------------
+# Bug: spurious raw vector-field column when metadata lacks that field (P1.1b)
+# ---------------------------------------------------------------------------
+
+test_that("no spurious raw 'cpi' column when some rows lack cpi in metadata", {
+  # Row 1: has cpi data  → should produce cpi_YYYY_area columns
+  # Row 2: has metadata but cpi is absent → should NOT produce a raw 'cpi' column;
+  #         cpi_* columns for that row should be NA (filled by rbindlist)
+  dir1 <- withr::local_tempdir()
+  dir2 <- withr::local_tempdir()
+  meta1 <- list(
+    surveyid_year = 2022,
+    reporting_level = "national",
+    cpi = c(`2011_national` = 0.266)
+  )
+  meta2 <- list(
+    surveyid_year = 1980,
+    reporting_level = "national"
+    # no cpi field at all
+  )
+  inv <- data.table::rbindlist(list(
+    make_inv_with_meta("CHN_2022_X_INC_ALL", meta1, dir1),
+    make_inv_with_meta("ARG_1980_X_INC_ALL", meta2, dir2)
+  ))
+
+  result <- pip_inv_enrich(inv, fields = c("reporting_level", "cpi"))
+
+  # The expanded column should exist
+  expect_contains(names(result), "cpi_2011_national")
+  # No raw 'cpi' column should appear
+  expect_false("cpi" %in% names(result))
+  # Row 2 should have NA for the expanded cpi column
+  expect_true(is.na(result[pip_id == "ARG_1980_X_INC_ALL", cpi_2011_national]))
+})
+

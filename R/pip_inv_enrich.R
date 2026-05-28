@@ -311,7 +311,16 @@ pip_inv_enrich <- function(inv, fields = character(0)) {
     extra <- lapply(fields, \(field) {
       val <- meta[[field]]
       if (is.null(val)) {
-        setNames(list(NA), field)
+        # Field absent from this survey's metadata.
+        # For scalar fields: emit a named NA so the column appears in every row.
+        # For vector fields: omit entirely — rbindlist(fill=TRUE) will fill the
+        # expanded wide columns (cpi_YYYY_area etc.) with NA automatically.
+        # Emitting list(cpi = NA) here would create a spurious raw 'cpi' column
+        # that conflicts with the expanded columns from other rows.
+        if (field %in% .PIP_META_VECTOR_FIELDS) {
+          return(list())
+        }
+        setNames(list(NA_character_), field)
       } else {
         expand_meta_field(field, val, yr)
       }
