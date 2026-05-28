@@ -199,10 +199,9 @@ test_that("load_pip_deflated_data() integration: load → deflate round-trip", {
   skip_on_ci()
 
   lr <- pipfun::get_latest_pip_release()
-  withr::defer(
-    pipfun::teardown_working_release(),
-    teardown_env = parent.frame()
-  )
+  # Note: pipfun has no teardown_working_release() export; side-effects
+  # (stamp aliases) persist for the session, which is acceptable in
+  # integration tests that require a working release context anyway.
   pipfun::setup_working_release(
     release = lr$release,
     identity = lr$identity,

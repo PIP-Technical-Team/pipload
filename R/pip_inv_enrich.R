@@ -60,7 +60,8 @@ expand_meta_field <- function(field_name, value, surveyid_year) {
   # the full element name and add a <field>_year column with the mismatched year.
   yr_str <- as.character(surveyid_year)
   out <- list()
-  mismatch_years <- character(0)
+  mismatch_years <- character(length(value))
+  mismatch_count <- 0L
 
   for (i in seq_along(value)) {
     elem_name <- nm[[i]]
@@ -81,14 +82,18 @@ expand_meta_field <- function(field_name, value, surveyid_year) {
     } else {
       # Year differs: keep full element name, prefix with field name
       col_nm <- paste0(field_name, "_", elem_name)
-      mismatch_years <- c(mismatch_years, elem_year)
+      mismatch_count <- mismatch_count + 1L
+      mismatch_years[[mismatch_count]] <- elem_year
     }
     out[[col_nm]] <- value[[i]]
   }
 
   # Add <field>_year column when at least one element had a mismatched year
-  if (length(mismatch_years) > 0L) {
-    out[[paste0(field_name, "_year")]] <- paste(unique(mismatch_years), collapse = ",")
+  if (mismatch_count > 0L) {
+    out[[paste0(field_name, "_year")]] <- paste(
+      unique(mismatch_years[seq_len(mismatch_count)]),
+      collapse = ","
+    )
   }
 
   return(out)
@@ -201,10 +206,7 @@ pip_inv_enrich <- function(inv, fields = character(0)) {
   if (length(already_present) > 0L) {
     cli::cli_inform(
       c(
-        "i" = paste0(
-          "Skipping {length(already_present)} field{?s} already present in ",
-          "{.arg inv}: {.val {already_present}}."
-        )
+        "i" = "Skipping {length(already_present)} field{?s} already present in {.arg inv}: {.val {already_present}}."
       ),
       class = "pip_inv_enrich_skip_existing"
     )
@@ -258,18 +260,27 @@ pip_inv_enrich <- function(inv, fields = character(0)) {
   })
 
   # Defensive check: if non-NA paths exist but all reads failed, the
-  # artifact layout may have changed.
+  # P2.6: Detect layout issues.  Only abort when a path EXISTS on disk
+  # but could not be read — that indicates a stamp layout change.  Individual
+  # missing artifacts (file simply not there) are normal; those are reported
+  # by the per-file pip_inv_enrich_read_error warning and produce NA rows.
   non_na_paths <- sum(!is.na(paths))
-  if (non_na_paths > 0L && !any(vapply(metas, Negate(is.null), logical(1L)))) {
-    example_path <- paths[!is.na(paths)][[1L]]
-    cli::cli_abort(
-      c(
-        "x" = "{non_na_paths} metadata path{?s} constructed but none could be read.",
-        "i" = "Example path: {.path {example_path}}",
-        "i" = "Check that the stamp artifact layout has not changed."
-      ),
-      class = c("pip_inv_enrich_layout_error", "piperr")
-    )
+  if (non_na_paths > 0L) {
+    extant_idx <- which(!is.na(paths) & file.exists(paths))
+    if (
+      length(extant_idx) > 0L &&
+        !any(vapply(metas[extant_idx], Negate(is.null), logical(1L)))
+    ) {
+      example_path <- paths[[extant_idx[[1L]]]]
+      cli::cli_abort(
+        c(
+          "x" = "{length(extant_idx)} metadata file{?s} found on disk but none could be read.",
+          "i" = "Example path: {.path {example_path}}",
+          "i" = "Check that the stamp artifact layout has not changed."
+        ),
+        class = c("pip_inv_enrich_layout_error", "piperr")
+      )
+    }
   }
 
   # Add a row index so the join key is always unique (pip_id may repeat
@@ -296,15 +307,16 @@ pip_inv_enrich <- function(inv, fields = character(0)) {
 
     yr <- meta$surveyid_year
 
-    for (field in fields) {
+    # Collect all field expansions then combine once to avoid O(n²) list copies.
+    extra <- lapply(fields, \(field) {
       val <- meta[[field]]
       if (is.null(val)) {
-        row[[field]] <- NA
+        setNames(list(NA), field)
       } else {
-        row <- c(row, expand_meta_field(field, val, yr))
+        expand_meta_field(field, val, yr)
       }
-    }
-    return(row)
+    })
+    return(c(row, do.call(c, extra)))
   })
 
   field_dt <- data.table::rbindlist(field_rows, fill = TRUE)

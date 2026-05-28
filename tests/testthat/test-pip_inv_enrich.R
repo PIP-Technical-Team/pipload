@@ -73,7 +73,7 @@ test_that("pip_inv_enrich extracts scalar field from temp metadata", {
   inv <- make_inv_with_meta("BOL_2022_EH_INC_ALL", meta, dir)
 
   result <- pip_inv_enrich(inv, fields = "reporting_level")
-  expect_true("reporting_level" %in% names(result))
+  expect_contains(names(result), "reporting_level")
   expect_equal(result$reporting_level, "2")
 })
 
@@ -117,7 +117,7 @@ test_that("pip_inv_enrich gives NA when version_id_metadata is NA", {
     result <- pip_inv_enrich(inv, fields = "reporting_level"),
     class = "pip_inv_enrich_missing_meta"
   )
-  expect_true("reporting_level" %in% names(result))
+  expect_contains(names(result), "reporting_level")
   expect_true(is.na(result$reporting_level))
 })
 
@@ -127,9 +127,13 @@ test_that("pip_inv_enrich gives NA when artifact file is missing", {
     path_metadata = withr::local_tempdir(),
     version_id_metadata = "no_such_version"
   )
-  # artifact path does not exist → qs_read fails → NULL meta → NA
+  # artifact path does not exist → qs_read fails → per-file read_error warning,
+  # then aggregate missing_meta warning.
   expect_warning(
-    result <- pip_inv_enrich(inv, fields = "reporting_level"),
+    expect_warning(
+      result <- pip_inv_enrich(inv, fields = "reporting_level"),
+      class = "pip_inv_enrich_read_error"
+    ),
     class = "pip_inv_enrich_missing_meta"
   )
   expect_true(is.na(result$reporting_level))
@@ -148,8 +152,8 @@ test_that("cpi field expands to cpi_YYYY_area columns", {
   inv <- make_inv_with_meta("CHN_2022_X_INC_ALL", meta, dir)
 
   result <- pip_inv_enrich(inv, fields = "cpi")
-  expect_true("cpi_2005_rural" %in% names(result))
-  expect_true("cpi_2011_urban" %in% names(result))
+  expect_contains(names(result), "cpi_2005_rural")
+  expect_contains(names(result), "cpi_2011_urban")
   expect_equal(result$cpi_2005_rural, 1.1)
   expect_equal(result$cpi_2011_urban, 0.9)
 })
@@ -167,8 +171,8 @@ test_that("ppp field uses existing names without doubling prefix", {
   inv <- make_inv_with_meta("CHN_2022_X_INC_ALL", meta, dir)
 
   result <- pip_inv_enrich(inv, fields = "ppp")
-  expect_true("ppp_2011_02_02_national" %in% names(result))
-  expect_true("ppp_2017_01_02_rural" %in% names(result))
+  expect_contains(names(result), "ppp_2011_02_02_national")
+  expect_contains(names(result), "ppp_2017_01_02_rural")
   # No ppp_ppp_ prefix doubling
   expect_false(any(grepl("^ppp_ppp_", names(result))))
   expect_equal(result$ppp_2011_02_02_national, 3.697)
@@ -187,8 +191,8 @@ test_that("pop strips year when it matches surveyid_year", {
   inv <- make_inv_with_meta("CHN_2022_X_INC_ALL", meta, dir)
 
   result <- pip_inv_enrich(inv, fields = "pop")
-  expect_true("pop_rural" %in% names(result))
-  expect_true("pop_national" %in% names(result))
+  expect_contains(names(result), "pop_rural")
+  expect_contains(names(result), "pop_national")
   expect_false("pop_2022_rural" %in% names(result))
   expect_false("pop_year" %in% names(result))
 })
@@ -202,8 +206,8 @@ test_that("pop keeps full name and adds pop_year when year mismatches", {
   inv <- make_inv_with_meta("CHN_2022_X_INC_ALL", meta, dir)
 
   result <- pip_inv_enrich(inv, fields = "pop")
-  expect_true("pop_2019_national" %in% names(result))
-  expect_true("pop_year" %in% names(result))
+  expect_contains(names(result), "pop_2019_national")
+  expect_contains(names(result), "pop_year")
   expect_equal(result$pop_year, "2019")
 })
 
@@ -225,9 +229,9 @@ test_that("two surveys with different pop areas produce union of columns with NA
 
   result <- pip_inv_enrich(inv, fields = "pop")
   # CHN row: pop_rural and pop_urban present, pop_national NA
-  expect_true("pop_rural" %in% names(result))
-  expect_true("pop_urban" %in% names(result))
-  expect_true("pop_national" %in% names(result))
+  expect_contains(names(result), "pop_rural")
+  expect_contains(names(result), "pop_urban")
+  expect_contains(names(result), "pop_national")
   expect_true(is.na(result[pip_id == "CHN_2022_X_INC_ALL", pop_national]))
   expect_true(is.na(result[pip_id == "IND_2015_X_INC_ALL", pop_rural]))
 })
@@ -246,9 +250,9 @@ test_that("mixed scalar and vector fields work together", {
   inv <- make_inv_with_meta("BOL_2022_EH_INC_ALL", meta, dir)
 
   result <- pip_inv_enrich(inv, fields = c("reporting_level", "cpi"))
-  expect_true("reporting_level" %in% names(result))
-  expect_true("cpi_2005_national" %in% names(result))
-  expect_true("cpi_2011_national" %in% names(result))
+  expect_contains(names(result), "reporting_level")
+  expect_contains(names(result), "cpi_2005_national")
+  expect_contains(names(result), "cpi_2011_national")
   expect_equal(result$reporting_level, "national")
 })
 
@@ -262,11 +266,15 @@ test_that("pip_inv_enrich warns with pip_inv_enrich_no_version_col when column a
     path_metadata = "some/path"
     # No version_id_metadata column
   )
+  # Emits no_version_col first, then aggregate missing_meta.
   expect_warning(
-    result <- pip_inv_enrich(inv, fields = "reporting_level"),
-    class = "pip_inv_enrich_no_version_col"
+    expect_warning(
+      result <- pip_inv_enrich(inv, fields = "reporting_level"),
+      class = "pip_inv_enrich_no_version_col"
+    ),
+    class = "pip_inv_enrich_missing_meta"
   )
-  expect_true("reporting_level" %in% names(result))
+  expect_contains(names(result), "reporting_level")
   expect_true(is.na(result$reporting_level))
 })
 
@@ -283,7 +291,7 @@ test_that("gdp strips year when it matches surveyid_year", {
   inv <- make_inv_with_meta("CHN_2022_X_INC_ALL", meta, dir)
 
   result <- pip_inv_enrich(inv, fields = "gdp")
-  expect_true("gdp_national" %in% names(result))
+  expect_contains(names(result), "gdp_national")
   expect_false("gdp_2022_national" %in% names(result))
   expect_false("gdp_year" %in% names(result))
 })
@@ -297,8 +305,8 @@ test_that("pce keeps full name and adds pce_year when year mismatches", {
   inv <- make_inv_with_meta("CHN_2022_X_INC_ALL", meta, dir)
 
   result <- pip_inv_enrich(inv, fields = "pce")
-  expect_true("pce_2018_national" %in% names(result))
-  expect_true("pce_year" %in% names(result))
+  expect_contains(names(result), "pce_2018_national")
+  expect_contains(names(result), "pce_year")
   expect_equal(result$pce_year, "2018")
 })
 
