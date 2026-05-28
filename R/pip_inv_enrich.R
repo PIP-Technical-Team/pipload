@@ -24,10 +24,21 @@
 #'   `pop`/`gdp`/`pce` element names.
 #'
 #' @return A named list: one element per output column.
-#' @keywords internal
+#' @noRd
 expand_meta_field <- function(field_name, value, surveyid_year) {
-  # Scalar fields: single column
+  # Scalar fields: single column.
+  # Warn if the field unexpectedly holds more than one element — only the
+  # first is used; the rest are silently dropped by the pipeline writer.
   if (!field_name %in% .PIP_META_VECTOR_FIELDS) {
+    if (length(value) > 1L) {
+      cli::cli_warn(
+        c(
+          "Field {.field {field_name}} has {length(value)} element{?s}; using first only.",
+          "i" = "This may indicate an upstream pipeline issue."
+        ),
+        class = "pip_inv_enrich_scalar_truncated"
+      )
+    }
     return(setNames(list(value[[1L]]), field_name))
   }
 
@@ -99,8 +110,9 @@ expand_meta_field <- function(field_name, value, surveyid_year) {
 #'   all requested fields.
 #'
 #' @param fields Character vector of metadata field names to add as columns.
-#'   Fields already present as columns in `inv` are silently skipped (no
-#'   overwrite). Must be a subset of the following valid fields:
+#'   Fields already present as columns in `inv` are skipped with an
+#'   informational message (no overwrite). Must be a subset of the following
+#'   valid fields:
 #'
 #'   **Scalar fields** (add one column each):
 #'   `"gd_type"`, `"reporting_level"`, `"ppp_data_level"`, `"cpi_data_level"`,
@@ -115,8 +127,8 @@ expand_meta_field <- function(field_name, value, surveyid_year) {
 #'     differs, the full element name is kept (`pop_2019_national`) and a
 #'     `<field>_year` column is added.
 #'
-#' @return The input `inv` with the requested columns appended. The number of
-#'   rows is unchanged. Vector fields may add many columns (up to one per
+#' @return A `data.table` identical to the input `inv` with the requested
+#'   columns appended. The number of rows is unchanged. Vector fields may add many columns (up to one per
 #'   unique area × year combination across all surveys); surveys lacking a
 #'   particular element receive `NA`.
 #'
@@ -202,12 +214,12 @@ pip_inv_enrich <- function(inv, fields = character(0)) {
     paths <- ifelse(
       is.na(inv$version_id_metadata),
       NA_character_,
-      fs::path(
+      as.character(fs::path(
         inv$path_metadata,
         "versions",
         inv$version_id_metadata,
         "artifact"
-      )
+      ))
     )
   } else {
     paths <- rep(NA_character_, nrow(inv))
@@ -227,9 +239,14 @@ pip_inv_enrich <- function(inv, fields = character(0)) {
     row <- list(pip_id = inv$pip_id[[i]])
 
     if (is.null(meta)) {
-      # No metadata available: NA for all requested fields
+      # No metadata available: NA for scalar fields only.
+      # Vector fields are intentionally omitted so rbindlist(fill=TRUE) fills
+      # those rows with NA rather than creating a spurious raw-field-name column
+      # that conflicts with the expanded wide columns (e.g. "cpi" vs "cpi_2005_rural").
       for (field in fields) {
-        row[[field]] <- NA
+        if (!field %in% .PIP_META_VECTOR_FIELDS) {
+          row[[field]] <- NA_character_
+        }
       }
       return(row)
     }
@@ -271,10 +288,13 @@ pip_inv_enrich <- function(inv, fields = character(0)) {
     }
   }
 
-  # Remove any pre-existing columns for requested scalar fields
-  # (incl. joyn .x/.y artifacts from prior enrichment runs)
+  # Remove any pre-existing expanded columns for requested fields from prior
+  # enrichment runs.  Use "^<field>_" (trailing underscore) to avoid accidentally
+  # deleting sibling scalar columns that share the field name as a prefix
+  # (e.g. "^pop_" leaves "pop_data_level" untouched).
+  inv_names <- names(inv)
   for (field in fields) {
-    existing <- grep(paste0("^", field), names(inv), value = TRUE)
+    existing <- grep(paste0("^", field, "_"), inv_names, value = TRUE)
     if (length(existing) > 0L) {
       inv[, (existing) := NULL]
     }
@@ -290,5 +310,5 @@ pip_inv_enrich <- function(inv, fields = character(0)) {
     verbose = FALSE
   )
 
-  inv
+  return(inv)
 }

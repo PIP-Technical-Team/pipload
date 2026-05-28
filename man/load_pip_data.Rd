@@ -37,7 +37,8 @@ find_pip_data(
 load_pip_release_inventory(
   version = NULL,
   verbose = getOption("pipload.verbose"),
-  format = "qs2"
+  format = "qs2",
+  fields = character(0)
 )
 
 load_pip_master_inventory(
@@ -113,7 +114,7 @@ character with id_name
 }
 \description{
 \link{load_pip_data} Load data from pip repository. \link{find_pip_data} Finds data
-available. \link{load_pip_inventory_release} Loads pip inventory for
+available. \link{load_pip_release_inventory} Loads pip inventory for
 corresponding release. \link{load_pip_master_inventory} Loads pip master inventory
 for corresponding release. \link{check_pip_id_name} checks that pip id_name is
 correct (INTERNAL)

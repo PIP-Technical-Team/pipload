@@ -1,7 +1,7 @@
 #' Set of functions to interact with PIP data.
 #'
 #' [load_pip_data] Load data from pip repository. [find_pip_data] Finds data
-#' available. [load_pip_inventory_release] Loads pip inventory for
+#' available. [load_pip_release_inventory] Loads pip inventory for
 #' corresponding release. [load_pip_master_inventory] Loads pip master inventory
 #' for corresponding release. [check_pip_id_name] checks that pip id_name is
 #' correct (INTERNAL)

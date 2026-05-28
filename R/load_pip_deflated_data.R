@@ -127,7 +127,7 @@ load_pip_deflated_data <- function(
     if (length(pip_id) == 0L) {
       cli::cli_abort(
         c(
-          "No matching survey found.",
+          "x" = "No matching survey found.",
           "i" = "Check {.arg country_code}, {.arg surveyid_year}, and other filter arguments."
         )
       )
@@ -135,7 +135,7 @@ load_pip_deflated_data <- function(
     if (length(pip_id) > 1L) {
       cli::cli_abort(
         c(
-          "More than one survey matched the filter arguments ({length(pip_id)} found).",
+          "x" = "More than one survey matched the filter arguments ({length(pip_id)} found).",
           "i" = "Matching IDs: {.val {pip_id}}.",
           "i" = "Refine filters or supply {.arg id_name} directly."
         )
