@@ -12,6 +12,24 @@
                     "title": "Update load functions so they can work with new pipeline structure.",
                     "status": "in-progress",
                     "plan": null
+                },
+                {
+                    "id": "fast-bulk-metadata-enrichment",
+                    "title": "Rewrite pip_inv_enrich with direct qs2 bulk loading and wide-column expansion",
+                    "status": "done",
+                    "plan": ".cg-docs/plans/2026-05-28-pip-inv-enrich-fast-bulk-v3.md"
+                },
+                {
+                    "id": "parallel-metadata-enrichment",
+                    "title": "Add parallel (future.apply) option to pip_inv_enrich for sub-5s enrichment",
+                    "status": "idea",
+                    "plan": null
+                },
+                {
+                    "id": "precomputed-metadata-summary-artifact",
+                    "title": "Pre-flatten metadata into a single summary qs2 artifact at pipeline write-time",
+                    "status": "idea",
+                    "plan": null
                 }
             ]
         }

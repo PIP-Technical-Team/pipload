@@ -7,11 +7,11 @@
 #'   workflow log. [load_gmd_valid_report] loads GMD validation report.
 #'
 #' @param country_code Character: country ISO 3 code.
-#' @param year numeric: four digit year
+#' @param surveyid_year numeric: four digit year
 #' @param module character: module of GMD collection (e.g., ALL, GPWG, L).
 #'   Default is GPWG
-#' @param survey character: survey acronyn
-#' @param filename character: File name
+#' @param survey_acronym character: survey acronym
+#' @param id_name character: full survey id name (e.g. `"HRV_2011_EU-SILC_V01_M_V04_A_GMD_GPWG"`)
 #' @param vermast  character: Version of the master data in the form "vXX" where
 #'   X is a number of two digits like "01" or "02".
 #' @param veralt character: Version of the alternative  data in the form "vXX"

@@ -31,19 +31,25 @@ find_pip_data(
   latest_year = FALSE,
   where = c("release", "master"),
   verbose = getOption("pipload.verbose"),
+  latest_version = FALSE,
+  vermast = NULL,
+  veralt = NULL,
+  collection = NULL,
   ...
 )
 
 load_pip_release_inventory(
   version = NULL,
   verbose = getOption("pipload.verbose"),
-  format = "qs2"
+  format = "qs2",
+  fields = character(0)
 )
 
 load_pip_master_inventory(
   format = "qs2",
   version = NULL,
-  verbose = getOption("pipload.verbose")
+  verbose = getOption("pipload.verbose"),
+  fields = character(0)
 )
 
 check_pip_id_name(id_name)
@@ -92,6 +98,12 @@ available. This is the default.}
 
 \item{...}{Just the following: country_code, year, survey, welfare_type,and
 module. They work exactly the same as the ones in \link{load_pip_data}}
+
+\item{fields}{Character vector of metadata field names to extract from each
+survey's stored metadata artifact and add as columns. Passed to
+\code{\link[=pip_inv_enrich]{pip_inv_enrich()}}. Default is \code{character(0)} (no enrichment). Example:
+\code{fields = "reporting_level"} adds the reporting level from each survey's
+metadata.}
 }
 \value{
 data.table with pip data. Note: one of \code{country_code} or \code{id_name} must be provided.
@@ -106,7 +118,7 @@ character with id_name
 }
 \description{
 \link{load_pip_data} Load data from pip repository. \link{find_pip_data} Finds data
-available. \link{load_pip_inventory_release} Loads pip inventory for
+available. \link{load_pip_release_inventory} Loads pip inventory for
 corresponding release. \link{load_pip_master_inventory} Loads pip master inventory
 for corresponding release. \link{check_pip_id_name} checks that pip id_name is
 correct (INTERNAL)

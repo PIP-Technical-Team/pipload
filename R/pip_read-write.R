@@ -7,6 +7,8 @@
 #'
 #' @param id Character. Artifact name or path (e.g., "myfile" or "data/myfile.qs2").
 #'   Can include directory structure; format extension is optional.
+#' @param format Character. File format to read, e.g. `"qs2"` (default) or `"fst"`.
+#'   Must match the extension of the stored artifact.
 #' @param version An integer or a quoted directive. Retrieve a specific version
 #'   of an artifact. See details in the function body for supported directives.
 #' @param alias Optional character. Passed to {stamp} functions (`st_versions`,

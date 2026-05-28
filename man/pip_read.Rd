@@ -16,6 +16,9 @@ pip_read(
 \item{id}{Character. Artifact name or path (e.g., "myfile" or "data/myfile.qs2").
 Can include directory structure; format extension is optional.}
 
+\item{format}{Character. File format to read, e.g. \code{"qs2"} (default) or \code{"fst"}.
+Must match the extension of the stored artifact.}
+
 \item{version}{An integer or a quoted directive. Retrieve a specific version
 of an artifact. See details in the function body for supported directives.}
 

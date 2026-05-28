@@ -1,7 +1,7 @@
 #' Set of functions to interact with PIP data.
 #'
 #' [load_pip_data] Load data from pip repository. [find_pip_data] Finds data
-#' available. [load_pip_inventory_release] Loads pip inventory for
+#' available. [load_pip_release_inventory] Loads pip inventory for
 #' corresponding release. [load_pip_master_inventory] Loads pip master inventory
 #' for corresponding release. [check_pip_id_name] checks that pip id_name is
 #' correct (INTERNAL)
@@ -128,6 +128,14 @@ load_pip_data <- function(
     ))
   }
 
+  # Suppress "No primary key recorded" stamp warning: pip survey data
+  # artifacts intentionally have no column pk (pk = NULL), so the warning
+  # fires on every load and is not actionable. Restore on exit to avoid
+  # affecting other stamp operations in the session.
+  old_pk_warn <- stamp::st_opts("warn_missing_pk_on_load", .get = TRUE)
+  on.exit(stamp::st_opts(warn_missing_pk_on_load = old_pk_warn), add = TRUE)
+  stamp::st_opts(warn_missing_pk_on_load = FALSE)
+
   return(pip_read(
     id = id_name,
     alias = alias,
@@ -167,6 +175,10 @@ find_pip_data <- function(
   latest_year = FALSE,
   where = c("release", "master"),
   verbose = getOption("pipload.verbose"),
+  latest_version = FALSE,
+  vermast = NULL,
+  veralt = NULL,
+  collection = NULL,
   ...
 ) {
   where <- match.arg(where)
@@ -205,6 +217,28 @@ find_pip_data <- function(
   }
   ctl <- ctl[grepl(pattern, pip_id)]
 
+  # Filter on version/collection columns when supplied.
+  # Capture arg values outside data.table context to avoid column-name shadowing.
+  if (!is.null(vermast)) {
+    .vermast <- toupper(vermast)
+    ctl <- ctl[toupper(vermast) %chin% .vermast]
+  }
+  if (!is.null(veralt)) {
+    .veralt <- toupper(veralt)
+    ctl <- ctl[toupper(veralt) %chin% .veralt]
+  }
+  if (!is.null(collection)) {
+    .collection <- toupper(collection)
+    ctl <- ctl[toupper(collection) %chin% .collection]
+  }
+
+  if (latest_version == TRUE) {
+    ctl <- ctl[,
+      .SD[veralt == max(veralt)],
+      by = .(country_code, surveyid_year, survey_acronym, welfare_type, module)
+    ]
+  }
+
   if (latest_year == TRUE && !("surveyid_year" %in% names(args))) {
     #need to check because it was args_info before instead of names(args)
     ctl <- ctl[,
@@ -222,6 +256,11 @@ find_pip_data <- function(
 }
 
 
+#' @param fields Character vector of metadata field names to extract from each
+#'   survey's stored metadata artifact and add as columns. Passed to
+#'   [pip_inv_enrich()]. Default is `character(0)` (no enrichment). Example:
+#'   `fields = "reporting_level"` adds the reporting level from each survey's
+#'   metadata.
 #' @return data.table with PIP inventory for the current release
 #' @rdname load_pip_data
 #' @export
@@ -237,7 +276,8 @@ find_pip_data <- function(
 load_pip_release_inventory <- \(
   version = NULL,
   verbose = getOption("pipload.verbose"),
-  format = "qs2"
+  format = "qs2",
+  fields = character(0)
 ) {
   dir_inv <- pipfun::get_pip_folders(folder = "pip_inventory", verbose = FALSE)
 
@@ -251,16 +291,27 @@ load_pip_release_inventory <- \(
     ))
   }
 
-  pip_read(
+  inv <- pip_read(
     "pip_release_inventory",
     alias = alias,
     version = version,
     verbose = verbose,
     format = format
   )
+
+  if (length(fields) > 0L) {
+    inv <- pip_inv_enrich(inv, fields = fields)
+  }
+
+  inv
 }
 
 
+#' @param fields Character vector of metadata field names to extract from each
+#'   survey's stored metadata artifact and add as columns. Passed to
+#'   [pip_inv_enrich()]. Default is `character(0)` (no enrichment). Example:
+#'   `fields = "reporting_level"` adds the reporting level from each survey's
+#'   metadata.
 #' @return data.table with PIP master inventory
 #' @rdname load_pip_data
 #' @export
@@ -276,7 +327,8 @@ load_pip_release_inventory <- \(
 load_pip_master_inventory <- \(
   format = "qs2",
   version = NULL,
-  verbose = getOption("pipload.verbose")
+  verbose = getOption("pipload.verbose"),
+  fields = character(0)
 ) {
   dir_inv <- pipfun::get_pip_folders(
     folder = "pip_master_inventory",
@@ -293,13 +345,19 @@ load_pip_master_inventory <- \(
     ))
   }
 
-  pip_read(
+  inv <- pip_read(
     "pip_master_inventory",
     alias = alias,
     version = version,
     verbose = verbose,
     format = format
   )
+
+  if (length(fields) > 0L) {
+    inv <- pip_inv_enrich(inv, fields = fields)
+  }
+
+  inv
 }
 
 

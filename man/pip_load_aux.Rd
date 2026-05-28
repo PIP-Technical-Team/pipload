@@ -37,8 +37,7 @@ Option "00" is useful for vintage control}
 
 \item{root_dir}{character: root directory of the PIP data}
 
-\item{maindir}{character: main directory. By default it
-uses \code{pipfun::pip_create_globals(root_dir)$PIP_DATA_DIR}}
+\item{maindir}{character: main directory. By default it uses \code{getOption("pipload.working_dir")}}
 
 \item{filename}{character: name of file if different from \code{measure}. Default
 is \code{measure}}
@@ -54,8 +53,6 @@ the main structure of data has changed and labels have not been updated}
 \item{verbose}{logical: whether to display message. Default is TRUE}
 
 \item{preferred_format}{character: preferred format. default is "fst".}
-
-\item{character:}{main directory. By default it uses \code{getOption("pipload.working_dir")}}
 }
 \value{
 data.table

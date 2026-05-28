@@ -19,10 +19,12 @@ pip_merge_aux(
 
 \item{ppp_year}{numeric: PPP round year}
 
+\item{branch}{character: data branch to load from. One of \code{"DEV"}, \code{"PROD"},
+or \code{"main"}. Default is \code{"DEV"}.}
+
 \item{root_dir}{character: root directory of the PIP data}
 
-\item{maindir}{character: main directory. By default it
-uses \code{pipfun::pip_create_globals(root_dir)$PIP_DATA_DIR}}
+\item{maindir}{character: main directory. By default it uses \code{getOption("pipload.working_dir")}}
 
 \item{...}{Other arguments passed on to \code{\link[base:merge]{base::merge()}}. Yet, it actually
 uses the merge S3 method for data.table}

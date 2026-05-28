@@ -137,6 +137,7 @@ pipid_class <- c("pipid", "pipmd", "data.table", "data.frame")
 #'
 #' @return The survey data.table with the correct pip S3 class.
 #' @keywords internal
+#' @noRd
 assign_pipclass_from_id <- function(survey, pip_id) {
   known_modules <- c("ALL", "GPWG", "HIST", "BIN", "GROUP", "SYNTH")
   pip_module <- sub(".*_", "", pip_id)
@@ -146,7 +147,8 @@ assign_pipclass_from_id <- function(survey, pip_id) {
         "Unrecognised module token {.val {pip_module}} in pip_id {.val {pip_id}}.",
         "i" = "Expected one of: {.val {known_modules}}.",
         "i" = "Defaulting to {.cls pipmd} class."
-      )
+      ),
+      class = c("pip_unknown_module_token", "pipwrn")
     )
   }
   if ("sim" %in% names(survey)) {
