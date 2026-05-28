@@ -27,3 +27,29 @@ absent-field, and any future early-return). See
 
 ## Workspace Notes
 <!-- Related folders, dependencies on other projects in the VS Code workspace -->
+
+## R CMD check Conventions
+
+### roxygen2 authoring rules (to avoid Rd warnings)
+
+- `@param` names must match the function signature exactly — update the docs
+  when renaming a parameter.
+- Never put `@param X` in a shared `@rdname` block if only a subset of
+  functions in that group have parameter `X`; place it on each function
+  individually.
+- `@inheritParams source_fn` only pulls params defined in `source_fn`. Params
+  unique to the inheriting function need an explicit `@param`.
+- `DESCRIPTION` must end with a trailing newline.
+- See `.cg-docs/solutions/build-errors/2026-05-28-rcmd-check-rd-param-mismatches.md`.
+
+### testthat: always chain expect_error() after expect_warning() when the function can also error
+
+`expect_warning()` muffles the warning but re-throws any subsequent error.
+In `R CMD check` (no working release configured), most `pip_*` functions abort
+after the deprecation warning fires. Pattern:
+
+```r
+fn(deprecated_arg = "value") |> expect_warning() |> expect_error()
+```
+
+See `.cg-docs/solutions/testing-patterns/2026-05-28-expect-warning-without-expect-error-swallows-error.md`.

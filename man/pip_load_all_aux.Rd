@@ -25,6 +25,9 @@ pip_load_all_aux(
 "pfw", "pop", "gdm", "gdp", "pce"). If "all", all auxiliary frame will be
 loaded in memory}
 
+\item{branch}{character: data branch to load from. One of \code{"DEV"}, \code{"PROD"},
+or \code{"main"}. Default is \code{"DEV"}.}
+
 \item{aux_names}{character of the same length of \code{aux}. Names of objects to
 be loaded. default is \code{aux}}
 
@@ -33,8 +36,7 @@ be loaded. default is \code{aux}}
 
 \item{root_dir}{character: root directory of the PIP data}
 
-\item{maindir}{character: main directory. By default it
-uses \code{pipfun::pip_create_globals(root_dir)$PIP_DATA_DIR}}
+\item{maindir}{character: main directory. By default it uses \code{getOption("pipload.working_dir")}}
 
 \item{version}{An integer or a quoted directive. "available": displays list
 of available versions for \code{measure}. "select"|"pick"|"choose": allows user

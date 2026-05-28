@@ -162,11 +162,24 @@ load_pip_deflated_data <- function(
     survey <- assign_pipclass_from_id(survey, pip_id)
   }
 
-  return(pipdata::pd_deflation(
+  result <- pipdata::pd_deflation(
     dt = survey,
     pip_id = pip_id,
     cpi = cpi,
     ppp = ppp,
-    pop = pop
-  ))
+    pop = pop,
+    version = version
+  )
+
+  if (is.null(result) || !data.table::is.data.table(result)) {
+    cli::cli_abort(
+      c(
+        "x" = "Deflation returned no data for {.val {pip_id}}.",
+        "i" = "This may indicate stale auxiliary data (CPI/PPP/POP) for the requested survey.",
+        "i" = "Try updating the working release or supplying {.arg cpi}, {.arg ppp}, and {.arg pop} explicitly."
+      )
+    )
+  }
+
+  return(result)
 }

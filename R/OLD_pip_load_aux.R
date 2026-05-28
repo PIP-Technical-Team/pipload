@@ -17,7 +17,7 @@
 #'   "version")` is the actual version of the most recent vintage of the file
 #'   rather that `attr(dd, "version")` equal to "current", which is the default.
 #'   Option "00" is useful for vintage control
-#' @param character: main directory. By default it uses `getOption("pipload.working_dir")`
+#' @param maindir character: main directory. By default it uses `getOption("pipload.working_dir")`
 #' @param file_to_load `r lifecycle::badge("deprecated")` `file_to_load` has
 #'   been superseded for a more convenient combination of `filename` and
 #'   `msrdir`. Now, it defaults to `filename`

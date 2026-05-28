@@ -50,6 +50,10 @@ load_gmd_valid_report()
 \arguments{
 \item{country_code}{Character: country ISO 3 code.}
 
+\item{surveyid_year}{numeric: four digit year}
+
+\item{survey_acronym}{character: survey acronym}
+
 \item{vermast}{character: Version of the master data in the form "vXX" where
 X is a number of two digits like "01" or "02".}
 
@@ -73,6 +77,9 @@ available. This is the default.}
 \item{version}{An integer or a quoted directive. Retrieve a specific version
 of an artifact. See details in the function body for supported directives.}
 
+\item{format}{Character. File format to read, e.g. \code{"qs2"} (default) or \code{"fst"}.
+Must match the extension of the stored artifact.}
+
 \item{verbose}{logical. If TRUE display information. Default is option
 "pipload.verbose"}
 
@@ -81,12 +88,6 @@ of an artifact. See details in the function body for supported directives.}
 \item{...}{Just the following: country_code, year, module, survey, vermast,
 veralt, collection, module. They work exactly the same as the ones in
 \link{load_dlw_data}}
-
-\item{year}{numeric: four digit year}
-
-\item{survey}{character: survey acronyn}
-
-\item{filename}{character: File name}
 }
 \value{
 data table with dlw data

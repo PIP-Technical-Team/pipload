@@ -3,6 +3,8 @@
 #' @param tables character: name of auxiliary tables available in
 #'   `pip_load_aux()`
 #' @param ppp_year numeric: PPP round year
+#' @param branch character: data branch to load from. One of `"DEV"`, `"PROD"`,
+#'   or `"main"`. Default is `"DEV"`.
 #' @inheritParams pip_load_aux
 #' @param ... Other arguments passed on to [base::merge()]. Yet, it actually
 #'   uses the merge S3 method for data.table

@@ -19,9 +19,10 @@ test_that("Syntax is working", {
   expect_error()
 
 
-  # deprecation works
+  # deprecation works - warning fires before the dir-not-found error
   pip_load_aux(measure = "ppp",
                file_to_load = "ppp_vintage") |>
-  expect_warning()
+  expect_warning() |>
+  expect_error()
 
 })

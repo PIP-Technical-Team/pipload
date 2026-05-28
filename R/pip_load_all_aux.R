@@ -8,6 +8,8 @@
 #'   be loaded. default is `aux`
 #' @param envir environment where the data frame will be allocated. Default is
 #'   `globalenv()`
+#' @param branch character: data branch to load from. One of `"DEV"`, `"PROD"`,
+#'   or `"main"`. Default is `"DEV"`.
 #' @inheritParams pip_load_aux
 #'
 #' @return invisible TRUE

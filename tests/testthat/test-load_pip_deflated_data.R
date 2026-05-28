@@ -208,7 +208,9 @@ test_that("load_pip_deflated_data() integration: load → deflate round-trip", {
     verbose = FALSE
   )
 
-  result <- load_pip_deflated_data(id_name = "BOL_2022_EH_INC_ALL")
+  result <- suppressWarnings(
+    load_pip_deflated_data(id_name = "BOL_2022_EH_INC_ALL")
+  )
 
   expect_s3_class(result, "data.table")
   expect_true(nrow(result) > 0)
