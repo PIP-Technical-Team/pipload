@@ -3,8 +3,7 @@ date: 2026-05-28
 title: "Rewrite pip_inv_enrich with direct qs2 bulk loading and wide-column expansion"
 status: completed
 completed-date: 2026-05-28
-completed-phases: [1]
-current-phase: 2
+completed-phases: [1, 2]
 scope: "Standard"
 brainstorm: ".cg-docs/brainstorms/2026-05-28-pip-inv-enrich-fast-bulk-loading.md"
 language: R

@@ -16,7 +16,7 @@
                 {
                     "id": "fast-bulk-metadata-enrichment",
                     "title": "Rewrite pip_inv_enrich with direct qs2 bulk loading and wide-column expansion",
-                    "status": "planned",
+                    "status": "done",
                     "plan": ".cg-docs/plans/2026-05-28-pip-inv-enrich-fast-bulk-v3.md"
                 },
                 {

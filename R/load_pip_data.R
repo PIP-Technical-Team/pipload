@@ -31,11 +31,6 @@
 #' @param where character: Either `"release"` or `"master"` indicating where to look for data. Default is `"release"`.
 #' @param version character: Specific data version to load; forwarded to `pip_read`. Default is `NULL` (latest if available).
 #' @param format character: Data format to read (for example, `"qs2"`). Default is `"qs2"`.
-#' @param fields Character vector of metadata field names to extract from each
-#'   survey's stored metadata artifact and add as columns. Passed to
-#'   [pip_inv_enrich()]. Default is `character(0)` (no enrichment). Example:
-#'   `fields = "reporting_level"` adds the reporting level from each survey's
-#'   metadata.
 #'
 #' @return data.table with pip data. Note: one of `country_code` or `id_name` must be provided.
 #' @export
@@ -261,6 +256,11 @@ find_pip_data <- function(
 }
 
 
+#' @param fields Character vector of metadata field names to extract from each
+#'   survey's stored metadata artifact and add as columns. Passed to
+#'   [pip_inv_enrich()]. Default is `character(0)` (no enrichment). Example:
+#'   `fields = "reporting_level"` adds the reporting level from each survey's
+#'   metadata.
 #' @return data.table with PIP inventory for the current release
 #' @rdname load_pip_data
 #' @export
@@ -307,6 +307,11 @@ load_pip_release_inventory <- \(
 }
 
 
+#' @param fields Character vector of metadata field names to extract from each
+#'   survey's stored metadata artifact and add as columns. Passed to
+#'   [pip_inv_enrich()]. Default is `character(0)` (no enrichment). Example:
+#'   `fields = "reporting_level"` adds the reporting level from each survey's
+#'   metadata.
 #' @return data.table with PIP master inventory
 #' @rdname load_pip_data
 #' @export
