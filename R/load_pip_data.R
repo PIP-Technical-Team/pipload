@@ -180,6 +180,10 @@ find_pip_data <- function(
   latest_year = FALSE,
   where = c("release", "master"),
   verbose = getOption("pipload.verbose"),
+  latest_version = FALSE,
+  vermast = NULL,
+  veralt = NULL,
+  collection = NULL,
   ...
 ) {
   where <- match.arg(where)
@@ -217,6 +221,28 @@ find_pip_data <- function(
       setDT()
   }
   ctl <- ctl[grepl(pattern, pip_id)]
+
+  # Filter on version/collection columns when supplied.
+  # Capture arg values outside data.table context to avoid column-name shadowing.
+  if (!is.null(vermast)) {
+    .vermast <- toupper(vermast)
+    ctl <- ctl[toupper(vermast) %chin% .vermast]
+  }
+  if (!is.null(veralt)) {
+    .veralt <- toupper(veralt)
+    ctl <- ctl[toupper(veralt) %chin% .veralt]
+  }
+  if (!is.null(collection)) {
+    .collection <- toupper(collection)
+    ctl <- ctl[toupper(collection) %chin% .collection]
+  }
+
+  if (latest_version == TRUE) {
+    ctl <- ctl[,
+      .SD[veralt == max(veralt)],
+      by = .(country_code, surveyid_year, survey_acronym, welfare_type, module)
+    ]
+  }
 
   if (latest_year == TRUE && !("surveyid_year" %in% names(args))) {
     #need to check because it was args_info before instead of names(args)

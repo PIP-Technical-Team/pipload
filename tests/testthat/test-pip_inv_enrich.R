@@ -252,3 +252,53 @@ test_that("mixed scalar and vector fields work together", {
   expect_equal(result$reporting_level, "national")
 })
 
+# ---------------------------------------------------------------------------
+# version_id_metadata column absent (P2.16)
+# ---------------------------------------------------------------------------
+
+test_that("pip_inv_enrich warns with pip_inv_enrich_no_version_col when column absent", {
+  inv <- data.table::data.table(
+    pip_id = "BOL_2022_EH_INC_ALL",
+    path_metadata = "some/path"
+    # No version_id_metadata column
+  )
+  expect_warning(
+    result <- pip_inv_enrich(inv, fields = "reporting_level"),
+    class = "pip_inv_enrich_no_version_col"
+  )
+  expect_true("reporting_level" %in% names(result))
+  expect_true(is.na(result$reporting_level))
+})
+
+# ---------------------------------------------------------------------------
+# gdp / pce vector field coverage (P2.17)
+# ---------------------------------------------------------------------------
+
+test_that("gdp strips year when it matches surveyid_year", {
+  dir <- withr::local_tempdir()
+  meta <- list(
+    surveyid_year = 2022,
+    gdp = c(`2022_national` = 2100)
+  )
+  inv <- make_inv_with_meta("CHN_2022_X_INC_ALL", meta, dir)
+
+  result <- pip_inv_enrich(inv, fields = "gdp")
+  expect_true("gdp_national" %in% names(result))
+  expect_false("gdp_2022_national" %in% names(result))
+  expect_false("gdp_year" %in% names(result))
+})
+
+test_that("pce keeps full name and adds pce_year when year mismatches", {
+  dir <- withr::local_tempdir()
+  meta <- list(
+    surveyid_year = 2022,
+    pce = c(`2018_national` = 500)
+  )
+  inv <- make_inv_with_meta("CHN_2022_X_INC_ALL", meta, dir)
+
+  result <- pip_inv_enrich(inv, fields = "pce")
+  expect_true("pce_2018_national" %in% names(result))
+  expect_true("pce_year" %in% names(result))
+  expect_equal(result$pce_year, "2018")
+})
+

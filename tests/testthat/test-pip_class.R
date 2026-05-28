@@ -143,3 +143,34 @@ test_that("self refernce not happening", {
   expect_equal(md, md2)
 
 })
+
+# ---------------------------------------------------------------------------
+# assign_pipclass_from_id()
+# ---------------------------------------------------------------------------
+
+test_that("assign_pipclass_from_id returns pipmd for ALL suffix", {
+  survey <- data.table::data.table(welfare = 1:3)
+  result <- pipload:::assign_pipclass_from_id(survey, "BOL_2022_EH_INC_ALL")
+  expect_s3_class(result, "pipmd")
+})
+
+test_that("assign_pipclass_from_id returns pipgd for GROUP suffix", {
+  survey <- data.table::data.table(welfare = 1:3)
+  result <- pipload:::assign_pipclass_from_id(survey, "CHN_2015_CHNS_INC_GROUP")
+  expect_s3_class(result, "pipgd")
+})
+
+test_that("assign_pipclass_from_id returns pipid when sim column present", {
+  survey <- data.table::data.table(welfare = 1:3, sim = 1L)
+  result <- pipload:::assign_pipclass_from_id(survey, "BOL_2022_EH_INC_ALL")
+  expect_s3_class(result, "pipid")
+})
+
+test_that("assign_pipclass_from_id warns on unrecognised token and returns pipmd", {
+  survey <- data.table::data.table(welfare = 1:3)
+  expect_warning(
+    result <- pipload:::assign_pipclass_from_id(survey, "BOL_2022_EH_INC_UNKNOWN"),
+    class = "pip_unknown_module_token"
+  )
+  expect_s3_class(result, "pipmd")
+})

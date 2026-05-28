@@ -65,6 +65,14 @@ expand_meta_field <- function(field_name, value, surveyid_year) {
   for (i in seq_along(value)) {
     elem_name <- nm[[i]]
     elem_year <- sub("^(\\d{4})_.*$", "\\1", elem_name)
+    # If sub returned the string unchanged, the YYYY_ prefix is absent — skip.
+    if (elem_year == elem_name) {
+      cli::cli_warn(
+        "Unexpected element name without YYYY_ prefix: {.val {elem_name}}. Skipping.",
+        class = "pip_inv_enrich_bad_elem_name"
+      )
+      next
+    }
     area_part <- sub("^\\d{4}_", "", elem_name)
 
     if (elem_year == yr_str) {
@@ -222,6 +230,13 @@ pip_inv_enrich <- function(inv, fields = character(0)) {
       ))
     )
   } else {
+    cli::cli_warn(
+      c(
+        "Inventory lacks {.col version_id_metadata}; all enrichment fields will be NA.",
+        "i" = "Reload via {.code load_pip_release_inventory()} or {.code load_pip_master_inventory()}."
+      ),
+      class = c("pip_inv_enrich_no_version_col", "pipwrn")
+    )
     paths <- rep(NA_character_, nrow(inv))
   }
 
@@ -230,13 +245,41 @@ pip_inv_enrich <- function(inv, fields = character(0)) {
     if (is.na(p)) {
       return(NULL)
     }
-    tryCatch(qs2::qs_read(p), error = \(e) NULL)
+    tryCatch(qs2::qs_read(p), error = \(e) {
+      cli::cli_warn(
+        c(
+          "!" = "Could not read metadata: {.path {p}}",
+          "i" = "{conditionMessage(e)}"
+        ),
+        class = c("pip_inv_enrich_read_error", "pipwrn")
+      )
+      NULL
+    })
   })
+
+  # Defensive check: if non-NA paths exist but all reads failed, the
+  # artifact layout may have changed.
+  non_na_paths <- sum(!is.na(paths))
+  if (non_na_paths > 0L && !any(vapply(metas, Negate(is.null), logical(1L)))) {
+    example_path <- paths[!is.na(paths)][[1L]]
+    cli::cli_abort(
+      c(
+        "x" = "{non_na_paths} metadata path{?s} constructed but none could be read.",
+        "i" = "Example path: {.path {example_path}}",
+        "i" = "Check that the stamp artifact layout has not changed."
+      ),
+      class = c("pip_inv_enrich_layout_error", "piperr")
+    )
+  }
+
+  # Add a row index so the join key is always unique (pip_id may repeat
+  # across reporting levels).
+  inv[, .row_id := .I]
 
   # For each row, expand requested fields into named list of columns
   field_rows <- lapply(seq_len(nrow(inv)), \(i) {
     meta <- metas[[i]]
-    row <- list(pip_id = inv$pip_id[[i]])
+    row <- list(.row_id = i, pip_id = inv$pip_id[[i]])
 
     if (is.null(meta)) {
       # No metadata available: NA for scalar fields only.
@@ -267,7 +310,7 @@ pip_inv_enrich <- function(inv, fields = character(0)) {
   field_dt <- data.table::rbindlist(field_rows, fill = TRUE)
 
   # Warn about pip_ids where no metadata could be loaded (all new cols are NA)
-  enriched_cols <- setdiff(names(field_dt), "pip_id")
+  enriched_cols <- setdiff(names(field_dt), c("pip_id", ".row_id"))
   if (length(enriched_cols) > 0L) {
     failed <- field_dt[
       rowSums(!is.na(field_dt[, enriched_cols, with = FALSE])) == 0L,
@@ -300,15 +343,19 @@ pip_inv_enrich <- function(inv, fields = character(0)) {
     }
   }
 
-  # Left join enrichment columns back onto inventory
+  # Left join enrichment columns back onto inventory using the unique row index
+  # (pip_id alone is not unique when the same survey appears at multiple
+  # reporting levels).  Drop pip_id from the right-hand table before joining.
+  field_dt_join <- field_dt[, !c("pip_id"), with = FALSE]
   inv <- joyn::left_join(
     inv,
-    field_dt,
-    by = "pip_id",
-    relationship = "many-to-one",
+    field_dt_join,
+    by = ".row_id",
+    relationship = "one-to-one",
     reportvar = FALSE,
     verbose = FALSE
   )
+  inv[, .row_id := NULL]
 
   return(inv)
 }

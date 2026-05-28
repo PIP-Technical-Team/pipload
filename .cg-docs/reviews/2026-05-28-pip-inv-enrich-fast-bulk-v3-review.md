@@ -5,24 +5,24 @@ findings:
   P1.2: fixed
   P1.3: fixed
   P1.4: fixed
-  P2.1: open
-  P2.2: open
-  P2.3: open
+  P2.1: fixed
+  P2.2: fixed
+  P2.3: fixed
   P2.4: fixed
   P2.5: fixed
-  P2.6: open
-  P2.7: open
-  P2.8: open
-  P2.9: open
+  P2.6: fixed
+  P2.7: fixed
+  P2.8: fixed
+  P2.9: fixed
   P2.10: fixed
   P2.11: fixed
   P2.12: fixed
-  P2.13: open
-  P2.14: open
-  P2.15: open
-  P2.16: open
-  P2.17: open
-  P2.18: open
+  P2.13: fixed
+  P2.14: fixed
+  P2.15: fixed
+  P2.16: fixed
+  P2.17: fixed
+  P2.18: fixed
   P3.1: fixed
   P3.2: fixed
   P3.3: open

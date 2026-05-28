@@ -31,6 +31,10 @@ find_pip_data(
   latest_year = FALSE,
   where = c("release", "master"),
   verbose = getOption("pipload.verbose"),
+  latest_version = FALSE,
+  vermast = NULL,
+  veralt = NULL,
+  collection = NULL,
   ...
 )
 

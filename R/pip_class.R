@@ -146,7 +146,8 @@ assign_pipclass_from_id <- function(survey, pip_id) {
         "Unrecognised module token {.val {pip_module}} in pip_id {.val {pip_id}}.",
         "i" = "Expected one of: {.val {known_modules}}.",
         "i" = "Defaulting to {.cls pipmd} class."
-      )
+      ),
+      class = c("pip_unknown_module_token", "pipwrn")
     )
   }
   if ("sim" %in% names(survey)) {
