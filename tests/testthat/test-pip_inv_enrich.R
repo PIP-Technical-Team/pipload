@@ -1,80 +1,118 @@
-test_that("pip_inv_enrich returns inv unchanged when fields is empty", {
-  inv <- data.table::data.table(
-    pip_id = "BOL_2022_EH_INC_ALL",
-    version_id_metadata = "v1"
+# Helper: write a metadata list to a stamp-layout temp path and return an inv
+# data.table row pointing at it.
+make_inv_with_meta <- function(pip_id, meta, dir) {
+  vid <- "abc123"
+  artifact_dir <- fs::path(dir, "versions", vid)
+  fs::dir_create(artifact_dir)
+  artifact_path <- fs::path(artifact_dir, "artifact")
+  qs2::qs_save(meta, artifact_path)
+
+  data.table::data.table(
+    pip_id = pip_id,
+    path_metadata = dir,
+    version_id_metadata = vid
   )
+}
+
+# ---------------------------------------------------------------------------
+# Early-exit and validation
+# ---------------------------------------------------------------------------
+
+test_that("pip_inv_enrich returns inv unchanged when fields is empty", {
+  inv <- data.table::data.table(pip_id = "BOL_2022_EH_INC_ALL")
   result <- pip_inv_enrich(inv, fields = character(0))
   expect_identical(result, inv)
 })
 
-test_that("pip_inv_enrich extracts field from metadata into inventory column", {
+test_that("pip_inv_enrich aborts on invalid field name", {
   inv <- data.table::data.table(
     pip_id = "BOL_2022_EH_INC_ALL",
-    version_id_metadata = "vid_001"
+    path_metadata = "x",
+    version_id_metadata = "v1"
   )
-  fake_meta <- list(reporting_level = "1")
+  expect_error(
+    pip_inv_enrich(inv, fields = "not_a_real_field"),
+    class = "pip_inv_enrich_invalid_field"
+  )
+})
 
-  testthat::local_mocked_bindings(
-    pip_read = function(id, alias, version = NULL, ...) fake_meta,
-    .package = "pipload"
+test_that("pip_inv_enrich aborts when path_metadata is missing", {
+  inv <- data.table::data.table(pip_id = "BOL_2022_EH_INC_ALL")
+  expect_error(
+    pip_inv_enrich(inv, fields = "reporting_level"),
+    class = "pip_inv_enrich_no_path_metadata"
   )
+})
+
+test_that("pip_inv_enrich skips fields already in inv with inform", {
+  inv <- data.table::data.table(
+    pip_id = "BOL_2022_EH_INC_ALL",
+    path_metadata = "x",
+    version_id_metadata = NA_character_,
+    reporting_level = "existing"
+  )
+  expect_message(
+    result <- pip_inv_enrich(inv, fields = "reporting_level"),
+    class = "pip_inv_enrich_skip_existing"
+  )
+  # inv unchanged — field was skipped
+  expect_equal(result$reporting_level, "existing")
+})
+
+# ---------------------------------------------------------------------------
+# Scalar field extraction
+# ---------------------------------------------------------------------------
+
+test_that("pip_inv_enrich extracts scalar field from temp metadata", {
+  dir <- withr::local_tempdir()
+  meta <- list(
+    surveyid_year = 2022,
+    reporting_level = "2",
+    cpi = c(`2022_national` = 1.0)
+  )
+  inv <- make_inv_with_meta("BOL_2022_EH_INC_ALL", meta, dir)
 
   result <- pip_inv_enrich(inv, fields = "reporting_level")
   expect_true("reporting_level" %in% names(result))
-  expect_equal(result$reporting_level, "1")
+  expect_equal(result$reporting_level, "2")
 })
 
-test_that("pip_inv_enrich passes version_id_metadata to pip_read", {
-  inv <- data.table::data.table(
-    pip_id = "BOL_2022_EH_INC_ALL",
-    version_id_metadata = "exact_version_abc"
+test_that("pip_inv_enrich extracts multiple scalar fields at once", {
+  dir1 <- withr::local_tempdir()
+  dir2 <- withr::local_tempdir()
+  meta1 <- list(
+    surveyid_year = 2022,
+    reporting_level = "1",
+    distribution_type = "micro"
   )
-  captured_version <- NULL
-  fake_meta <- list(reporting_level = "2")
-
-  testthat::local_mocked_bindings(
-    pip_read = function(id, alias, version = NULL, ...) {
-      captured_version <<- version
-      fake_meta
-    },
-    .package = "pipload"
+  meta2 <- list(
+    surveyid_year = 2015,
+    reporting_level = "2",
+    distribution_type = "group"
   )
+  inv <- data.table::rbindlist(list(
+    make_inv_with_meta("BOL_2022_EH_INC_ALL", meta1, dir1),
+    make_inv_with_meta("CHN_2015_NSS_INC_ALL", meta2, dir2)
+  ))
 
-  pip_inv_enrich(inv, fields = "reporting_level")
-  expect_equal(captured_version, "exact_version_abc")
+  result <- pip_inv_enrich(
+    inv,
+    fields = c("reporting_level", "distribution_type")
+  )
+  expect_equal(result$reporting_level, c("1", "2"))
+  expect_equal(result$distribution_type, c("micro", "group"))
 })
 
-test_that("pip_inv_enrich uses version = NULL when version_id_metadata is NA", {
+# ---------------------------------------------------------------------------
+# NA handling
+# ---------------------------------------------------------------------------
+
+test_that("pip_inv_enrich gives NA when version_id_metadata is NA", {
   inv <- data.table::data.table(
     pip_id = "BOL_2022_EH_INC_ALL",
+    path_metadata = "irrelevant",
     version_id_metadata = NA_character_
   )
-  captured_version <- "not_null"
-  fake_meta <- list(reporting_level = "1")
-
-  testthat::local_mocked_bindings(
-    pip_read = function(id, alias, version = NULL, ...) {
-      captured_version <<- version
-      fake_meta
-    },
-    .package = "pipload"
-  )
-
-  pip_inv_enrich(inv, fields = "reporting_level")
-  expect_null(captured_version)
-})
-
-test_that("pip_inv_enrich gives NA when metadata load fails", {
-  inv <- data.table::data.table(
-    pip_id = "XYZ_2000_TST_INC_ALL",
-    version_id_metadata = "stale_version"
-  )
-
-  testthat::local_mocked_bindings(
-    pip_read = function(...) stop("version not found"),
-    .package = "pipload"
-  )
-
   expect_warning(
     result <- pip_inv_enrich(inv, fields = "reporting_level"),
     class = "pip_inv_enrich_missing_meta"
@@ -83,46 +121,134 @@ test_that("pip_inv_enrich gives NA when metadata load fails", {
   expect_true(is.na(result$reporting_level))
 })
 
-test_that("pip_inv_enrich removes pre-existing field columns before join", {
+test_that("pip_inv_enrich gives NA when artifact file is missing", {
   inv <- data.table::data.table(
     pip_id = "BOL_2022_EH_INC_ALL",
-    version_id_metadata = "v1",
-    reporting_level.x = NA_character_,
-    reporting_level.y = NA_character_
+    path_metadata = withr::local_tempdir(),
+    version_id_metadata = "no_such_version"
   )
-  fake_meta <- list(reporting_level = "1")
-
-  testthat::local_mocked_bindings(
-    pip_read = function(...) fake_meta,
-    .package = "pipload"
+  # artifact path does not exist → qs_read fails → NULL meta → NA
+  expect_warning(
+    result <- pip_inv_enrich(inv, fields = "reporting_level"),
+    class = "pip_inv_enrich_missing_meta"
   )
-
-  result <- pip_inv_enrich(inv, fields = "reporting_level")
-  expect_false("reporting_level.x" %in% names(result))
-  expect_false("reporting_level.y" %in% names(result))
-  expect_equal(result$reporting_level, "1")
+  expect_true(is.na(result$reporting_level))
 })
 
-test_that("pip_inv_enrich extracts multiple fields in one call", {
-  inv <- data.table::data.table(
-    pip_id = c("BOL_2022_EH_INC_ALL", "CHN_2015_NSS_INC_ALL"),
-    version_id_metadata = c("v1", "v2")
-  )
-  fake_meta_bol <- list(reporting_level = "1", welfare_type = "INC")
-  fake_meta_chn <- list(reporting_level = "2", welfare_type = "INC")
+# ---------------------------------------------------------------------------
+# cpi vector expansion
+# ---------------------------------------------------------------------------
 
-  call_count <- 0L
-  testthat::local_mocked_bindings(
-    pip_read = function(id, ...) {
-      call_count <<- call_count + 1L
-      if (id == "BOL_2022_EH_INC_ALL") fake_meta_bol else fake_meta_chn
-    },
-    .package = "pipload"
+test_that("cpi field expands to cpi_YYYY_area columns", {
+  dir <- withr::local_tempdir()
+  meta <- list(
+    surveyid_year = 2022,
+    cpi = c(`2005_rural` = 1.1, `2011_urban` = 0.9)
   )
+  inv <- make_inv_with_meta("CHN_2022_X_INC_ALL", meta, dir)
 
-  result <- pip_inv_enrich(inv, fields = c("reporting_level", "welfare_type"))
+  result <- pip_inv_enrich(inv, fields = "cpi")
+  expect_true("cpi_2005_rural" %in% names(result))
+  expect_true("cpi_2011_urban" %in% names(result))
+  expect_equal(result$cpi_2005_rural, 1.1)
+  expect_equal(result$cpi_2011_urban, 0.9)
+})
+
+# ---------------------------------------------------------------------------
+# ppp vector expansion (no prefix doubling)
+# ---------------------------------------------------------------------------
+
+test_that("ppp field uses existing names without doubling prefix", {
+  dir <- withr::local_tempdir()
+  meta <- list(
+    surveyid_year = 2022,
+    ppp = c(`ppp_2011_02_02_national` = 3.697, `ppp_2017_01_02_rural` = 3.495)
+  )
+  inv <- make_inv_with_meta("CHN_2022_X_INC_ALL", meta, dir)
+
+  result <- pip_inv_enrich(inv, fields = "ppp")
+  expect_true("ppp_2011_02_02_national" %in% names(result))
+  expect_true("ppp_2017_01_02_rural" %in% names(result))
+  # No ppp_ppp_ prefix doubling
+  expect_false(any(grepl("^ppp_ppp_", names(result))))
+  expect_equal(result$ppp_2011_02_02_national, 3.697)
+})
+
+# ---------------------------------------------------------------------------
+# pop / gdp / pce year-stripping
+# ---------------------------------------------------------------------------
+
+test_that("pop strips year when it matches surveyid_year", {
+  dir <- withr::local_tempdir()
+  meta <- list(
+    surveyid_year = 2022,
+    pop = c(`2022_rural` = 514e6, `2022_national` = 1412e6)
+  )
+  inv <- make_inv_with_meta("CHN_2022_X_INC_ALL", meta, dir)
+
+  result <- pip_inv_enrich(inv, fields = "pop")
+  expect_true("pop_rural" %in% names(result))
+  expect_true("pop_national" %in% names(result))
+  expect_false("pop_2022_rural" %in% names(result))
+  expect_false("pop_year" %in% names(result))
+})
+
+test_that("pop keeps full name and adds pop_year when year mismatches", {
+  dir <- withr::local_tempdir()
+  meta <- list(
+    surveyid_year = 2022,
+    pop = c(`2019_national` = 1000e6)
+  )
+  inv <- make_inv_with_meta("CHN_2022_X_INC_ALL", meta, dir)
+
+  result <- pip_inv_enrich(inv, fields = "pop")
+  expect_true("pop_2019_national" %in% names(result))
+  expect_true("pop_year" %in% names(result))
+  expect_equal(result$pop_year, "2019")
+})
+
+# ---------------------------------------------------------------------------
+# union of columns across surveys with different areas
+# ---------------------------------------------------------------------------
+
+test_that("two surveys with different pop areas produce union of columns with NAs", {
+  dir1 <- withr::local_tempdir()
+  dir2 <- withr::local_tempdir()
+  meta1 <- list(surveyid_year = 2022,
+                pop = c(`2022_rural` = 500e6, `2022_urban` = 900e6))
+  meta2 <- list(surveyid_year = 2015,
+                pop = c(`2015_national` = 1200e6))
+  inv <- data.table::rbindlist(list(
+    make_inv_with_meta("CHN_2022_X_INC_ALL", meta1, dir1),
+    make_inv_with_meta("IND_2015_X_INC_ALL", meta2, dir2)
+  ))
+
+  result <- pip_inv_enrich(inv, fields = "pop")
+  # CHN row: pop_rural and pop_urban present, pop_national NA
+  expect_true("pop_rural" %in% names(result))
+  expect_true("pop_urban" %in% names(result))
+  expect_true("pop_national" %in% names(result))
+  expect_true(is.na(result[pip_id == "CHN_2022_X_INC_ALL", pop_national]))
+  expect_true(is.na(result[pip_id == "IND_2015_X_INC_ALL", pop_rural]))
+})
+
+# ---------------------------------------------------------------------------
+# Mixed scalar + vector in one call
+# ---------------------------------------------------------------------------
+
+test_that("mixed scalar and vector fields work together", {
+  dir <- withr::local_tempdir()
+  meta <- list(
+    surveyid_year = 2022,
+    reporting_level = "national",
+    cpi = c(`2005_national` = 1.2, `2011_national` = 1.1)
+  )
+  inv <- make_inv_with_meta("BOL_2022_EH_INC_ALL", meta, dir)
+
+  result <- pip_inv_enrich(inv, fields = c("reporting_level", "cpi"))
   expect_true("reporting_level" %in% names(result))
-  expect_true("welfare_type" %in% names(result))
-  expect_equal(result$reporting_level, c("1", "2"))
-  expect_equal(result$welfare_type, c("INC", "INC"))
+  expect_true("cpi_2005_national" %in% names(result))
+  expect_true("cpi_2011_national" %in% names(result))
+  expect_equal(result$reporting_level, "national")
 })
+
