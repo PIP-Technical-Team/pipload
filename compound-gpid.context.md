@@ -42,6 +42,16 @@ absent-field, and any future early-return). See
 - `DESCRIPTION` must end with a trailing newline.
 - See `.cg-docs/solutions/build-errors/2026-05-28-rcmd-check-rd-param-mismatches.md`.
 
+### R function-definition audit: always match both `function` and `\()` syntaxes
+
+When grepping R source for function definitions (e.g. to audit parameter
+coverage), always use the alternation pattern `(<- function)|(<- \\()`.
+The `\()` lambda shorthand (R 4.1+) is semantically identical to
+`function()` but is **silently missed** by `<- function`-only patterns.
+As a fallback, parse `NAMESPACE` to enumerate all exports and then locate
+their definitions. See
+`.cg-docs/solutions/testing-patterns/2026-06-04-r-lambda-syntax-missed-by-function-regex.md`.
+
 ### testthat: always chain expect_error() after expect_warning() when the function can also error
 
 `expect_warning()` muffles the warning but re-throws any subsequent error.
