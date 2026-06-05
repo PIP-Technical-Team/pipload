@@ -23,7 +23,7 @@ pip_load_all_aux <- function(replace           = NULL,
                              maindir           = pipfun::pip_create_globals(root_dir)$PIP_DATA_DIR,
                              version           = NULL,
                              apply_label       = TRUE,
-                             verbose           = FALSE,
+                             verbose           = getOption("pipload.verbose"),
                              preferred_format  = NULL
                              ) {
 

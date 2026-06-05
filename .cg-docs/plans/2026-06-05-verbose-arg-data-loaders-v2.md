@@ -9,6 +9,8 @@ estimated-effort: "small"
 tags: [verbose, UX, consistency]
 supersedes: ".cg-docs/plans/2026-06-04-verbose-arg-data-loaders.md"
 review-findings: [P2.1-cascade-amplification, P2.2-pip-read-threading, P3.1-inheritParams, P3.2-testing-hedge, P3.3-legacy-guard]
+completed-phases: [1]
+current-phase: 2
 ---
 
 # Plan: Add verbose argument to data loading functions missing it (v2)

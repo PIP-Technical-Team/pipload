@@ -19,6 +19,7 @@ pip_find_cache <- function(country          = NULL,
                            source           = NULL,
                            version          = NULL,
                            tool             = c("PC", "pc", "tb", "TB"),
+                           verbose          = getOption("pipload.verbose"),
                            root_dir         = Sys.getenv("PIP_ROOT_DIR"),
                            pipedir          = pipfun::pip_create_globals(root_dir)$PIP_PIPE_DIR
                            )  {
@@ -86,6 +87,10 @@ pip_find_cache <- function(country          = NULL,
 
   ri <- ri[grepl(pattern, cache_id),
            cache_id]
+
+  if (verbose) {
+    cli::cli_alert_info("Found {.val {length(ri)}} cache file{?s} matching the filter.")
+  }
 
   return(ri)
 
