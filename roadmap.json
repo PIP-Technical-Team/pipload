@@ -34,7 +34,7 @@
                 {
                     "id": "verbose-arg-data-loaders",
                     "title": "Check if data loading functions have verbose argument",
-                    "status": "active",
+                    "status": "done",
                     "plan": ".cg-docs/plans/2026-06-05-verbose-arg-data-loaders-v2.md"
                 },
                 {

@@ -1,7 +1,8 @@
 ---
 date: 2026-06-05
 title: "Add verbose argument to data loading functions missing it (v2)"
-status: active
+status: completed
+completed-date: 2026-06-05
 scope: "Lightweight"
 brainstorm: null
 language: "R"
@@ -9,8 +10,7 @@ estimated-effort: "small"
 tags: [verbose, UX, consistency]
 supersedes: ".cg-docs/plans/2026-06-04-verbose-arg-data-loaders.md"
 review-findings: [P2.1-cascade-amplification, P2.2-pip-read-threading, P3.1-inheritParams, P3.2-testing-hedge, P3.3-legacy-guard]
-completed-phases: [1]
-current-phase: 2
+completed-phases: [1, 2]
 ---
 
 # Plan: Add verbose argument to data loading functions missing it (v2)
