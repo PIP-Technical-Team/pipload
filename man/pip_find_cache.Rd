@@ -14,7 +14,8 @@ pip_find_cache(
   version = NULL,
   tool = c("PC", "pc", "tb", "TB"),
   root_dir = Sys.getenv("PIP_ROOT_DIR"),
-  pipedir = pipfun::pip_create_globals(root_dir)$PIP_PIPE_DIR
+  pipedir = pipfun::pip_create_globals(root_dir)$PIP_PIPE_DIR,
+  verbose = getOption("pipload.verbose")
 )
 }
 \arguments{
@@ -43,6 +44,8 @@ income}
 
 \item{pipedir}{charater: directory of pipeline. Default is
 \code{pipfun::pip_create_globals(root_dir)$PIP_PIPE_DIR}}
+
+\item{verbose}{logical: If TRUE, display informative messages. Default TRUE}
 }
 \value{
 data.table

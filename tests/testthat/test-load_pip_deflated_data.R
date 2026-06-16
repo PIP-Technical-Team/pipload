@@ -197,6 +197,10 @@ test_that("load_pip_deflated_data() integration: load → deflate round-trip", {
   skip_if_not_installed("pipdata")
   skip_if_not_installed("pipfun")
   skip_on_ci()
+  skip_if_not(
+    has_pip_data(),
+    "PIP auxiliary data not accessible in test environment"
+  )
 
   lr <- pipfun::get_latest_pip_release()
   # Note: pipfun has no teardown_working_release() export; side-effects

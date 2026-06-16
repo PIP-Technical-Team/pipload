@@ -37,15 +37,15 @@ find_dlw_data(
 
 check_dlw_id_name(id_name)
 
-load_dlw_gmd_inventory()
+load_dlw_gmd_inventory(verbose = getOption("pipload.verbose"))
 
-load_dlw_gmd_log()
+load_dlw_gmd_log(verbose = getOption("pipload.verbose"))
 
-load_gmd_valid_inv()
+load_gmd_valid_inv(verbose = getOption("pipload.verbose"))
 
-load_gmd_valid_log()
+load_gmd_valid_log(verbose = getOption("pipload.verbose"))
 
-load_gmd_valid_report()
+load_gmd_valid_report(verbose = getOption("pipload.verbose"))
 }
 \arguments{
 \item{country_code}{Character: country ISO 3 code.}

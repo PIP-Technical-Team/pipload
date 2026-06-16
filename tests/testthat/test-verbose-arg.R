@@ -1,12 +1,6 @@
 library(testthat)
 library(data.table)
 
-# Skip tests if PIP data is not accessible
-has_pip_data <- function() {
-  root_dir <- Sys.getenv("PIP_ROOT_DIR", "")
-  nzchar(root_dir) && dir.exists(file.path(root_dir, "_aux"))
-}
-
 # -------------------------------------------------------------------------
 # pip_find_cache()
 # -------------------------------------------------------------------------
