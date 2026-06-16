@@ -6,13 +6,16 @@
 \usage{
 pip_load_dlw_inventory(
   root_dir = Sys.getenv("PIP_ROOT_DIR"),
-  dlw_dir = pipfun::pip_create_globals(root_dir)$DLW_RAW_DIR
+  dlw_dir = pipfun::pip_create_globals(root_dir)$DLW_RAW_DIR,
+  verbose = getOption("pipload.verbose")
 )
 }
 \arguments{
 \item{root_dir}{character: root directory of the PIP data}
 
 \item{dlw_dir}{character: path of datalibweb raw data}
+
+\item{verbose}{logical: If TRUE, display loading messages. Default is option "pipload.verbose"}
 }
 \value{
 data.table

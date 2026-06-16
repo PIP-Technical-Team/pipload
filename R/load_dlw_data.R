@@ -269,7 +269,7 @@ check_dlw_id_name <- \(id_name) {
 #' \dontrun{
 #' load_dlw_gmd_inventory()
 #' }
-load_dlw_gmd_inventory <- \() {
+load_dlw_gmd_inventory <- \(verbose = getOption("pipload.verbose")) {
   binv <- pipfun::get_pip_folders(folder = "dlw_inventory", verbose = FALSE)
 
   alias_list <- stamp::st_alias_list()
@@ -282,7 +282,8 @@ load_dlw_gmd_inventory <- \() {
     ))
   }
 
-  pip_read("dlw_gmd_inv", alias = alias)
+  if (verbose) cli::cli_alert_info("Loading {.field dlw_gmd_inv}")
+  pip_read("dlw_gmd_inv", alias = alias, verbose = verbose)
 }
 
 
@@ -294,7 +295,7 @@ load_dlw_gmd_inventory <- \() {
 #' \dontrun{
 #' load_dlw_gmd_log()
 #' }
-load_dlw_gmd_log <- \() {
+load_dlw_gmd_log <- \(verbose = getOption("pipload.verbose")) {
   binv <- pipfun::get_pip_folders(folder = "dlw_inventory", verbose = FALSE)
 
   alias_list <- stamp::st_alias_list()
@@ -307,7 +308,8 @@ load_dlw_gmd_log <- \() {
     ))
   }
 
-  pip_read("dlw_gmd_log", alias = alias)
+  if (verbose) cli::cli_alert_info("Loading {.field dlw_gmd_log}")
+  pip_read("dlw_gmd_log", alias = alias, verbose = verbose)
 }
 
 #' @returns [load_gmd_valid_inv] data.table with inventory of validated GMD data
@@ -318,7 +320,7 @@ load_dlw_gmd_log <- \() {
 #' \dontrun{
 #' load_gmd_valid_inv()
 #' }
-load_gmd_valid_inv <- \() {
+load_gmd_valid_inv <- \(verbose = getOption("pipload.verbose")) {
   binv <- pipfun::get_pip_folders(folder = "dlw_metadata", verbose = FALSE)
 
   alias_list <- stamp::st_alias_list()
@@ -331,7 +333,8 @@ load_gmd_valid_inv <- \() {
     ))
   }
 
-  pip_read("gmd_valid_inv", alias = alias)
+  if (verbose) cli::cli_alert_info("Loading {.field gmd_valid_inv}")
+  pip_read("gmd_valid_inv", alias = alias, verbose = verbose)
 }
 
 #' @returns [load_gmd_valid_log] data.table with log of GMD validated workflow
@@ -342,7 +345,7 @@ load_gmd_valid_inv <- \() {
 #' \dontrun{
 #' load_gmd_valid_log()
 #' }
-load_gmd_valid_log <- \() {
+load_gmd_valid_log <- \(verbose = getOption("pipload.verbose")) {
   binv <- pipfun::get_pip_folders(folder = "dlw_metadata", verbose = FALSE)
 
   alias_list <- stamp::st_alias_list()
@@ -355,7 +358,8 @@ load_gmd_valid_log <- \() {
     ))
   }
 
-  pip_read("dlw_validation_log", alias = alias)
+  if (verbose) cli::cli_alert_info("Loading {.field dlw_validation_log}")
+  pip_read("dlw_validation_log", alias = alias, verbose = verbose)
 }
 
 #' @returns [load_gmd_valid_report] data.table with validation report data
@@ -366,7 +370,7 @@ load_gmd_valid_log <- \() {
 #' \dontrun{
 #' load_gmd_valid_report()
 #' }
-load_gmd_valid_report <- \() {
+load_gmd_valid_report <- \(verbose = getOption("pipload.verbose")) {
   binv <- pipfun::get_pip_folders(folder = "dlw_metadata", verbose = FALSE)
 
   alias_list <- stamp::st_alias_list()
@@ -379,5 +383,6 @@ load_gmd_valid_report <- \() {
     ))
   }
 
-  pip_read("validation_report", alias = alias)
+  if (verbose) cli::cli_alert_info("Loading {.field validation_report}")
+  pip_read("validation_report", alias = alias, verbose = verbose)
 }

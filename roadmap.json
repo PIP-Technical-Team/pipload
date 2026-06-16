@@ -30,6 +30,18 @@
                     "title": "Pre-flatten metadata into a single summary qs2 artifact at pipeline write-time",
                     "status": "idea",
                     "plan": null
+                },
+                {
+                    "id": "verbose-arg-data-loaders",
+                    "title": "Check if data loading functions have verbose argument",
+                    "status": "done",
+                    "plan": ".cg-docs/plans/2026-06-05-verbose-arg-data-loaders-v2.md"
+                },
+                {
+                    "id": "audit-deprecate-legacy-loaders",
+                    "title": "Audit legacy loading functions and deprecate those superseded by new pipeline",
+                    "status": "idea",
+                    "plan": null
                 }
             ]
         }

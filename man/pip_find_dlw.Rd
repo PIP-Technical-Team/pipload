@@ -54,7 +54,7 @@ in the Poverty Calculator. Default if FALSE}
 \item{filter_to_tb}{logical: If TRUE filter most recent data to be included
 in the Table Maker. Default if FALSE}
 
-\item{verbose}{logical: whether to display message. Default is TRUE}
+\item{verbose}{logical: If TRUE, display loading messages. Default is option "pipload.verbose"}
 }
 \value{
 data.frame: list of filenames to be loaded with pcn_load()

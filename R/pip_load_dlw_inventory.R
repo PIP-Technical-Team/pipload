@@ -5,6 +5,7 @@
 #' the dlw inventory is updated
 #'
 #' @param dlw_dir character: path of datalibweb raw data
+#' @param verbose logical: If TRUE, display loading messages. Default is option "pipload.verbose"
 #' @inheritParams pip_create_globals
 #'
 #' @return data.table
@@ -14,7 +15,8 @@
 #' pip_load_dlw_inventory()
 pip_load_dlw_inventory  <- function(
   root_dir = Sys.getenv("PIP_ROOT_DIR"),
-  dlw_dir  = pipfun::pip_create_globals(root_dir)$DLW_RAW_DIR
+  dlw_dir  = pipfun::pip_create_globals(root_dir)$DLW_RAW_DIR,
+  verbose  = getOption("pipload.verbose")
   ){
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -40,6 +42,10 @@ pip_load_dlw_inventory  <- function(
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   # load data   ---------
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  if (verbose) {
+    cli::cli_alert_info("Loading DLW inventory from {.path {dlw_inv_file}}")
+  }
 
   dlw_inv <-fst::read_fst(dlw_inv_file,
                           as.data.table = TRUE)
