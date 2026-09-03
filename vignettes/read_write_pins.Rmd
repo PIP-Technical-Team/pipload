@@ -1,8 +1,8 @@
 ---
-title: "Read and Write with `pins`"
+title: "Read and Write Versioned Data with `pipload`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Read and Write with `pins`}
+  %\VignetteIndexEntry{Read and Write Versioned Data with `pipload`}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -15,72 +15,94 @@ knitr::opts_chunk$set(
 ```
 
 ```{r setup}
-devtools::load_all(".")
-# library(pipload)
+library(pipload)
 ```
 
-## Quick Start: Reading and Writing with `pins`
+## Read and write versioned data
 
-This vignette shows how to use the `pip_write` and `pip_read` functions to save and retrieve data with versioning using the `pins` package. We'll use a temporary board for demonstration, but the same logic applies to your real boards.
+`pip_read()` and `pip_write()` provide a small interface to the `{stamp}`
+package for saving and retrieving versioned artifacts. A stamp alias identifies
+the storage root. Initialize the alias once before using either function.
 
-## Create a temporary board
+## Create a temporary stamp alias
 
-```{r}
-board <- pins::board_temp(versioned = TRUE)
+The following setup creates an isolated storage root for this example. In a
+project workflow, the alias is normally initialized by the project setup code.
+
+```{r create-alias}
+alias <- paste0("pipload_vignette_", Sys.getpid())
+root <- fs::path_temp(alias)
+fs::dir_create(root)
+stamp::st_init(root, alias = alias)
 name <- "x"
 ```
 
 ## Write several versions of an object
 
-```{r}
-pip_write(board, x = 1:5,  pin_name = name)
-Sys.sleep(3)
-pip_write(board, x = 1:10, pin_name = name)
-Sys.sleep(3)
-pip_write(board, x = 4:9,  pin_name = name)
+Pass the object as the first argument and identify it with `id`. The short
+delays ensure that each write is recorded as a distinct version.
+
+```{r write-versions}
+pip_write(1:5, id = name, alias = alias)
+Sys.sleep(1)
+pip_write(1:10, id = name, alias = alias)
+Sys.sleep(1)
+pip_write(4:9, id = name, alias = alias)
 ```
 
-## Read 
+## Read versions
 
-### the latest version
+### Read the latest version
 
-```{r}
-pip_read(board = board, 
-         pin_name = name)
+With the default `version = NULL`, `pip_read()` loads the latest version.
+
+```{r read-latest}
+pip_read(id = name, alias = alias)
 ```
 
-### List all available versions
+### List available versions
 
-```{r}
-vers <- pip_read(board, 
-                 pin_name = name, 
-                 version = "available")
-vers
+Use `version = "available"` to return version metadata. The `vintage` column
+uses zero for the latest version, negative one for the previous version, and so
+on.
+
+```{r list-versions}
+versions <- pip_read(
+  id = name,
+  alias = alias,
+  version = "available"
+)
+versions
 ```
 
-### Read a specific version by version string
+### Read a specific version
 
-```{r}
-version <- vers[3, version]
-pip_read(board, pin_name = name, version = version)
+The version identifier from the metadata can be passed back to `pip_read()`.
+
+```{r read-specific}
+version_id <- versions[3, version_id]
+pip_read(id = name, alias = alias, version = version_id)
 ```
 
 ### Read previous versions by index
 
-```{r}
-pip_read(board, pin_name =  name, version = -1) # previous version
-pip_read(board,pin_name =  name, version = -2) # two versions back
+Negative integer values select versions relative to the latest version.
+
+```{r read-previous}
+pip_read(id = name, alias = alias, version = -1)
+pip_read(id = name, alias = alias, version = -2)
 ```
-
-
 
 ## Build higher-level functions
 
-`pip_read()` and `pip_write()` are the backbone of any other function in the `{pipload}` package. For instance, the function `load_dlw_data()` makes use of all the functionality of pins and `pip_read()`.
+`pip_read()` and `pip_write()` are the backbone of higher-level functions in
+the `{pipload}` package. For example, `load_dlw_data()` uses `pip_read()` to
+load data from the configured DLW release.
 
-Below are some real-world examples of how you might use these higher-level functions in your workflow:
+The following examples require access to a configured PIP working release and
+are therefore not evaluated when this vignette is built:
 
-```{r load_dlw_data}
+```{r load-dlw-data, eval = FALSE}
 # Get the latest release and set up the working environment
 lr <- pipfun::get_latest_pip_release()
 pipfun::setup_working_release(
@@ -89,24 +111,22 @@ pipfun::setup_working_release(
   verbose = FALSE
 )
 
-# Using pin_name (with extension)
-load_dlw_data(pin_name = "HRV_2011_EU-SILC_V01_M_V04_A_GMD_GPWG.qs2") |>
+# Using id_name (with extension)
+load_dlw_data(id_name = "HRV_2011_EU-SILC_V01_M_V04_A_GMD_GPWG.qs2") |>
   head()
 
-# Using pin_name (without extension also works)
-load_dlw_data(pin_name = "HRV_2011_EU-SILC_V01_M_V04_A_GMD_GPWG") |>
+# Using id_name without an extension also works
+load_dlw_data(id_name = "HRV_2011_EU-SILC_V01_M_V04_A_GMD_GPWG") |>
   head()
 
-# Using country and year
-load_dlw_data(country_code = "HRV", year = 2011) |>
+# Using country and survey year
+load_dlw_data(country_code = "HRV", surveyid_year = 2011) |>
   head()
 
 # Find all data for a country
 find_dlw_data(country_code = "HRV") |>
   head()
 
-# Find the latest year in EACH module for a country
+# Find the latest year in each module for a country
 find_dlw_data(country_code = "HRV", latest_year = TRUE)
 ```
-
-
